@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { FINALE, REGIONS, regionById } from './data/regions'
 import { setMuted, sfx } from './logic/audio'
+import { backgroundFor } from './logic/backgrounds'
 import { starsFor } from './logic/progress'
 import { freshSave, loadSave, persistSave } from './logic/storage'
 import { levelId, type SaveData } from './types'
@@ -141,6 +142,7 @@ export default function App() {
         <StoryScene
           lines={region.intro}
           background={region.color}
+          image={backgroundFor(region.id, 0)}
           equipped={save.equipped}
           onDone={() => storyDone(screen.regionId, screen.level)}
         />
@@ -183,6 +185,8 @@ export default function App() {
         <StoryScene
           lines={FINALE}
           background="#7c3aed"
+          image={backgroundFor('tower', 3)}
+          imageEnd
           equipped={save.equipped}
           finale
           onDone={() => setScreen({ name: 'map' })}

@@ -1,5 +1,6 @@
 import { REGIONS } from '../data/regions'
 import { sfx } from '../logic/audio'
+import { backgroundFor } from '../logic/backgrounds'
 import { completedLevels, levelUnlocked, levelsNeededFor, regionUnlocked } from '../logic/progress'
 import { levelId, type SaveData } from '../types'
 import { Monster } from './Monster'
@@ -39,6 +40,7 @@ export function WorldMap({ save, onPlayLevel, onWardrobe, onToggleMute }: Props)
         {REGIONS.map((region, ri) => {
           const unlocked = regionUnlocked(save, ri)
           const missing = levelsNeededFor(ri) - completedLevels(save)
+          const art = backgroundFor(region.id, 0)
           return (
             <section
               key={region.id}
@@ -46,6 +48,7 @@ export function WorldMap({ save, onPlayLevel, onWardrobe, onToggleMute }: Props)
               style={{ ['--region-color' as string]: region.color }}
               data-testid={`region-${region.id}`}
             >
+              {art && <div className="region-art" aria-hidden style={{ backgroundImage: `url(${art})` }} />}
               <div className="region-heading">
                 <span className="region-emoji" aria-hidden>
                   {unlocked ? region.emoji : '🔒'}

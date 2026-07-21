@@ -280,6 +280,14 @@ button {
   filter: grayscale(0.9);
   opacity: 0.55;
 }
+/* Picture-book header strip: a slice of the region's first panorama. */
+.region-art {
+  margin: -14px -14px 10px;
+  height: 88px;
+  border-radius: 19px 19px 0 0;
+  background-size: cover;
+  background-position: 0% 30%;
+}
 .region-heading {
   display: flex;
   align-items: center;
@@ -354,6 +362,28 @@ button {
   justify-content: center;
   gap: 26px;
   cursor: pointer;
+  overflow: hidden;
+}
+/* Region panorama behind the dialogue, dimmed enough for the avatars to pop. */
+.story-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+}
+.story-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(30, 27, 75, 0.3) 0%, rgba(30, 27, 75, 0.55) 55%, rgba(30, 27, 75, 0.85) 100%);
+}
+.story-screen > :not(.story-bg, .btn-skip) {
+  position: relative;
+  z-index: 1;
+}
+.story-screen > .btn-skip {
+  z-index: 2;
 }
 .story-avatars {
   display: flex;

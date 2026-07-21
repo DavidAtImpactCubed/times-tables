@@ -157,6 +157,37 @@ button {
   justify-content: center;
   gap: 22px;
   text-align: center;
+  overflow: hidden;
+}
+/* Island vista with a slow dreamy drift; dimmed towards the bottom for the button. */
+.title-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  animation: title-drift 40s ease-in-out infinite alternate;
+}
+@keyframes title-drift {
+  from {
+    transform: scale(1.04) translateY(1%);
+  }
+  to {
+    transform: scale(1.14) translateY(-2%);
+  }
+}
+.title-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(30, 27, 75, 0.35) 0%, rgba(30, 27, 75, 0.15) 40%, rgba(30, 27, 75, 0.6) 100%);
+}
+.title-screen > :not(.title-bg, .title-stars) {
+  position: relative;
+  z-index: 1;
+}
+.title-stars {
+  z-index: 1;
 }
 .game-title {
   font-size: clamp(2.4rem, 9vw, 3.6rem);

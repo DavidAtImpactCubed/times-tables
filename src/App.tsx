@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { FINALE, REGIONS, regionById } from './data/regions'
 import { setMuted, sfx } from './logic/audio'
-import { backgroundFor } from './logic/backgrounds'
+import { TITLE_BG, backgroundFor } from './logic/backgrounds'
 import { starsFor } from './logic/progress'
 import { freshSave, loadSave, persistSave } from './logic/storage'
 import { levelId, type SaveData } from './types'
@@ -76,6 +76,9 @@ export default function App() {
     case 'title':
       return (
         <div className="screen title-screen">
+          {TITLE_BG && (
+            <div className="title-bg" aria-hidden data-testid="title-bg" style={{ backgroundImage: `url(${TITLE_BG})` }} />
+          )}
           <div className="title-stars" aria-hidden>
             {Array.from({ length: 14 }, (_, i) => (
               <span key={i} className="twinkle" style={{ animationDelay: `${i * 0.4}s` }}>

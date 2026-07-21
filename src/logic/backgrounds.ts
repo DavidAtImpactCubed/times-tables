@@ -16,3 +16,6 @@ for (const [path, url] of Object.entries(files)) {
 
 export const backgroundFor = (regionId: string, level: number): string | undefined =>
   byStem[`${regionId}-${level}`]
+
+/** The island vista shown on the title screen. */
+export const TITLE_BG: string | undefined = byStem['title']

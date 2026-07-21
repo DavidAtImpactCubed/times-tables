@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { sfx } from '../logic/audio'
+import { backgroundFor } from '../logic/backgrounds'
 import { QUESTIONS_PER_LEVEL } from '../logic/questions'
 import type { PartSlot, Region } from '../types'
 import { Confetti } from './Confetti'
@@ -33,8 +34,13 @@ export function ResultsScreen({ region, level, correct, stars, gained, equipped,
           ? 'Well done — stars won back!'
           : 'So close! One more try and those stars are yours!'
 
+  const bg = backgroundFor(region.id, level)
+
   return (
     <div className="screen results-screen" style={{ ['--region-color' as string]: region.color }}>
+      {bg && (
+        <div className="results-banner" aria-hidden data-testid="results-bg" style={{ backgroundImage: `url(${bg})` }} />
+      )}
       {stars > 0 && <Confetti />}
       <h1 className="results-title">
         {region.emoji} {region.levels[level].title}

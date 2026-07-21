@@ -645,6 +645,32 @@ button {
   gap: 10px;
   text-align: center;
   background: linear-gradient(180deg, color-mix(in srgb, var(--region-color) 55%, #312e81) 0%, #1e1b4b 100%);
+  overflow: hidden;
+}
+/* Postcard from the journey's end: the right edge of the level panorama,
+   full-width and undimmed at the top, fading into the celebration gradient. */
+.results-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: min(30vh, 250px);
+  background-size: cover;
+  background-position: 100% 35%;
+  z-index: 0;
+}
+.results-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(30, 27, 75, 0.9) 100%);
+}
+.results-screen:has(.results-banner) {
+  padding-top: min(30vh, 250px);
+}
+.results-screen > :not(.results-banner) {
+  position: relative;
+  z-index: 1;
 }
 .results-title {
   color: #fff;

@@ -1,12 +1,92 @@
-// Temporary reference sheet of every monster component, for the art pipeline.
-// Not part of the game build.
+// Temporary reference sheets for the art pipeline. Not part of the game build.
+//   /sheet.html        — full monsters wearing each item
+//   /sheet.html?parts  — isolated component layers on the shared 220×250 canvas
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { Monster, type Mood } from './components/Monster'
+import { Monster, type MonsterLayer, type Mood } from './components/Monster'
 import { WARDROBE } from './data/wardrobe'
 import type { PartSlot } from './types'
 
 const SIZE = 150
+
+interface PartDef {
+  label: string
+  layer: MonsterLayer
+  equipped?: Partial<Record<PartSlot, string>>
+  mood?: Mood
+  ghost?: boolean
+}
+
+const PARTS: PartDef[] = [
+  { label: 'base-body', layer: 'base', ghost: false },
+  { label: 'mouth-idle', layer: 'mouth', mood: 'idle' },
+  { label: 'mouth-happy', layer: 'mouth', mood: 'happy' },
+  { label: 'mouth-sad', layer: 'mouth', mood: 'sad' },
+  { label: 'eyes-two', layer: 'eyes' },
+  ...WARDROBE.filter((i) => i.slot !== 'body').map(
+    (i): PartDef => ({ label: i.id, layer: i.slot as MonsterLayer, equipped: { [i.slot]: i.id } }),
+  ),
+]
+
+const CHECKER =
+  'repeating-conic-gradient(#d1d5db 0% 25%, #f3f4f6 0% 50%) 0 0 / 20px 20px'
+
+function PartCell({ part }: { part: PartDef }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: SIZE + 26 }}>
+      <div
+        style={{
+          position: 'relative',
+          width: SIZE,
+          height: SIZE * (250 / 220),
+          background: CHECKER,
+          borderRadius: 8,
+          border: '2px solid #6b7280',
+          overflow: 'hidden',
+        }}
+      >
+        {part.ghost !== false && (
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.15 }}>
+            <Monster equipped={{}} layer="base" size={SIZE} />
+          </div>
+        )}
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <Monster equipped={part.equipped ?? {}} mood={part.mood ?? 'idle'} layer={part.layer} size={SIZE} />
+        </div>
+      </div>
+      <span style={{ fontFamily: 'monospace', fontSize: 13, marginTop: 4 }}>{part.label}</span>
+    </div>
+  )
+}
+
+function PartsSheet() {
+  return (
+    <div>
+      <div id="handoff" style={{ padding: 26, background: '#fff', width: 1560 }}>
+        <h1 style={{ fontFamily: 'monospace', fontSize: 24, margin: '0 0 6px' }}>
+          MONSTER PART LAYERS — each part isolated on the shared 220×250 canvas
+        </h1>
+        <p style={{ fontFamily: 'monospace', fontSize: 15, margin: '0 0 18px' }}>
+          Checkerboard = transparency. Faint ghost body = position reference only, not part of the layer. The game
+          stacks layers in order: back → base-body → eyes → mouth → glasses → horns → hat → held.
+        </p>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          {PARTS.map((p) => (
+            <PartCell key={p.label} part={p} />
+          ))}
+        </div>
+      </div>
+      {/* clean export targets for transparent per-part PNGs (no ghost, no background) */}
+      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        {PARTS.map((p) => (
+          <div key={p.label} data-part={p.label} style={{ width: 300, height: 300 * (250 / 220) }}>
+            <Monster equipped={p.equipped ?? {}} mood={p.mood ?? 'idle'} layer={p.layer} size={300} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 function Cell({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -127,4 +207,5 @@ function Sheet() {
   )
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(<Sheet />)
+const parts = new URLSearchParams(location.search).has('parts')
+ReactDOM.createRoot(document.getElementById('root')!).render(parts ? <PartsSheet /> : <Sheet />)

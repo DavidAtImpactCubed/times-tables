@@ -3,6 +3,8 @@ import { sfx } from '../logic/audio'
 import type { PartSlot, StoryLine } from '../types'
 import { Confetti } from './Confetti'
 import { Monster } from './Monster'
+import owlUrl from '../assets/characters/owl.webp'
+import goblinUrl from '../assets/characters/goblin.webp'
 
 interface Props {
   lines: StoryLine[]
@@ -47,11 +49,11 @@ export function StoryScene({ lines, background, image, imageEnd, equipped, final
         <div className={`story-avatar ${line.speaker === 'monster' ? 'talking' : 'quiet'}`}>
           <Monster equipped={equipped} mood={line.speaker === 'monster' ? 'happy' : 'idle'} size={130} />
         </div>
-        <div className={`story-avatar big-emoji ${line.speaker === 'guide' ? 'talking' : 'quiet'}`} aria-hidden>
-          🦉
+        <div className={`story-avatar ${line.speaker === 'guide' ? 'talking' : 'quiet'}`}>
+          <img className="story-char" src={owlUrl} alt="Olly the Owl" draggable={false} />
         </div>
-        <div className={`story-avatar big-emoji ${line.speaker === 'goblin' ? 'talking' : 'quiet'}`} aria-hidden>
-          😈
+        <div className={`story-avatar ${line.speaker === 'goblin' ? 'talking' : 'quiet'}`}>
+          <img className="story-char" src={goblinUrl} alt="The Star Goblin" draggable={false} />
         </div>
       </div>
       <div className="speech-bubble">

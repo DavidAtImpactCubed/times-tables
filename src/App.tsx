@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { FINALE, REGIONS, regionById } from './data/regions'
 import { setMuted, sfx } from './logic/audio'
 import { starsFor } from './logic/progress'
-import { loadSave, persistSave } from './logic/storage'
+import { freshSave, loadSave, persistSave } from './logic/storage'
 import { levelId, type SaveData } from './types'
 import { LevelScreen } from './components/LevelScreen'
 import { Monster } from './components/Monster'
@@ -23,6 +23,7 @@ type Screen =
 export default function App() {
   const [save, setSave] = useState<SaveData>(loadSave)
   const [screen, setScreen] = useState<Screen>({ name: 'title' })
+  const [confirmReset, setConfirmReset] = useState(false)
 
   useEffect(() => {
     persistSave(save)
@@ -98,6 +99,29 @@ export default function App() {
           >
             {Object.keys(save.stars).length > 0 ? '▶ Keep playing!' : '▶ Start the adventure!'}
           </button>
+          {Object.keys(save.stars).length > 0 &&
+            (confirmReset ? (
+              <div className="reset-confirm" data-testid="reset-confirm">
+                <p>Delete ALL progress and stars?</p>
+                <button
+                  className="btn btn-danger"
+                  data-testid="reset-yes"
+                  onClick={() => {
+                    setSave(freshSave())
+                    setConfirmReset(false)
+                  }}
+                >
+                  Yes, start over
+                </button>
+                <button className="btn btn-secondary" onClick={() => setConfirmReset(false)}>
+                  Keep my stars!
+                </button>
+              </div>
+            ) : (
+              <button className="btn btn-quiet reset-btn" data-testid="reset-btn" onClick={() => setConfirmReset(true)}>
+                Reset progress
+              </button>
+            ))}
         </div>
       )
 

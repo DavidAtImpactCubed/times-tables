@@ -1,0 +1,96 @@
+import { REGIONS } from '../data/regions'
+import { sfx } from '../logic/audio'
+import { levelUnlocked, regionUnlocked } from '../logic/progress'
+import { levelId, type SaveData } from '../types'
+import { Monster } from './Monster'
+
+interface Props {
+  save: SaveData
+  onPlayLevel: (regionId: string, level: number) => void
+  onWardrobe: () => void
+  onToggleMute: () => void
+}
+
+export function WorldMap({ save, onPlayLevel, onWardrobe, onToggleMute }: Props) {
+  return (
+    <div className="screen map-screen">
+      <header className="map-header">
+        <div className="map-monster">
+          <Monster equipped={save.equipped} mood="idle" size={72} className="bounce-slow" />
+        </div>
+        <div className="map-title">
+          <h1>Monster Island</h1>
+          <p>Win the stars back from the Star Goblin!</p>
+        </div>
+        <div className="map-actions">
+          <span className="wallet" data-testid="wallet">
+            ⭐ {save.wallet}
+          </span>
+          <button className="btn btn-round" onClick={onWardrobe} aria-label="Monster wardrobe" data-testid="wardrobe-btn">
+            👕
+          </button>
+          <button className="btn btn-round" onClick={onToggleMute} aria-label="Sound on or off">
+            {save.muted ? '🔇' : '🔊'}
+          </button>
+        </div>
+      </header>
+
+      <div className="region-list">
+        {REGIONS.map((region, ri) => {
+          const unlocked = regionUnlocked(save, ri)
+          return (
+            <section
+              key={region.id}
+              className={`region-card ${unlocked ? '' : 'locked'}`}
+              style={{ ['--region-color' as string]: region.color }}
+              data-testid={`region-${region.id}`}
+            >
+              <div className="region-heading">
+                <span className="region-emoji" aria-hidden>
+                  {unlocked ? region.emoji : '🔒'}
+                </span>
+                <div>
+                  <h2>{region.name}</h2>
+                  <p className="region-sub">
+                    {region.kind === 'times'
+                      ? `The ${region.tables[0]} times table`
+                      : region.kind === 'division'
+                        ? 'Division facts'
+                        : 'Everything mixed up!'}
+                  </p>
+                </div>
+              </div>
+              {unlocked && (
+                <div className="level-row">
+                  {region.levels.map((lvl, li) => {
+                    const open = levelUnlocked(save, ri, li)
+                    const stars = save.stars[levelId(region.id, li)] ?? 0
+                    return (
+                      <button
+                        key={li}
+                        className={`level-btn ${open ? '' : 'locked'} ${stars > 0 ? 'done' : ''}`}
+                        disabled={!open}
+                        onClick={() => {
+                          sfx.click()
+                          onPlayLevel(region.id, li)
+                        }}
+                        data-testid={`level-${region.id}-${li}`}
+                      >
+                        <span className="level-num">{open ? li + 1 : '🔒'}</span>
+                        <span className="level-stars" aria-label={`${stars} stars`}>
+                          {'★'.repeat(stars)}
+                          {'☆'.repeat(3 - stars)}
+                        </span>
+                        <span className="level-name">{lvl.title}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </section>
+          )
+        })}
+      </div>
+    </div>
+  )
+}

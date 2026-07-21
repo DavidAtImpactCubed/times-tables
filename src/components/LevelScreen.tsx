@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { sfx } from '../logic/audio'
+import { backgroundFor } from '../logic/backgrounds'
 import { QUESTIONS_PER_LEVEL, explain, generateLevel, questionText } from '../logic/questions'
 import type { PartSlot, Question, Region } from '../types'
 import { Monster, type Mood } from './Monster'
@@ -81,9 +82,18 @@ export function LevelScreen({ region, level, equipped, onFinish, onQuit }: Props
   }
 
   const progress = Math.min(answeredFirst / QUESTIONS_PER_LEVEL, 1)
+  const bg = backgroundFor(region.id, level)
 
   return (
     <div className="screen level-screen" style={{ ['--region-color' as string]: region.color }}>
+      {bg && (
+        <div
+          className="level-bg"
+          aria-hidden
+          data-testid="level-bg"
+          style={{ backgroundImage: `url(${bg})`, backgroundPosition: `${progress * 100}% 50%` }}
+        />
+      )}
       <header className="level-header">
         <button className="btn btn-round" onClick={onQuit} aria-label="Back to the map">
           🗺️

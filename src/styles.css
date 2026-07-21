@@ -408,6 +408,27 @@ button {
   background: linear-gradient(180deg, color-mix(in srgb, var(--region-color) 65%, #312e81) 0%, #1e1b4b 100%);
   border-radius: 0;
   gap: 8px;
+  overflow: hidden;
+}
+/* Scrolling scenery: pans right a little after every answered question. */
+.level-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: auto 100%;
+  background-repeat: no-repeat;
+  transition: background-position 1s ease;
+}
+.level-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(30, 27, 75, 0.08) 0%, rgba(30, 27, 75, 0.3) 45%, rgba(30, 27, 75, 0.82) 100%);
+}
+.level-header,
+.level-main {
+  position: relative;
+  z-index: 1;
 }
 .level-header {
   width: 100%;

@@ -154,28 +154,19 @@ export function LevelScreen({ region, level, equipped, onFinish, onQuit }: Props
               Got it! 👍
             </button>
           </div>
-        ) : q.input === 'choice' ? (
-          <div className="choices" data-testid="choices">
-            {q.choices!.map((c) => (
-              <button
-                key={c}
-                className="btn choice-btn"
-                disabled={feedback !== null}
-                onClick={() => submit(c)}
-                data-testid={`choice-${c}`}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-        ) : (
-          <NumberPad
-            value={typed}
-            onChange={setTyped}
-            onSubmit={() => submit(parseInt(typed, 10))}
-            disabled={feedback !== null}
-          />
-        )}
+        ) : feedback === null ? (
+          q.input === 'choice' ? (
+            <div className="choices" data-testid="choices">
+              {q.choices!.map((c) => (
+                <button key={c} className="btn choice-btn" onClick={() => submit(c)} data-testid={`choice-${c}`}>
+                  {c}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <NumberPad value={typed} onChange={setTyped} onSubmit={() => submit(parseInt(typed, 10))} />
+          )
+        ) : null}
 
         {feedback?.kind === 'correct' && <div className="correct-flash">✔ {q.answer} — brilliant!</div>}
       </main>

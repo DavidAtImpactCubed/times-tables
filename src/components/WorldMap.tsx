@@ -1,6 +1,6 @@
 import { REGIONS } from '../data/regions'
 import { sfx } from '../logic/audio'
-import { levelUnlocked, regionUnlocked } from '../logic/progress'
+import { completedLevels, levelUnlocked, levelsNeededFor, regionUnlocked } from '../logic/progress'
 import { levelId, type SaveData } from '../types'
 import { Monster } from './Monster'
 
@@ -38,6 +38,7 @@ export function WorldMap({ save, onPlayLevel, onWardrobe, onToggleMute }: Props)
       <div className="region-list">
         {REGIONS.map((region, ri) => {
           const unlocked = regionUnlocked(save, ri)
+          const missing = levelsNeededFor(ri) - completedLevels(save)
           return (
             <section
               key={region.id}
@@ -60,6 +61,11 @@ export function WorldMap({ save, onPlayLevel, onWardrobe, onToggleMute }: Props)
                   </p>
                 </div>
               </div>
+              {!unlocked && (
+                <p className="unlock-hint" data-testid={`unlock-hint-${region.id}`}>
+                  Finish {missing} more stage{missing === 1 ? '' : 's'} to unlock!
+                </p>
+              )}
               {unlocked && (
                 <div className="level-row">
                   {region.levels.map((lvl, li) => {

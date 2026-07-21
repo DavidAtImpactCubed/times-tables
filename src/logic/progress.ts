@@ -8,10 +8,16 @@ export function starsFor(correct: number): number {
   return 0
 }
 
+/** Stages finished with at least 1 star, across the whole island. */
+export function completedLevels(save: SaveData): number {
+  return Object.values(save.stars).filter((s) => s >= 1).length
+}
+
+/** Region n unlocks once 3×n stages are complete (region 0 is always open). */
+export const levelsNeededFor = (regionIndex: number): number => regionIndex * 3
+
 export function regionUnlocked(save: SaveData, regionIndex: number): boolean {
-  if (regionIndex === 0) return true
-  const prev = REGIONS[regionIndex - 1]
-  return (save.stars[levelId(prev.id, prev.levels.length - 1)] ?? 0) >= 1
+  return completedLevels(save) >= levelsNeededFor(regionIndex)
 }
 
 export function levelUnlocked(save: SaveData, regionIndex: number, level: number): boolean {

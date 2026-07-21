@@ -10,9 +10,11 @@ them on hats, horns, wings and colours for your own monster in the wardrobe.
 
 ## The game
 
-- **7 story regions**, unlocked in order: Twinkle Beach (2s), Triple Tree Forest (3s),
+- **7 story regions**: Twinkle Beach (2s), Triple Tree Forest (3s),
   Five-Spike Mountain (5s), Ten-Tentacle Lagoon (10s), Eleventy Cloud Castle (11s),
-  Division Cavern, and The Goblin's Tower (everything mixed).
+  Division Cavern, and The Goblin's Tower (everything mixed). Region *n* unlocks
+  once 3×(n−1) stages are complete anywhere on the island (3 for the Forest,
+  6 for the Mountain, … 18 for the Tower).
 - **4 levels per region** with ramping difficulty: multiple choice → typed answers on a
   big number pad → missing numbers → mixed times & division.
 - **Up to 3 stars per level** (10/10 → ⭐⭐⭐). Replay any level to improve your stars.

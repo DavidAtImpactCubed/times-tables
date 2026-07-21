@@ -273,6 +273,12 @@ button {
   font-size: 0.85rem;
   color: #6b7280;
 }
+.unlock-hint {
+  margin: 10px 0 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #6b7280;
+}
 .level-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

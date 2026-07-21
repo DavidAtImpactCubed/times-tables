@@ -47,7 +47,7 @@ export function ResultsScreen({ region, level, correct, stars, gained, equipped,
         ))}
       </div>
       <p className="results-score" data-testid="results-score">
-        {correct} out of {QUESTIONS_PER_LEVEL} correct
+        {correct} out of {QUESTIONS_PER_LEVEL} first tries correct
       </p>
       <p className="results-message">{message}</p>
       <div className="results-monster">

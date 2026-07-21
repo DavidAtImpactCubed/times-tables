@@ -437,6 +437,16 @@ button {
 .level-monster {
   height: 130px;
 }
+.retry-banner {
+  background: #e0e7ff;
+  color: #3730a3;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 2px dashed #6366f1;
+  animation: pop-in 0.25s ease both;
+}
 .equation {
   display: flex;
   align-items: center;

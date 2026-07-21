@@ -104,6 +104,11 @@ export function LevelScreen({ region, level, equipped, onFinish, onQuit }: Props
       )}
 
       <main className="level-main">
+        {entry.retry && (
+          <div className="retry-banner" data-testid="retry-banner">
+            🔁 Second try — just for practice, not scored!
+          </div>
+        )}
         <div className="level-monster">
           <Monster equipped={equipped} mood={mood} size={110} className={feedback?.kind === 'correct' ? 'jump' : ''} />
         </div>

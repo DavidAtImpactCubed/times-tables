@@ -27,13 +27,13 @@ export const WARDROBE: WardrobeItem[] = [
   { id: 'glasses-heart', slot: 'glasses', name: 'Heart glasses', price: 4, variant: 'heart' },
   { id: 'glasses-star', slot: 'glasses', name: 'Star glasses', price: 4, variant: 'star' },
   // Horns
-  { id: 'horns-little', slot: 'horns', name: 'Little horns', price: 2, variant: 'little' },
-  { id: 'horns-curly', slot: 'horns', name: 'Blue horns', price: 3, variant: 'curly' },
-  { id: 'horns-green', slot: 'horns', name: 'Sprout horns', price: 3, variant: 'green' },
-  { id: 'horns-antennae', slot: 'horns', name: 'Antennae', price: 3, variant: 'antennae' },
   { id: 'horns-cream', slot: 'horns', name: 'Ram horns', price: 3, variant: 'cream' },
   { id: 'horns-teal', slot: 'horns', name: 'Teal horns', price: 3, variant: 'teal' },
+  { id: 'horns-green', slot: 'horns', name: 'Sprout horns', price: 3, variant: 'green' },
+  { id: 'horns-antennae', slot: 'horns', name: 'Antennae', price: 3, variant: 'antennae' },
   { id: 'horns-bat', slot: 'horns', name: 'Bat wings', price: 4, variant: 'bat' },
+  { id: 'horns-little', slot: 'horns', name: 'Large horns', price: 2, variant: 'little' },
+  { id: 'horns-curly', slot: 'horns', name: 'Large blue horns', price: 3, variant: 'curly' },
   // Hats
   { id: 'hat-cap', slot: 'hat', name: 'Baseball cap', price: 2, variant: 'cap' },
   { id: 'hat-beanie', slot: 'hat', name: 'Bobble hat', price: 2, variant: 'beanie' },

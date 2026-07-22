@@ -64,12 +64,12 @@ const PLACE: Record<string, Placement> = {
   'mouth-happy': { cx: 650, cy: 938, w: 280 },
   'mouth-sad': { cx: 650, cy: 938, w: 150 },
   'mouth-excited': { cx: 650, cy: 938, w: 280 },
-  'glasses-round': { cx: 650, cy: 772, w: 387 },
-  'glasses-blue': { cx: 650, cy: 772, w: 387 },
-  'glasses-pixel': { cx: 650, cy: 766, w: 387 },
-  'glasses-shutter': { cx: 650, cy: 766, w: 387 },
-  'glasses-heart': { cx: 650, cy: 772, w: 387 },
-  'glasses-star': { cx: 650, cy: 766, w: 396 },
+  'glasses-round': { cx: 650, cy: 780, w: 387 },
+  'glasses-blue': { cx: 650, cy: 780, w: 387 },
+  'glasses-pixel': { cx: 650, cy: 774, w: 387 },
+  'glasses-shutter': { cx: 650, cy: 774, w: 387 },
+  'glasses-heart': { cx: 650, cy: 780, w: 387 },
+  'glasses-star': { cx: 650, cy: 774, w: 396 },
   'face-bowtie': { cx: 650, cy: 1055, w: 300 },
   'face-scarf': { cx: 650, cy: 1075, w: 530 },
   'face-scarf-green': { cx: 650, cy: 1075, w: 530 },
@@ -115,6 +115,9 @@ const FRONT_BACK = new Set(['back-belt', 'back-duck'])
 /** held items that extend beyond the fingers, so the gripping-fingers overlay is skipped. */
 const NO_FINGERS = new Set(['held-lantern', 'held-telescope'])
 
+/** big head-toppers drawn above hats so the hat tucks under them rather than hiding them. */
+const HORNS_OVER_HAT = new Set(['horns-cream', 'horns-teal', 'horns-bat'])
+
 function layerStyle(stem: string): CSSProperties {
   const p = PLACE[stem]
   return {
@@ -144,7 +147,13 @@ export function Monster({ equipped, mood = 'idle', size = 160, className, layer 
   const back = equipped.back
   const backIsFront = back !== undefined && FRONT_BACK.has(back)
 
-  // stacking order: back → base → front-worn back items → eyes → mouth → neckwear → horns → hat → held
+  // most horns sit under the hat; big head-toppers (ram/teal/bat) sit above it
+  const horns = equipped.horns
+  const hornsUnderHat = horns && !HORNS_OVER_HAT.has(horns) ? horns : undefined
+  const hornsOverHat = horns && HORNS_OVER_HAT.has(horns) ? horns : undefined
+
+  // stacking order: back → base → front-worn back items → eyes → mouth → neckwear
+  //   → under-hat horns → hat → over-hat horns → held
   const stems: { layer: MonsterLayer; stem?: string; place?: string }[] = [
     { layer: 'back', stem: backIsFront ? undefined : back },
     { layer: 'base', stem: bodyStem, place: pose },
@@ -153,8 +162,9 @@ export function Monster({ equipped, mood = 'idle', size = 160, className, layer 
     { layer: 'glasses', stem: equipped.glasses },
     { layer: 'mouth', stem: `${mouthBase}${faceSuffix}`, place: mouthBase },
     { layer: 'face', stem: equipped.face },
-    { layer: 'horns', stem: equipped.horns },
+    { layer: 'horns', stem: hornsUnderHat },
     { layer: 'hat', stem: equipped.hat },
+    { layer: 'horns', stem: hornsOverHat },
     { layer: 'held', stem: equipped.held },
     // fingers painted over the held prop so its handle looks gripped by the fist —
     // skip for props that extend past the fingers (they'd be wrongly overlapped)

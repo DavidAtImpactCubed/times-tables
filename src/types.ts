@@ -19,14 +19,16 @@ export interface Question {
 
 export type LevelMode = 'choice' | 'type' | 'missing' | 'mixed'
 
-export interface LevelDef {
-  mode: LevelMode
-  title: string
-}
-
 export interface StoryLine {
   speaker: 'monster' | 'goblin' | 'guide'
   text: string
+}
+
+export interface LevelDef {
+  mode: LevelMode
+  title: string
+  /** story beat shown before this level (first time only) */
+  story: StoryLine[]
 }
 
 export interface Region {
@@ -38,7 +40,6 @@ export interface Region {
   tables: number[]
   kind: 'times' | 'division' | 'mixed'
   levels: LevelDef[]
-  intro: StoryLine[]
 }
 
 export type PartSlot = 'body' | 'eyes' | 'glasses' | 'horns' | 'hat' | 'face' | 'held' | 'back'

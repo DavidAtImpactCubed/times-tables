@@ -1,12 +1,17 @@
-import type { Region } from '../types'
+import type { Region, StoryLine } from '../types'
 
-const TIMES_LEVELS = (table: number) => [
-  { mode: 'choice' as const, title: `Meet the ${table}s` },
-  { mode: 'type' as const, title: `Type the ${table}s` },
-  { mode: 'missing' as const, title: 'Missing numbers' },
-  { mode: 'mixed' as const, title: 'Times & sharing' },
+const TIMES_LEVELS = (table: number, stories: StoryLine[][]) => [
+  { mode: 'choice' as const, title: `Meet the ${table}s`, story: stories[0] },
+  { mode: 'type' as const, title: `Type the ${table}s`, story: stories[1] },
+  { mode: 'missing' as const, title: 'Missing numbers', story: stories[2] },
+  { mode: 'mixed' as const, title: 'Times & sharing', story: stories[3] },
 ]
 
+const M = (text: string): StoryLine => ({ speaker: 'monster', text })
+const O = (text: string): StoryLine => ({ speaker: 'guide', text })
+const G = (text: string): StoryLine => ({ speaker: 'goblin', text })
+
+// Regions in play order: 2, 5, 10, 3, 11, then division and the mixed finale.
 export const REGIONS: Region[] = [
   {
     id: 'beach',
@@ -15,27 +20,20 @@ export const REGIONS: Region[] = [
     color: '#f59e0b',
     tables: [2],
     kind: 'times',
-    levels: TIMES_LEVELS(2),
-    intro: [
-      { speaker: 'guide', text: 'Oh no! The cheeky Star Goblin has pinched ALL the magic stars from Monster Island!' },
-      { speaker: 'goblin', text: 'Hee hee hee! They are MINE now! You will never get them back!' },
-      { speaker: 'guide', text: 'Stars only shine for clever monsters. Answer number puzzles and they will fly back to you!' },
-      { speaker: 'monster', text: 'Let’s start here on Twinkle Beach with the 2 times table. I can do this!' },
-    ],
-  },
-  {
-    id: 'forest',
-    name: 'Triple Tree Forest',
-    emoji: '🌳',
-    color: '#22c55e',
-    tables: [3],
-    kind: 'times',
-    levels: TIMES_LEVELS(3),
-    intro: [
-      { speaker: 'guide', text: 'Welcome to Triple Tree Forest, where everything grows in threes!' },
-      { speaker: 'goblin', text: 'Grrr! You got the beach stars. But the 3 times table is MUCH too tricky for you!' },
-      { speaker: 'monster', text: 'Threes are easy-peasy: 3, 6, 9, 12… Watch me, Goblin!' },
-    ],
+    levels: TIMES_LEVELS(2, [
+      [
+        O('Wake up, little monster — disaster! The Star Goblin has stolen every star on Monster Island!'),
+        G('Hee hee hee! They are ALL mine now! Catch me if you can!'),
+        O('His trail starts here on Twinkle Beach. Solve the 2 times table and the stars will shine back to you!'),
+        M('Don’t worry, Olly — I’ll win back every last one. Twos first: 2, 4, 6, 8!'),
+      ],
+      [O('Look — glowing footprints in the sand, counting up in twos!'), M('The goblin went this way. Follow the twos!')],
+      [
+        M('Oh no, the waves have washed some footprints away…'),
+        O('Then fill in the missing numbers, and the trail will glow again!'),
+      ],
+      [G('Still here? Try SHARING the stars out — bet you can’t!'), M('Times and sharing are two halves of the same trick. Watch!')],
+    ]),
   },
   {
     id: 'mountain',
@@ -44,12 +42,16 @@ export const REGIONS: Region[] = [
     color: '#8b5cf6',
     tables: [5],
     kind: 'times',
-    levels: TIMES_LEVELS(5),
-    intro: [
-      { speaker: 'guide', text: 'Five-Spike Mountain! Every path up climbs in jumps of 5.' },
-      { speaker: 'goblin', text: 'I hid the stars at the TOP! Hope you don’t know your 5s… hee hee!' },
-      { speaker: 'monster', text: '5, 10, 15, 20 — I’ll be at the top in no time!' },
-    ],
+    levels: TIMES_LEVELS(5, [
+      [
+        O('The trail climbs Five-Spike Mountain. The path rises in jumps of five!'),
+        M('5, 10, 15, 20 — I’ll hop up in fives!'),
+        G('You’ll never reach the top before me! Hee hee!'),
+      ],
+      [M('The higher we climb, the more stars I can see twinkling above.'), O('Keep counting in fives — every right answer lights the path.')],
+      [O('A rockfall! Some of the numbers have tumbled away.'), M('I can work out what’s missing. Nothing stops this monster!')],
+      [G('Fine, take the mountain stars — I’ve a whole SACK more!'), M('Then I’ll win those back too. Onwards!')],
+    ]),
   },
   {
     id: 'lagoon',
@@ -58,12 +60,34 @@ export const REGIONS: Region[] = [
     color: '#06b6d4',
     tables: [10],
     kind: 'times',
-    levels: TIMES_LEVELS(10),
-    intro: [
-      { speaker: 'guide', text: 'This is Ten-Tentacle Lagoon. The friendly octopus counts everything in tens!' },
-      { speaker: 'goblin', text: 'Ha! I tied the stars to the octopus’s tentacles. Ten knots on each one!' },
-      { speaker: 'monster', text: 'Tens are my favourite — just pop a zero on the end!' },
-    ],
+    levels: TIMES_LEVELS(10, [
+      [
+        O('The goblin rowed across Ten-Tentacle Lagoon. The friendly octopus counts in tens!'),
+        M('Tens are easy — just pop a zero on the end! 10, 20, 30!'),
+        G('Blub blub — hope you can swim, hee hee!'),
+      ],
+      [M('The octopus is holding stars up on its tentacles — ten on each one!'), O('Answer well and it will pass them to you.')],
+      [O('Ripples have hidden some numbers under the water.'), M('I’ll figure out the missing tens!')],
+      [M('Look — the goblin dropped a clue, heading for the forest!'), O('Well spotted. To the trees!')],
+    ]),
+  },
+  {
+    id: 'forest',
+    name: 'Triple Tree Forest',
+    emoji: '🌳',
+    color: '#22c55e',
+    tables: [3],
+    kind: 'times',
+    levels: TIMES_LEVELS(3, [
+      [
+        O('Welcome to Triple Tree Forest, where everything grows in threes.'),
+        G('My secret hideout is near — but you’ll get LOST in here! Hee hee!'),
+        M('Not if I follow the threes: 3, 6, 9, 12!'),
+      ],
+      [M('Glowing mushrooms in clusters of three light the way.'), O('Follow them deeper — we’re close now.')],
+      [O('The path splits! Only the right numbers reveal the true way.'), M('Missing numbers won’t fool me!')],
+      [M('There — the goblin’s rope ladder, climbing up into the clouds!'), G('Grrr! How did you find it?!')],
+    ]),
   },
   {
     id: 'castle',
@@ -72,12 +96,16 @@ export const REGIONS: Region[] = [
     color: '#ec4899',
     tables: [11],
     kind: 'times',
-    levels: TIMES_LEVELS(11),
-    intro: [
-      { speaker: 'guide', text: 'Up in the clouds sits Eleventy Castle, home of the elegant 11s.' },
-      { speaker: 'goblin', text: 'ELEVENS?! Even I get those wrong. You’ve got no chance!' },
-      { speaker: 'monster', text: 'The 11s do a magic double trick: 22, 33, 44… I see the pattern!' },
-    ],
+    levels: TIMES_LEVELS(11, [
+      [
+        O('Up we go, to Eleventy Cloud Castle — home of the tricky elevens!'),
+        M('The elevens do a magic doubling trick: 11, 22, 33, 44!'),
+        G('You nearly caught me — but not quite! Up, up!'),
+      ],
+      [M('The clouds are stepping stones — each right answer makes one solid!'), O('Steady now… try not to look down.')],
+      [O('The castle gate only opens for the missing numbers.'), M('Eleven times… got it! Open up!')],
+      [G('You’re too close! I’m hiding in my CAVE, where you’ll never divide!'), M('Division? That’s just sharing backwards. After him!')],
+    ]),
   },
   {
     id: 'cavern',
@@ -87,15 +115,18 @@ export const REGIONS: Region[] = [
     tables: [2, 5, 10, 3, 11],
     kind: 'division',
     levels: [
-      { mode: 'choice', title: 'Sharing out' },
-      { mode: 'type', title: 'Divide & shine' },
-      { mode: 'missing', title: 'Tricky splits' },
-      { mode: 'mixed', title: 'Crystal challenge' },
-    ],
-    intro: [
-      { speaker: 'guide', text: 'Deep in Division Cavern, stars are shared into equal piles of glittering crystals.' },
-      { speaker: 'goblin', text: 'Dividing is times tables BACKWARDS! Your brain will get dizzy! Hee hee!' },
-      { speaker: 'monster', text: 'If 5 × 4 = 20, then 20 ÷ 5 = 4. It’s the same fact family — nice try, Goblin!' },
+      {
+        mode: 'choice',
+        title: 'Sharing out',
+        story: [
+          O('Deep in Division Cavern, the goblin split the stars into equal piles of crystals.'),
+          G('Sharing is HARD! Your brain will go dizzy, hee hee!'),
+          M('If 5 × 4 = 20, then 20 ÷ 5 = 4 — same fact family!'),
+        ],
+      },
+      { mode: 'type', title: 'Divide & shine', story: [M('Each crystal pile is stars shared out evenly.'), O('Divide carefully and they’ll come loose.')] },
+      { mode: 'missing', title: 'Tricky splits', story: [O('These crystals are trickier — thinking caps on!'), M('I love a good puzzle. Bring it on!')] },
+      { mode: 'mixed', title: 'Crystal challenge', story: [M('The last tunnel leads up… to the goblin’s tower!'), G('Eep! This is my very LAST hiding place!')] },
     ],
   },
   {
@@ -106,23 +137,26 @@ export const REGIONS: Region[] = [
     tables: [2, 3, 5, 10, 11],
     kind: 'mixed',
     levels: [
-      { mode: 'choice', title: 'Tower gates' },
-      { mode: 'type', title: 'Spiral stairs' },
-      { mode: 'missing', title: 'Goblin’s riddles' },
-      { mode: 'mixed', title: 'The final showdown' },
-    ],
-    intro: [
-      { speaker: 'goblin', text: 'You found my tower?! Fine! But I mixed EVERYTHING up — all the tables at once!' },
-      { speaker: 'guide', text: 'This is it — beat the Goblin’s mixed-up puzzles and every star comes home!' },
-      { speaker: 'monster', text: 'Twos, threes, fives, tens AND elevens… bring it on!' },
+      {
+        mode: 'choice',
+        title: 'Tower gates',
+        story: [
+          G('You found my tower?! Fine — but I’ve MIXED every table together!'),
+          O('This is it. Everything you’ve learned, all at once. You can do this!'),
+          M('Twos, fives, tens, threes, elevens AND sharing — I’m ready!'),
+        ],
+      },
+      { mode: 'type', title: 'Spiral stairs', story: [M('Up the spiral stairs — the sack of stars is glowing above!'), O('Don’t slow down now!')] },
+      { mode: 'missing', title: 'Goblin’s riddles', story: [G('Riddles and tricks! Surely THIS stumps you!'), M('Mix them up all you like — I know my tables!')] },
+      { mode: 'mixed', title: 'The final showdown', story: [O('The rooftop! The very last stars are within reach!'), M('This is for all of Monster Island — here we go!')] },
     ],
   },
 ]
 
-export const FINALE: { speaker: 'monster' | 'goblin' | 'guide'; text: string }[] = [
+export const FINALE: StoryLine[] = [
   { speaker: 'goblin', text: 'Nooo! You answered EVERYTHING! Fine… take your sparkly stars back.' },
-  { speaker: 'guide', text: 'You did it! Monster Island is twinkling again, all thanks to you!' },
-  { speaker: 'goblin', text: 'Actually… could you teach ME the 11 times table? Pretty please?' },
+  { speaker: 'guide', text: 'You did it! Every star is home and Monster Island is twinkling again — all thanks to you!' },
+  { speaker: 'goblin', text: 'Actually… could you teach ME the times tables? Pretty please?' },
   { speaker: 'monster', text: 'Of course! Maths is more fun with friends. Hooray!' },
 ]
 

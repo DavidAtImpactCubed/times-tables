@@ -56,7 +56,8 @@ export default function App() {
 
   const startLevel = (regionId: string, level: number) => {
     sfx.click()
-    if (!save.seenStory.includes(regionId)) {
+    const id = levelId(regionId, level)
+    if (!save.seenStory.includes(id)) {
       setScreen({ name: 'story', regionId, level })
     } else {
       setScreen({ name: 'level', regionId, level })
@@ -64,7 +65,8 @@ export default function App() {
   }
 
   const storyDone = (regionId: string, level: number) => {
-    setSave((s) => ({ ...s, seenStory: [...s.seenStory, regionId] }))
+    const id = levelId(regionId, level)
+    setSave((s) => ({ ...s, seenStory: [...s.seenStory, id] }))
     setScreen({ name: 'level', regionId, level })
   }
 
@@ -171,9 +173,9 @@ export default function App() {
       const region = regionById(screen.regionId)
       return (
         <StoryScene
-          lines={region.intro}
+          lines={region.levels[screen.level].story}
           background={region.color}
-          image={backgroundFor(region.id, 0)}
+          image={backgroundFor(region.id, screen.level)}
           equipped={save.equipped}
           onDone={() => storyDone(screen.regionId, screen.level)}
         />

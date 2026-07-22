@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { FINALE, REGIONS, regionById } from './data/regions'
 import { WARDROBE } from './data/wardrobe'
 import { setMuted, sfx } from './logic/audio'
 import { TITLE_BG, backgroundFor } from './logic/backgrounds'
-import { starsFor } from './logic/progress'
-import { freshSave, loadSave, persistSave } from './logic/storage'
+import { starsFor, totalStars } from './logic/progress'
+import { addProfile, freshSave, listProfiles, loadSave, persistSave, removeProfile } from './logic/storage'
 import { levelId, type SaveData } from './types'
 import { LevelScreen } from './components/LevelScreen'
 import { Monster } from './components/Monster'
@@ -14,7 +14,7 @@ import { Wardrobe } from './components/Wardrobe'
 import { WorldMap } from './components/WorldMap'
 
 type Screen =
-  | { name: 'title' }
+  | { name: 'landing' }
   | { name: 'map' }
   | { name: 'story'; regionId: string; level: number }
   | { name: 'level'; regionId: string; level: number }
@@ -22,46 +22,79 @@ type Screen =
   | { name: 'finale' }
   | { name: 'wardrobe' }
 
+/** Unlock all levels, own every item and top up stars (tester cheat). */
+function applyCheat(save: SaveData): SaveData {
+  const stars = { ...save.stars }
+  for (const region of REGIONS)
+    for (let l = 0; l < region.levels.length; l++) {
+      const id = levelId(region.id, l)
+      stars[id] = Math.max(stars[id] ?? 0, 1)
+    }
+  return { ...save, stars, wallet: save.wallet + 99, owned: WARDROBE.map((i) => i.id) }
+}
+
 export default function App() {
-  const [save, setSave] = useState<SaveData>(loadSave)
-  const [screen, setScreen] = useState<Screen>({ name: 'title' })
-  const [confirmReset, setConfirmReset] = useState(false)
-  const [cheatOn, setCheatOn] = useState(false)
+  const [profiles, setProfiles] = useState<string[]>(() => listProfiles())
+  const [profile, setProfile] = useState<string | null>(null)
+  const [save, setSave] = useState<SaveData>(freshSave)
+  const [screen, setScreen] = useState<Screen>({ name: 'landing' })
+  const [adding, setAdding] = useState(false)
+  const [newName, setNewName] = useState('')
+  const [cheatArmed, setCheatArmed] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const titleTaps = useRef<number[]>([])
 
-  // Hidden tester cheat: 5 quick taps on the title unlocks all levels and items.
+  // persist the active profile's save
+  useEffect(() => {
+    if (profile) persistSave(profile, save)
+    setMuted(save.muted)
+  }, [save, profile])
+
+  // Hidden tester cheat: 5 quick taps on the title arms it for the next player chosen.
   const titleTapped = () => {
     const now = Date.now()
     titleTaps.current = [...titleTaps.current.filter((t) => now - t < 3000), now]
     if (titleTaps.current.length >= 5) {
       titleTaps.current = []
       sfx.fanfare()
-      setCheatOn(true)
-      setSave((s) => {
-        const stars = { ...s.stars }
-        for (const region of REGIONS)
-          for (let l = 0; l < region.levels.length; l++) {
-            const id = levelId(region.id, l)
-            stars[id] = Math.max(stars[id] ?? 0, 1)
-          }
-        return { ...s, stars, wallet: s.wallet + 99, owned: WARDROBE.map((i) => i.id) }
-      })
+      setCheatArmed(true)
     }
   }
 
-  useEffect(() => {
-    persistSave(save)
-    setMuted(save.muted)
-  }, [save])
+  const playAs = (name: string) => {
+    let s = loadSave(name)
+    if (cheatArmed) {
+      s = applyCheat(s)
+      setCheatArmed(false)
+    }
+    setProfile(name)
+    setSave(s)
+    persistSave(name, s)
+    sfx.fanfare()
+    setScreen({ name: 'map' })
+  }
+
+  const createPlayer = () => {
+    const name = newName.trim().slice(0, 12)
+    if (!name || profiles.includes(name)) return
+    addProfile(name)
+    setProfiles(listProfiles())
+    setNewName('')
+    setAdding(false)
+    playAs(name)
+  }
+
+  const deletePlayer = (name: string) => {
+    removeProfile(name)
+    setProfiles(listProfiles())
+    setConfirmDelete(null)
+  }
 
   const startLevel = (regionId: string, level: number) => {
     sfx.click()
     const id = levelId(regionId, level)
-    if (!save.seenStory.includes(id)) {
-      setScreen({ name: 'story', regionId, level })
-    } else {
-      setScreen({ name: 'level', regionId, level })
-    }
+    if (!save.seenStory.includes(id)) setScreen({ name: 'story', regionId, level })
+    else setScreen({ name: 'level', regionId, level })
   }
 
   const storyDone = (regionId: string, level: number) => {
@@ -76,11 +109,7 @@ export default function App() {
     const before = save.stars[id] ?? 0
     const gained = Math.max(0, stars - before)
     if (gained > 0) {
-      setSave((s) => ({
-        ...s,
-        stars: { ...s.stars, [id]: Math.max(before, stars) },
-        wallet: s.wallet + gained,
-      }))
+      setSave((s) => ({ ...s, stars: { ...s.stars, [id]: Math.max(before, stars) }, wallet: s.wallet + gained }))
     }
     setScreen({ name: 'results', regionId, level, correct, stars, gained })
   }
@@ -97,10 +126,16 @@ export default function App() {
     }
   }
 
+  // summaries for the landing chips
+  const profileCards = useMemo(
+    () => profiles.map((name) => ({ name, save: loadSave(name) })),
+    [profiles, screen.name],
+  )
+
   switch (screen.name) {
-    case 'title':
+    case 'landing':
       return (
-        <div className="screen title-screen">
+        <div className="screen landing-screen">
           {TITLE_BG && (
             <div className="title-bg" aria-hidden data-testid="title-bg" style={{ backgroundImage: `url(${TITLE_BG})` }} />
           )}
@@ -111,51 +146,74 @@ export default function App() {
               </span>
             ))}
           </div>
-          <h1 className="game-title" onClick={titleTapped} data-testid="game-title">
-            Monster Maths
-            <br />
-            Quest
-          </h1>
-          {cheatOn && (
-            <div className="cheat-toast" data-testid="cheat-toast">
-              🔓 Tester mode: all levels & items unlocked!
-            </div>
-          )}
-          <div className="title-monster">
-            <Monster equipped={save.equipped} mood="happy" size={200} className="bounce" />
-          </div>
-          <button
-            className="btn btn-big btn-primary"
-            onClick={() => {
-              sfx.fanfare()
-              setScreen({ name: 'map' })
-            }}
-          >
-            {Object.keys(save.stars).length > 0 ? '▶ Keep playing!' : '▶ Start the adventure!'}
-          </button>
-          {Object.keys(save.stars).length > 0 &&
-            (confirmReset ? (
-              <div className="reset-confirm" data-testid="reset-confirm">
-                <p>Delete ALL progress and stars?</p>
-                <button
-                  className="btn btn-danger"
-                  data-testid="reset-yes"
-                  onClick={() => {
-                    setSave(freshSave())
-                    setConfirmReset(false)
-                  }}
-                >
-                  Yes, start over
-                </button>
-                <button className="btn btn-secondary" onClick={() => setConfirmReset(false)}>
-                  Keep my stars!
-                </button>
+          <div className="landing-inner" data-testid="landing">
+            <h1 className="game-title" onClick={titleTapped} data-testid="game-title">
+              Monster Maths
+              <br />
+              Quest
+            </h1>
+            {cheatArmed && (
+              <div className="cheat-toast" data-testid="cheat-toast">
+                🔓 Cheat ready — it’ll unlock the next player!
+              </div>
+            )}
+
+            {adding ? (
+              <div className="name-entry" data-testid="name-entry">
+                <p className="name-prompt">What’s your name?</p>
+                <input
+                  className="name-input"
+                  data-testid="name-input"
+                  value={newName}
+                  maxLength={12}
+                  autoFocus
+                  placeholder="Type your name"
+                  onChange={(e) => setNewName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && createPlayer()}
+                />
+                <div className="name-buttons">
+                  <button className="btn btn-primary" data-testid="name-go" disabled={!newName.trim()} onClick={createPlayer}>
+                    Let’s go! ▸
+                  </button>
+                  <button className="btn btn-quiet" onClick={() => { setAdding(false); setNewName('') }}>
+                    Back
+                  </button>
+                </div>
               </div>
             ) : (
-              <button className="btn btn-quiet reset-btn" data-testid="reset-btn" onClick={() => setConfirmReset(true)}>
-                Reset progress
-              </button>
-            ))}
+              <>
+                <p className="landing-sub">{profileCards.length ? 'Who’s playing?' : 'Start your adventure!'}</p>
+                <div className="profile-list">
+                  {profileCards.map(({ name, save: ps }) => (
+                    <div key={name} className="profile-chip-wrap">
+                      <button className="profile-chip" data-testid={`profile-${name}`} onClick={() => playAs(name)}>
+                        <Monster equipped={ps.equipped} mood="happy" size={72} />
+                        <span className="profile-name">{name}</span>
+                        <span className="profile-stars">⭐ {totalStars(ps)}</span>
+                      </button>
+                      {confirmDelete === name ? (
+                        <div className="profile-del-confirm">
+                          <button className="btn btn-danger btn-tiny" data-testid={`delete-yes-${name}`} onClick={() => deletePlayer(name)}>
+                            Delete
+                          </button>
+                          <button className="btn btn-secondary btn-tiny" onClick={() => setConfirmDelete(null)}>
+                            Keep
+                          </button>
+                        </div>
+                      ) : (
+                        <button className="profile-del" aria-label={`Delete ${name}`} onClick={() => setConfirmDelete(name)}>
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <button className="btn btn-big btn-primary" data-testid="new-player-btn" onClick={() => setAdding(true)}>
+                  ＋ New player
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )
 
@@ -163,9 +221,15 @@ export default function App() {
       return (
         <WorldMap
           save={save}
+          playerName={profile ?? ''}
           onPlayLevel={startLevel}
           onWardrobe={() => setScreen({ name: 'wardrobe' })}
           onToggleMute={() => setSave((s) => ({ ...s, muted: !s.muted }))}
+          onSwitchPlayer={() => {
+            setProfiles(listProfiles())
+            setConfirmDelete(null)
+            setScreen({ name: 'landing' })
+          }}
         />
       )
 

@@ -7,12 +7,14 @@ import { Monster } from './Monster'
 
 interface Props {
   save: SaveData
+  playerName: string
   onPlayLevel: (regionId: string, level: number) => void
   onWardrobe: () => void
   onToggleMute: () => void
+  onSwitchPlayer: () => void
 }
 
-export function WorldMap({ save, onPlayLevel, onWardrobe, onToggleMute }: Props) {
+export function WorldMap({ save, playerName, onPlayLevel, onWardrobe, onToggleMute, onSwitchPlayer }: Props) {
   return (
     <div className="screen map-screen">
       <header className="map-header">
@@ -21,7 +23,13 @@ export function WorldMap({ save, onPlayLevel, onWardrobe, onToggleMute }: Props)
         </div>
         <div className="map-title">
           <h1>Monster Island</h1>
-          <p>Win the stars back from the Star Goblin!</p>
+          {playerName ? (
+            <button className="player-tag" onClick={onSwitchPlayer} data-testid="switch-player" aria-label="Switch player">
+              👤 {playerName} <span className="player-tag-swap">▾</span>
+            </button>
+          ) : (
+            <p>Win the stars back from the Star Goblin!</p>
+          )}
         </div>
         <div className="map-actions">
           <span className="wallet" data-testid="wallet">

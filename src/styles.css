@@ -152,8 +152,9 @@ button {
   }
 }
 
-/* ---------- title screen ---------- */
-.title-screen {
+/* ---------- title / landing screen ---------- */
+.title-screen,
+.landing-screen {
   justify-content: center;
   gap: 22px;
   text-align: center;
@@ -182,7 +183,8 @@ button {
   inset: 0;
   background: linear-gradient(180deg, rgba(30, 27, 75, 0.35) 0%, rgba(30, 27, 75, 0.15) 40%, rgba(30, 27, 75, 0.6) 100%);
 }
-.title-screen > :not(.title-bg, .title-stars) {
+.title-screen > :not(.title-bg, .title-stars),
+.landing-screen > :not(.title-bg, .title-stars) {
   position: relative;
   z-index: 1;
 }
@@ -240,6 +242,166 @@ button {
   font-weight: 700;
   animation: pop-in 0.25s ease both;
 }
+/* ---------- landing: name entry + profile picker ---------- */
+.landing-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 460px;
+}
+.landing-sub {
+  margin: 0;
+  color: #fef9c3;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+.name-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  padding: 22px 18px;
+}
+.name-prompt {
+  margin: 0;
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+.name-input {
+  width: 100%;
+  max-width: 280px;
+  font: inherit;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 12px 16px;
+  border: 3px solid #fde047;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1e1b4b;
+}
+.name-input:focus {
+  outline: none;
+  border-color: #fff;
+  box-shadow: 0 0 0 4px rgba(253, 224, 71, 0.4);
+}
+.name-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.profile-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+  width: 100%;
+}
+.profile-chip-wrap {
+  position: relative;
+}
+.profile-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 118px;
+  padding: 14px 10px 12px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+.profile-chip:hover,
+.profile-chip:focus-visible {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.26);
+  outline: none;
+}
+.profile-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profile-stars {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fde047;
+}
+.profile-del {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(30, 27, 75, 0.8);
+  color: #fecaca;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.profile-chip-wrap:hover .profile-del,
+.profile-del:focus-visible {
+  opacity: 1;
+}
+.profile-del-confirm {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: flex;
+  gap: 4px;
+  background: rgba(30, 27, 75, 0.95);
+  padding: 5px;
+  border-radius: 14px;
+  z-index: 2;
+}
+.btn-tiny {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border-radius: 10px;
+}
+/* switch-player tag on the world map */
+.player-tag {
+  border: none;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 4px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  margin-top: 2px;
+  transition: background 0.12s ease;
+}
+.player-tag:hover,
+.player-tag:focus-visible {
+  background: rgba(255, 255, 255, 0.3);
+  outline: none;
+}
+.player-tag-swap {
+  opacity: 0.8;
+  font-size: 0.8rem;
+}
+
 .reset-confirm {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 18px;

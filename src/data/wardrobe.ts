@@ -14,7 +14,6 @@ export const WARDROBE: WardrobeItem[] = [
   { id: 'body-blue', slot: 'body', name: 'Blue', price: 3, variant: 'blue' },
   { id: 'body-rainbow', slot: 'body', name: 'Rainbow', price: 8, variant: 'rainbow' },
   // Eyes
-  { id: 'eyes-happy', slot: 'eyes', name: 'Curious eyes', price: 2, variant: 'happy' },
   { id: 'eyes-sleepy', slot: 'eyes', name: 'Sleepy eyes', price: 2, variant: 'sleepy' },
   { id: 'eyes-wink', slot: 'eyes', name: 'Smiley eyes', price: 3, variant: 'wink' },
   { id: 'eyes-angry', slot: 'eyes', name: 'Grumpy eyes', price: 3, variant: 'angry' },
@@ -75,6 +74,7 @@ export const WARDROBE: WardrobeItem[] = [
 export const RETIRED_ITEM_PRICES: Record<string, number> = {
   'eyes-one': 2,
   'eyes-three': 3,
+  'eyes-happy': 2,
   'hat-bow': 2,
   'hat-flower': 2,
   'hat-party': 3,

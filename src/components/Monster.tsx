@@ -76,10 +76,10 @@ const PLACE: Record<string, Placement> = {
   'face-scarf-blue': { cx: 650, cy: 1075, w: 530 },
   'face-bandana': { cx: 650, cy: 1115, w: 560 },
   'face-medal': { cx: 650, cy: 1090, w: 760 },
-  'horns-little': { cx: 650, cy: 445, w: 470 },
-  'horns-curly': { cx: 650, cy: 445, w: 470 },
-  'horns-green': { cx: 650, cy: 425, w: 470 },
-  'horns-antennae': { cx: 650, cy: 398, w: 420 },
+  'horns-little': { cx: 650, cy: 463, w: 470 },
+  'horns-curly': { cx: 650, cy: 463, w: 470 },
+  'horns-green': { cx: 650, cy: 443, w: 470 },
+  'horns-antennae': { cx: 650, cy: 416, w: 420 },
   'horns-cream': { cx: 650, cy: 560, w: 480 },
   'horns-teal': { cx: 650, cy: 558, w: 480 },
   'horns-bat': { cx: 650, cy: 572, w: 470 },
@@ -115,8 +115,6 @@ const FRONT_BACK = new Set(['back-belt', 'back-duck'])
 /** held items that extend beyond the fingers, so the gripping-fingers overlay is skipped. */
 const NO_FINGERS = new Set(['held-lantern', 'held-telescope'])
 
-/** big head-toppers drawn above hats so the hat tucks under them rather than hiding them. */
-const HORNS_OVER_HAT = new Set(['horns-cream', 'horns-teal', 'horns-bat'])
 
 function layerStyle(stem: string): CSSProperties {
   const p = PLACE[stem]
@@ -147,13 +145,8 @@ export function Monster({ equipped, mood = 'idle', size = 160, className, layer 
   const back = equipped.back
   const backIsFront = back !== undefined && FRONT_BACK.has(back)
 
-  // most horns sit under the hat; big head-toppers (ram/teal/bat) sit above it
-  const horns = equipped.horns
-  const hornsUnderHat = horns && !HORNS_OVER_HAT.has(horns) ? horns : undefined
-  const hornsOverHat = horns && HORNS_OVER_HAT.has(horns) ? horns : undefined
-
   // stacking order: back → base → front-worn back items → eyes → mouth → neckwear
-  //   → under-hat horns → hat → over-hat horns → held
+  //   → hat → horns (all horns sit above the hat) → held
   const stems: { layer: MonsterLayer; stem?: string; place?: string }[] = [
     { layer: 'back', stem: backIsFront ? undefined : back },
     { layer: 'base', stem: bodyStem, place: pose },
@@ -162,9 +155,8 @@ export function Monster({ equipped, mood = 'idle', size = 160, className, layer 
     { layer: 'glasses', stem: equipped.glasses },
     { layer: 'mouth', stem: `${mouthBase}${faceSuffix}`, place: mouthBase },
     { layer: 'face', stem: equipped.face },
-    { layer: 'horns', stem: hornsUnderHat },
     { layer: 'hat', stem: equipped.hat },
-    { layer: 'horns', stem: hornsOverHat },
+    { layer: 'horns', stem: equipped.horns },
     { layer: 'held', stem: equipped.held },
     // fingers painted over the held prop so its handle looks gripped by the fist —
     // skip for props that extend past the fingers (they'd be wrongly overlapped)

@@ -5,7 +5,17 @@ import { itemById } from '../data/wardrobe'
 export type Mood = 'idle' | 'happy' | 'sad' | 'excited'
 
 /** One compositing layer of the monster; used by the parts sheet to export isolated components. */
-export type MonsterLayer = 'base' | 'back' | 'horns' | 'eyes' | 'glasses' | 'mouth' | 'face' | 'hat' | 'held'
+export type MonsterLayer =
+  | 'base'
+  | 'back'
+  | 'horns'
+  | 'eyes'
+  | 'glasses'
+  | 'mouth'
+  | 'face'
+  | 'hat'
+  | 'held'
+  | 'fingers'
 
 interface Props {
   equipped: Partial<Record<PartSlot, string>>
@@ -42,6 +52,8 @@ const PLACE: Record<string, Placement> = {
   // standing base is offset left so the head (skewed by the tail) sits at canvas centre
   'base-body': { cx: 598, cy: 959, w: 952 },
   'base-body-raised': { cx: 650, cy: 962, w: 999 },
+  // fingers overlay shares the raised-body frame, drawn over held props so handles look gripped
+  fingers: { cx: 650, cy: 962, w: 999 },
   'eyes-two': { cx: 650, cy: 748, w: 340 },
   'eyes-happy': { cx: 650, cy: 748, w: 340 },
   'eyes-angry': { cx: 650, cy: 748, w: 340 },
@@ -121,6 +133,7 @@ export function Monster({ equipped, mood = 'idle', size = 160, className, layer 
   // eyes/mouths carry monster skin (lids, brows, lips) tinted to match the body;
   // the rainbow body uses the green-shifted face, matching its gradient at head height
   const faceSuffix = bodyVariant === 'purple' ? '' : bodyVariant === 'rainbow' ? '-green' : `-${bodyVariant}`
+  const bodySuffix = bodyVariant === 'purple' ? '' : `-${bodyVariant}`
   const eyesBase = equipped.eyes ?? 'eyes-two'
   const mouthBase = `mouth-${mood}`
 
@@ -139,6 +152,8 @@ export function Monster({ equipped, mood = 'idle', size = 160, className, layer 
     { layer: 'horns', stem: equipped.horns },
     { layer: 'hat', stem: equipped.hat },
     { layer: 'held', stem: equipped.held },
+    // fingers painted over the held prop so its handle looks gripped by the fist
+    { layer: 'fingers', stem: equipped.held ? `fingers${bodySuffix}` : undefined, place: 'fingers' },
   ]
 
   return (

@@ -26,10 +26,10 @@ const asset = (stem: string): string | undefined => {
   return undefined
 }
 
-// Shared compositing canvas (from the art-extraction pipeline): 1400×1340 units,
-// base body 1034×970 at (183, 290). Placements are {cx, cy, w} in canvas units.
-const CANVAS_W = 1400
-const CANVAS_H = 1340
+// Shared compositing canvas (from the art-extraction pipeline): 1300×1240 units,
+// base body 954×1082 at (173, 138). Placements are {cx, cy, w} in canvas units.
+const CANVAS_W = 1300
+const CANVAS_H = 1240
 
 interface Placement {
   cx: number
@@ -38,34 +38,46 @@ interface Placement {
 }
 
 const PLACE: Record<string, Placement> = {
-  'base-body': { cx: 700, cy: 775, w: 1034 },
-  'eyes-two': { cx: 700, cy: 610, w: 400 },
-  'eyes-one': { cx: 700, cy: 610, w: 260 },
-  'eyes-three': { cx: 700, cy: 610, w: 430 },
-  'eyes-sleepy': { cx: 700, cy: 610, w: 430 },
-  'eyes-stars': { cx: 700, cy: 610, w: 390 },
-  'mouth-idle': { cx: 700, cy: 810, w: 230 },
-  'mouth-happy': { cx: 700, cy: 810, w: 280 },
-  'mouth-sad': { cx: 700, cy: 810, w: 230 },
-  'face-round': { cx: 700, cy: 610, w: 470 },
-  'face-sun': { cx: 700, cy: 610, w: 470 },
-  'face-star': { cx: 700, cy: 610, w: 470 },
-  'horns-little': { cx: 700, cy: 300, w: 500 },
-  'horns-curly': { cx: 700, cy: 280, w: 560 },
-  'horns-antennae': { cx: 700, cy: 200, w: 420 },
-  'horns-unicorn': { cx: 700, cy: 210, w: 160 },
-  'hat-crown': { cx: 700, cy: 250, w: 380 },
-  'hat-wizard': { cx: 700, cy: 230, w: 520 },
-  'hat-party': { cx: 700, cy: 180, w: 300 },
-  'hat-bow': { cx: 440, cy: 300, w: 320 },
-  'hat-flower': { cx: 980, cy: 310, w: 250 },
-  'held-balloon': { cx: 1277, cy: 670, w: 260 },
-  'held-wand': { cx: 1247, cy: 740, w: 310 },
-  'held-icecream': { cx: 1247, cy: 710, w: 200 },
-  'held-flag': { cx: 1267, cy: 670, w: 300 },
-  'back-cape': { cx: 700, cy: 930, w: 1050 },
-  'back-wings': { cx: 700, cy: 620, w: 1220 },
+  'base-body': { cx: 650, cy: 679, w: 954 },
+  'eyes-two': { cx: 650, cy: 468, w: 340 },
+  'eyes-happy': { cx: 650, cy: 468, w: 340 },
+  'eyes-angry': { cx: 650, cy: 468, w: 340 },
+  'eyes-sleepy': { cx: 650, cy: 468, w: 340 },
+  'eyes-wink': { cx: 650, cy: 468, w: 330 },
+  'eyes-stars': { cx: 650, cy: 468, w: 350 },
+  'mouth-idle': { cx: 650, cy: 658, w: 230 },
+  'mouth-happy': { cx: 650, cy: 658, w: 280 },
+  'mouth-sad': { cx: 650, cy: 658, w: 150 },
+  'mouth-excited': { cx: 650, cy: 658, w: 280 },
+  'face-scarf': { cx: 650, cy: 803, w: 430 },
+  'face-bandana': { cx: 650, cy: 803, w: 440 },
+  'face-medal': { cx: 650, cy: 783, w: 380 },
+  'horns-little': { cx: 650, cy: 228, w: 470 },
+  'horns-curly': { cx: 650, cy: 228, w: 470 },
+  'horns-green': { cx: 650, cy: 198, w: 470 },
+  'horns-antennae': { cx: 650, cy: 118, w: 420 },
+  'hat-crown': { cx: 650, cy: 173, w: 330 },
+  'hat-wizard': { cx: 675, cy: 153, w: 470 },
+  'hat-pirate': { cx: 650, cy: 168, w: 480 },
+  'hat-aviator': { cx: 650, cy: 198, w: 420 },
+  'hat-cap': { cx: 665, cy: 193, w: 420 },
+  'hat-beanie': { cx: 650, cy: 168, w: 380 },
+  'held-balloon': { cx: 1197, cy: 658, w: 230 },
+  'held-wand': { cx: 1187, cy: 898, w: 300 },
+  'held-icecream': { cx: 1167, cy: 898, w: 190 },
+  'held-flag': { cx: 1187, cy: 858, w: 290 },
+  'held-telescope': { cx: 1187, cy: 898, w: 300 },
+  'held-lantern': { cx: 1167, cy: 928, w: 220 },
+  'back-cape': { cx: 650, cy: 908, w: 1150 },
+  'back-wings': { cx: 650, cy: 538, w: 1250 },
+  'back-batwings': { cx: 650, cy: 518, w: 1420 },
+  'back-belt': { cx: 650, cy: 948, w: 620 },
+  'back-satchel': { cx: 320, cy: 918, w: 300 },
+  'back-duck': { cx: 650, cy: 988, w: 900 },
 }
+
+/** back-slot items worn on the front of the body (rendered above the base). */
+const FRONT_BACK = new Set(['back-belt', 'back-satchel', 'back-duck'])
 
 function layerStyle(stem: string): CSSProperties {
   const p = PLACE[stem]
@@ -85,12 +97,16 @@ export function Monster({ equipped, mood = 'idle', size = 160, className, layer 
   const bodyVariant = variant('body') ?? 'purple'
   const bodyStem = bodyVariant === 'purple' ? 'base-body' : `base-body-${bodyVariant}`
   const eyesStem = equipped.eyes ?? 'eyes-two'
-  const mouthStem = `mouth-${mood === 'excited' ? 'happy' : mood}`
+  const mouthStem = `mouth-${mood}`
 
-  // stacking order: back → base → eyes → mouth → glasses → horns → hat → held
+  const back = equipped.back
+  const backIsFront = back !== undefined && FRONT_BACK.has(back)
+
+  // stacking order: back → base → front-worn back items → eyes → mouth → neckwear → horns → hat → held
   const stems: [MonsterLayer, string | undefined][] = [
-    ['back', equipped.back],
+    ['back', backIsFront ? undefined : back],
     ['base', bodyStem],
+    ['back', backIsFront ? back : undefined],
     ['eyes', eyesStem],
     ['mouth', mouthStem],
     ['face', equipped.face],

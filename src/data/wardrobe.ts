@@ -33,6 +33,8 @@ export const WARDROBE: WardrobeItem[] = [
   { id: 'hat-crown', slot: 'hat', name: 'Royal crown', price: 6, variant: 'crown' },
   // Neckwear
   { id: 'face-scarf', slot: 'face', name: 'Red scarf', price: 2, variant: 'scarf' },
+  { id: 'face-scarf-green', slot: 'face', name: 'Green scarf', price: 2, variant: 'scarf-green' },
+  { id: 'face-scarf-blue', slot: 'face', name: 'Blue scarf', price: 2, variant: 'scarf-blue' },
   { id: 'face-bandana', slot: 'face', name: 'Star bandana', price: 3, variant: 'bandana' },
   { id: 'face-medal', slot: 'face', name: 'Star medal', price: 4, variant: 'medal' },
   // Held

@@ -22,6 +22,8 @@ const SPEAKER_NAMES = { monster: 'You', goblin: 'Star Goblin', guide: 'Olly the 
 export function StoryScene({ lines, background, image, imageEnd, equipped, finale, onDone }: Props) {
   const [index, setIndex] = useState(0)
   const line = lines[index]
+  // only bring on a character who actually has a line in this scene
+  const speakers = new Set(lines.map((l) => l.speaker))
 
   const advance = () => {
     sfx.click()
@@ -49,12 +51,16 @@ export function StoryScene({ lines, background, image, imageEnd, equipped, final
         <div className={`story-avatar ${line.speaker === 'monster' ? 'talking' : 'quiet'}`}>
           <Monster equipped={equipped} mood={line.speaker === 'monster' ? 'happy' : 'idle'} size={130} />
         </div>
-        <div className={`story-avatar ${line.speaker === 'guide' ? 'talking' : 'quiet'}`}>
-          <img className="story-char" src={owlUrl} alt="Olly the Owl" draggable={false} />
-        </div>
-        <div className={`story-avatar ${line.speaker === 'goblin' ? 'talking' : 'quiet'}`}>
-          <img className="story-char" src={goblinUrl} alt="The Star Goblin" draggable={false} />
-        </div>
+        {speakers.has('guide') && (
+          <div className={`story-avatar ${line.speaker === 'guide' ? 'talking' : 'quiet'}`}>
+            <img className="story-char" src={owlUrl} alt="Olly the Owl" draggable={false} />
+          </div>
+        )}
+        {speakers.has('goblin') && (
+          <div className={`story-avatar ${line.speaker === 'goblin' ? 'talking' : 'quiet'}`}>
+            <img className="story-char" src={goblinUrl} alt="The Star Goblin" draggable={false} />
+          </div>
+        )}
       </div>
       <div className="speech-bubble">
         <div className="speech-name">{SPEAKER_NAMES[line.speaker]}</div>

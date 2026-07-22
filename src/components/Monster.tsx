@@ -52,8 +52,8 @@ const PLACE: Record<string, Placement> = {
   'mouth-happy': { cx: 650, cy: 938, w: 280 },
   'mouth-sad': { cx: 650, cy: 938, w: 150 },
   'mouth-excited': { cx: 650, cy: 938, w: 280 },
-  'face-scarf': { cx: 650, cy: 1110, w: 860 },
-  'face-bandana': { cx: 650, cy: 1120, w: 880 },
+  'face-scarf': { cx: 650, cy: 1075, w: 530 },
+  'face-bandana': { cx: 650, cy: 1115, w: 560 },
   'face-medal': { cx: 650, cy: 1090, w: 760 },
   'horns-little': { cx: 650, cy: 445, w: 470 },
   'horns-curly': { cx: 650, cy: 445, w: 470 },
@@ -76,7 +76,7 @@ const PLACE: Record<string, Placement> = {
   'back-wings': { cx: 650, cy: 818, w: 1250 },
   'back-batwings': { cx: 650, cy: 798, w: 1420 },
   'back-belt': { cx: 650, cy: 1228, w: 620 },
-  'back-duck': { cx: 650, cy: 1268, w: 900 },
+  'back-duck': { cx: 650, cy: 1230, w: 930 },
 }
 
 /** back-slot items worn on the front of the body (rendered above the base). */

@@ -65,6 +65,172 @@ function divQuestion(table: number, n: number, unknown: Question['unknown'], inp
   return q
 }
 
+// ---- early-years question builders (addition, subtraction, counting) ----
+
+const COUNT_OBJECTS = ['⭐', '🐚', '🌸', '🍎', '🐟', '🎈', '🍄', '🦋', '🌟', '🐚']
+
+const rnd = (min: number, max: number) => min + Math.floor(Math.random() * (max - min + 1))
+
+function addQuestion(a: number, b: number, unknown: Question['unknown'], input: Question['input']): Question {
+  const result = a + b
+  const answer = unknown === 'result' ? result : unknown === 'a' ? a : b
+  const q: Question = { kind: 'add', a, b, result, unknown, answer, input }
+  if (input === 'choice') q.choices = makeChoices(answer, [answer - 1, answer + 1, answer - 2, answer + 2, answer + 3])
+  return q
+}
+
+function subQuestion(a: number, b: number, unknown: Question['unknown'], input: Question['input']): Question {
+  // a - b = result, with a >= b >= 0 so the answer is never negative
+  const result = a - b
+  const answer = unknown === 'result' ? result : unknown === 'a' ? a : b
+  const q: Question = { kind: 'sub', a, b, result, unknown, answer, input }
+  if (input === 'choice') q.choices = makeChoices(answer, [answer - 1, answer + 1, answer - 2, answer + 2])
+  return q
+}
+
+function countQuestion(n: number, input: Question['input']): Question {
+  const q: Question = {
+    kind: 'count',
+    a: n,
+    b: 0,
+    result: n,
+    unknown: 'result',
+    answer: n,
+    input,
+    count: n,
+    object: pick(COUNT_OBJECTS),
+  }
+  if (input === 'choice') q.choices = makeChoices(n, [n - 1, n + 1, n - 2, n + 2])
+  return q
+}
+
+/** Split a total into two positive parts a + b = total. */
+function splitTotal(total: number, maxPart = 12): [number, number] {
+  const lo = Math.max(1, total - maxPart)
+  const hi = Math.min(total - 1, maxPart)
+  const a = rnd(lo, hi)
+  return [a, total - a]
+}
+
+/** Build `n` questions from a factory, avoiding two identical questions in a row. */
+function fill(n: number, factory: () => Question): Question[] {
+  const out: Question[] = []
+  let prev = ''
+  for (let i = 0; i < n; i++) {
+    let q = factory()
+    let guard = 0
+    while (qKey(q) === prev && guard++ < 25) q = factory()
+    out.push(q)
+    prev = qKey(q)
+  }
+  return out
+}
+
+const EARLY_KINDS = new Set(['count', 'bond', 'add', 'sub', 'double'])
+
+function generateEarlyLevel(region: Region, level: number): Question[] {
+  const mode = region.levels[level].mode
+  const N = QUESTIONS_PER_LEVEL
+
+  const factory = (): Question => {
+    switch (region.kind) {
+      case 'count':
+        if (level === 0) return countQuestion(rnd(1, 5), 'choice')
+        if (level === 1) return countQuestion(rnd(1, 10), 'choice')
+        if (level === 2) return addQuestion(rnd(0, 9), 1, 'result', 'choice') // one more
+        return subQuestion(rnd(1, 10), 1, 'result', 'choice') // one less
+
+      case 'bond': {
+        if (level === 0) {
+          const [a, b] = splitTotal(rnd(2, 5), 4)
+          return addQuestion(a, b, 'result', 'choice')
+        }
+        if (level === 1) {
+          const a = rnd(1, 4)
+          return addQuestion(a, 5 - a, 'b', 'choice') // a + ? = 5
+        }
+        if (level === 2) {
+          const [a, b] = splitTotal(rnd(2, 10), 9)
+          return addQuestion(a, b, 'result', 'choice')
+        }
+        const a = rnd(1, 9)
+        return addQuestion(a, 10 - a, 'b', 'choice') // a + ? = 10
+      }
+
+      case 'add': {
+        if (level === 0) {
+          const [a, b] = splitTotal(rnd(2, 10), 9)
+          return addQuestion(a, b, 'result', 'choice')
+        }
+        if (level === 1) {
+          const [a, b] = splitTotal(rnd(6, 20), 12)
+          return addQuestion(a, b, 'result', 'choice')
+        }
+        if (level === 2) {
+          const [a, b] = splitTotal(rnd(6, 20), 12)
+          return addQuestion(a, b, 'result', 'pad')
+        }
+        const a = rnd(1, 9)
+        const b = rnd(1, 9)
+        return addQuestion(a, b, 'b', 'choice') // a + ? = total
+      }
+
+      case 'sub': {
+        if (level === 0) {
+          const a = rnd(2, 10)
+          return subQuestion(a, rnd(1, a), 'result', 'choice')
+        }
+        if (level === 1) {
+          const a = rnd(2, 10)
+          return subQuestion(a, rnd(1, a), 'result', 'pad')
+        }
+        if (level === 2) {
+          const a = rnd(6, 20)
+          return subQuestion(a, rnd(1, Math.min(a, 12)), 'result', 'choice')
+        }
+        // mixed add & take away within 20
+        if (Math.random() < 0.5) {
+          const [a, b] = splitTotal(rnd(4, 20), 12)
+          return addQuestion(a, b, 'result', 'choice')
+        }
+        const a = rnd(4, 20)
+        return subQuestion(a, rnd(1, Math.min(a, 12)), 'result', 'choice')
+      }
+
+      case 'double':
+      default: {
+        if (level === 0) return doubleQ(rnd(1, 10), 'choice')
+        if (level === 1) return doubleQ(rnd(1, 10), 'pad')
+        if (level === 2) {
+          if (Math.random() < 0.5) {
+            const [a, b] = splitTotal(rnd(4, 20), 12)
+            return addQuestion(a, b, 'result', 'choice')
+          }
+          const a = rnd(4, 20)
+          return subQuestion(a, rnd(1, Math.min(a, 12)), 'result', 'choice')
+        }
+        // star champion: doubles, adding and taking away, typed
+        const r = Math.random()
+        if (r < 0.34) return doubleQ(rnd(1, 10), 'pad')
+        if (r < 0.67) {
+          const [a, b] = splitTotal(rnd(4, 20), 12)
+          return addQuestion(a, b, 'result', 'pad')
+        }
+        const a = rnd(4, 20)
+        return subQuestion(a, rnd(1, Math.min(a, 12)), 'result', 'pad')
+      }
+    }
+  }
+
+  void mode
+  return fill(N, factory)
+}
+
+/** Double a number, shown as n + n = ? */
+function doubleQ(n: number, input: Question['input']): Question {
+  return addQuestion(n, n, 'result', input)
+}
+
 const qKey = (q: Question) => `${q.kind}:${q.a}:${q.b}:${q.unknown}`
 
 /** Take up to `count` questions with distinct keys. */
@@ -85,6 +251,8 @@ function takeDistinct(qs: Question[], count: number): Question[] {
 const multipliers = (max = MAX_N) => shuffle(Array.from({ length: max }, (_, i) => i + 1))
 
 export function generateLevel(region: Region, level: number): Question[] {
+  if (EARLY_KINDS.has(region.kind)) return generateEarlyLevel(region, level)
+
   const mode = region.levels[level].mode
   const qs: Question[] = []
 
@@ -153,9 +321,10 @@ export function generateLevel(region: Region, level: number): Question[] {
 /** Human-readable question, with the unknown slot rendered as "?" (used by display + tests). */
 export function questionText(q: Question): { left: string; op: string; right: string; result: string } {
   const show = (slot: Question['unknown'], value: number) => (q.unknown === slot ? '?' : String(value))
+  const op = q.kind === 'mul' ? '×' : q.kind === 'div' ? '÷' : q.kind === 'add' ? '+' : '−'
   return {
     left: show('a', q.a),
-    op: q.kind === 'mul' ? '×' : '÷',
+    op,
     right: show('b', q.b),
     result: show('result', q.result),
   }
@@ -166,6 +335,18 @@ export function questionText(q: Question): { left: string; op: string; right: st
  * chips [5, 10, 15, 20] and the sentence "4 jumps of 5 makes 20".
  */
 export function explain(q: Question): { chips: number[]; text: string } {
+  if (q.kind === 'count') {
+    const n = q.count ?? q.result
+    return { chips: Array.from({ length: n }, (_, i) => i + 1), text: `Count them one by one — there are ${n}.` }
+  }
+  if (q.kind === 'add') {
+    const chips = Array.from({ length: q.result - q.a + 1 }, (_, i) => q.a + i)
+    return { chips, text: `Start at ${q.a} and count on ${q.b}: you reach ${q.result}. So ${q.a} + ${q.b} = ${q.result}.` }
+  }
+  if (q.kind === 'sub') {
+    const chips = Array.from({ length: q.a - q.result + 1 }, (_, i) => q.a - i)
+    return { chips, text: `Start at ${q.a} and count back ${q.b}: you reach ${q.result}. So ${q.a} − ${q.b} = ${q.result}.` }
+  }
   if (q.kind === 'mul') {
     const table = Math.min(q.a, q.b)
     const jumps = Math.max(q.a, q.b)

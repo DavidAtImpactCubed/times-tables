@@ -14,8 +14,17 @@ for (const [path, url] of Object.entries(files)) {
   byStem[stem] = url
 }
 
+/** Early-years regions reuse the main island's art. */
+const ART_ALIAS: Record<string, string> = {
+  'count-cove': 'beach',
+  'bonds-bay': 'lagoon',
+  'add-meadow': 'forest',
+  'sub-trail': 'mountain',
+  'doubles-keep': 'castle',
+}
+
 export const backgroundFor = (regionId: string, level: number): string | undefined =>
-  byStem[`${regionId}-${level}`]
+  byStem[`${regionId}-${level}`] ?? byStem[`${ART_ALIAS[regionId] ?? regionId}-${level}`]
 
 /** The island vista shown on the title screen. */
 export const TITLE_BG: string | undefined = byStem['title']

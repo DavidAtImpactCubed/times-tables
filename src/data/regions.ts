@@ -1,4 +1,4 @@
-import type { Region, StoryLine } from '../types'
+import type { Curriculum, Region, StoryLine } from '../types'
 
 const TIMES_LEVELS = (table: number, stories: StoryLine[][]) => [
   { mode: 'choice' as const, title: `Meet the ${table}s`, story: stories[0] },
@@ -160,8 +160,157 @@ export const FINALE: StoryLine[] = [
   { speaker: 'monster', text: 'Of course! Maths is more fun with friends. Hooray!' },
 ]
 
+// ---------------------------------------------------------------------------
+// Early-years curriculum (Reception & Year 1, ages 4–6)
+// Counting, one more/less, number bonds, addition, subtraction and doubles.
+// Regions reuse the main island's background art via the `art` field.
+// ---------------------------------------------------------------------------
+
+const EL = (mode: Region['levels'][number]['mode'], title: string, story: StoryLine[]) => ({ mode, title, story })
+
+export const EARLY_REGIONS: Region[] = [
+  {
+    id: 'count-cove',
+    name: 'Counting Cove',
+    emoji: '🐚',
+    color: '#f59e0b',
+    tables: [],
+    kind: 'count',
+    curriculum: 'early',
+    art: 'beach',
+    levels: [
+      EL('choice', 'Count to 5', [
+        O('Welcome to Counting Cove, little monster! Shiny stars are hiding in the sand.'),
+        M('I’ll count them one by one — 1, 2, 3!'),
+        O('Tap how many you see, and the stars are yours!'),
+      ]),
+      EL('choice', 'Count to 10', [
+        M('So many stars now — right up to ten!'),
+        O('Count carefully and tap the number. You’ve got this!'),
+      ]),
+      EL('choice', 'One more', [
+        O('A friendly crab pops ONE more star on the pile each time.'),
+        M('One more than 4 is… 5! Easy peasy.'),
+      ]),
+      EL('choice', 'One less', [
+        M('Oops — a little wave washes ONE star away!'),
+        O('What’s one less? You can work it out!'),
+      ]),
+    ],
+  },
+  {
+    id: 'bonds-bay',
+    name: 'Number Bond Bay',
+    emoji: '🐠',
+    color: '#06b6d4',
+    tables: [],
+    kind: 'bond',
+    curriculum: 'early',
+    art: 'lagoon',
+    levels: [
+      EL('choice', 'Add to 5', [
+        O('In Number Bond Bay, stars swim in little groups. Put them together!'),
+        M('2 stars and 3 stars makes 5 stars!'),
+      ]),
+      EL('missing', 'Bonds of 5', [
+        O('These shells always hold 5 pearls. How many are hiding?'),
+        M('3 and how many more make 5? I can find it!'),
+      ]),
+      EL('choice', 'Add to 10', [M('Bigger groups now — all the way to ten!'), O('Add them up and tap the total.')]),
+      EL('missing', 'Bonds of 10', [
+        G('Blub! Bet you can’t find what makes TEN! Hee hee!'),
+        M('7 and 3! Number bonds don’t fool me.'),
+      ]),
+    ],
+  },
+  {
+    id: 'add-meadow',
+    name: 'Adding Meadow',
+    emoji: '🌼',
+    color: '#22c55e',
+    tables: [],
+    kind: 'add',
+    curriculum: 'early',
+    art: 'forest',
+    levels: [
+      EL('choice', 'Adding to 10', [
+        O('The Adding Meadow is full of flowers, and each has a few stars.'),
+        M('I’ll add the stars from two flowers together!'),
+      ]),
+      EL('choice', 'Adding to 20', [M('Even more stars now — up past ten!'), O('Count on from the bigger number — nice and steady.')]),
+      EL('type', 'Type the total', [O('You’re ready to type your answers now!'), M('Tap the numbers and press go. Here we grow!')]),
+      EL('missing', 'Missing number', [
+        O('Some flowers have hidden their stars. How many more are needed?'),
+        M('6 and how many make 9? Let me think… 3!'),
+      ]),
+    ],
+  },
+  {
+    id: 'sub-trail',
+    name: 'Take-Away Trail',
+    emoji: '🍂',
+    color: '#8b5cf6',
+    tables: [],
+    kind: 'sub',
+    curriculum: 'early',
+    art: 'mountain',
+    levels: [
+      EL('choice', 'Take away to 10', [
+        O('On the Take-Away Trail, cheeky birds fly off with some stars!'),
+        M('If I had 7 and 2 fly away, I have 5 left.'),
+      ]),
+      EL('type', 'Type it', [M('I’ll type how many are left!'), O('Count back carefully — you’re doing great.')]),
+      EL('choice', 'Take away to 20', [M('Bigger numbers now — but I’m not scared!'), O('Take them away and tap what’s left.')]),
+      EL('mixed', 'Add & take away', [
+        O('This part mixes adding AND taking away. Read each one carefully!'),
+        M('Plus means more, take-away means fewer. I’m ready!'),
+      ]),
+    ],
+  },
+  {
+    id: 'doubles-keep',
+    name: 'Doubles Keep',
+    emoji: '🏰',
+    color: '#ec4899',
+    tables: [],
+    kind: 'double',
+    curriculum: 'early',
+    art: 'castle',
+    levels: [
+      EL('choice', 'Doubles', [
+        O('Up in Doubles Keep, a magic mirror makes TWO of everything!'),
+        M('Double 3 is 3 and 3 — that’s 6!'),
+      ]),
+      EL('type', 'Type the double', [M('I’ll type the doubles all by myself!'), O('Double means add the number to itself.')]),
+      EL('choice', 'Add & take away', [
+        G('You’ve done SO well… but here’s a mix of everything! Hee hee!'),
+        M('Adding, taking away — bring it on!'),
+      ]),
+      EL('mixed', 'Star champion', [
+        O('The very last stars are at the top of the keep!'),
+        M('I’ve learned so much. This is for all my new stars!'),
+        G('Amazing! You’re a real star champion!'),
+      ]),
+    ],
+  },
+]
+
+export const EARLY_FINALE: StoryLine[] = [
+  { speaker: 'guide', text: 'Hooray! You collected every single star across the whole island!' },
+  { speaker: 'monster', text: 'I can count, add, take away AND double now. I’m so proud!' },
+  { speaker: 'goblin', text: 'You’re the cleverest little monster I know. Well done, superstar!' },
+]
+
+const ALL_REGIONS = [...REGIONS, ...EARLY_REGIONS]
+
+export const regionsFor = (curriculum: Curriculum): Region[] =>
+  curriculum === 'early' ? EARLY_REGIONS : REGIONS
+
+export const finaleFor = (curriculum: Curriculum): StoryLine[] =>
+  curriculum === 'early' ? EARLY_FINALE : FINALE
+
 export const regionById = (id: string): Region => {
-  const r = REGIONS.find((x) => x.id === id)
+  const r = ALL_REGIONS.find((x) => x.id === id)
   if (!r) throw new Error(`Unknown region ${id}`)
   return r
 }

@@ -1,12 +1,33 @@
-import { REGIONS } from '../data/regions'
 import { sfx } from '../logic/audio'
 import { backgroundFor } from '../logic/backgrounds'
 import { completedLevels, levelUnlocked, levelsNeededFor, regionUnlocked } from '../logic/progress'
-import { levelId, type SaveData } from '../types'
+import { levelId, type Region, type SaveData } from '../types'
 import { Monster } from './Monster'
+
+function regionSubtitle(region: Region): string {
+  switch (region.kind) {
+    case 'times':
+      return `The ${region.tables[0]} times table`
+    case 'division':
+      return 'Division facts'
+    case 'mixed':
+      return 'Everything mixed up!'
+    case 'count':
+      return 'Counting & numbers'
+    case 'bond':
+      return 'Number bonds'
+    case 'add':
+      return 'Adding up'
+    case 'sub':
+      return 'Taking away'
+    case 'double':
+      return 'Doubles & more'
+  }
+}
 
 interface Props {
   save: SaveData
+  regions: Region[]
   playerName: string
   onPlayLevel: (regionId: string, level: number) => void
   onWardrobe: () => void
@@ -14,7 +35,7 @@ interface Props {
   onSwitchPlayer: () => void
 }
 
-export function WorldMap({ save, playerName, onPlayLevel, onWardrobe, onToggleMute, onSwitchPlayer }: Props) {
+export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, onToggleMute, onSwitchPlayer }: Props) {
   return (
     <div className="screen map-screen">
       <header className="map-header">
@@ -45,7 +66,7 @@ export function WorldMap({ save, playerName, onPlayLevel, onWardrobe, onToggleMu
       </header>
 
       <div className="region-list">
-        {REGIONS.map((region, ri) => {
+        {regions.map((region, ri) => {
           const unlocked = regionUnlocked(save, ri)
           const missing = levelsNeededFor(ri) - completedLevels(save)
           const art = backgroundFor(region.id, 0)
@@ -63,13 +84,7 @@ export function WorldMap({ save, playerName, onPlayLevel, onWardrobe, onToggleMu
                 </span>
                 <div>
                   <h2>{region.name}</h2>
-                  <p className="region-sub">
-                    {region.kind === 'times'
-                      ? `The ${region.tables[0]} times table`
-                      : region.kind === 'division'
-                        ? 'Division facts'
-                        : 'Everything mixed up!'}
-                  </p>
+                  <p className="region-sub">{regionSubtitle(region)}</p>
                 </div>
               </div>
               {!unlocked && (
@@ -80,7 +95,7 @@ export function WorldMap({ save, playerName, onPlayLevel, onWardrobe, onToggleMu
               {unlocked && (
                 <div className="level-row">
                   {region.levels.map((lvl, li) => {
-                    const open = levelUnlocked(save, ri, li)
+                    const open = levelUnlocked(save, regions, ri, li)
                     const stars = save.stars[levelId(region.id, li)] ?? 0
                     return (
                       <button

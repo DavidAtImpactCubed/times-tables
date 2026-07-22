@@ -1,5 +1,4 @@
-import { REGIONS } from '../data/regions'
-import { levelId, type SaveData } from '../types'
+import { levelId, type Region, type SaveData } from '../types'
 
 export function starsFor(correct: number): number {
   if (correct >= 10) return 3
@@ -20,10 +19,10 @@ export function regionUnlocked(save: SaveData, regionIndex: number): boolean {
   return completedLevels(save) >= levelsNeededFor(regionIndex)
 }
 
-export function levelUnlocked(save: SaveData, regionIndex: number, level: number): boolean {
+export function levelUnlocked(save: SaveData, regions: Region[], regionIndex: number, level: number): boolean {
   if (!regionUnlocked(save, regionIndex)) return false
   if (level === 0) return true
-  return (save.stars[levelId(REGIONS[regionIndex].id, level - 1)] ?? 0) >= 1
+  return (save.stars[levelId(regions[regionIndex].id, level - 1)] ?? 0) >= 1
 }
 
 export const totalStars = (save: SaveData): number =>

@@ -1,8 +1,10 @@
-export type QuestionKind = 'mul' | 'div'
+export type QuestionKind = 'mul' | 'div' | 'add' | 'sub' | 'count'
 
 /**
  * A question is one fact with one unknown slot:
  *   mul: a × b = result      div: a ÷ b = result
+ *   add: a + b = result      sub: a - b = result
+ *   count: "how many?" — `count` objects shown, answer is how many
  * The unknown says which slot the player must fill in.
  */
 export interface Question {
@@ -15,6 +17,9 @@ export interface Question {
   /** 'choice' shows big answer buttons, 'pad' shows the number pad */
   input: 'choice' | 'pad'
   choices?: number[]
+  /** count questions only: how many objects to show, and which emoji */
+  count?: number
+  object?: string
 }
 
 export type LevelMode = 'choice' | 'type' | 'missing' | 'mixed'
@@ -31,15 +36,33 @@ export interface LevelDef {
   story: StoryLine[]
 }
 
+/** Which age band a profile plays: 'early' = Reception/Year 1, 'main' = Year 2/3. */
+export type Curriculum = 'early' | 'main'
+
+export type RegionKind =
+  | 'times'
+  | 'division'
+  | 'mixed'
+  // early-years kinds
+  | 'count'
+  | 'bond'
+  | 'add'
+  | 'sub'
+  | 'double'
+
 export interface Region {
   id: string
   name: string
   emoji: string
   color: string
-  /** times tables this region draws from */
+  /** times tables this region draws from (unused by early-years regions) */
   tables: number[]
-  kind: 'times' | 'division' | 'mixed'
+  kind: RegionKind
   levels: LevelDef[]
+  /** which age band this region belongs to (defaults to 'main') */
+  curriculum?: Curriculum
+  /** background art region id to reuse, when this region has no art of its own */
+  art?: string
 }
 
 export type PartSlot = 'body' | 'eyes' | 'glasses' | 'horns' | 'hat' | 'face' | 'held' | 'back'
@@ -55,6 +78,8 @@ export interface WardrobeItem {
 
 export interface SaveData {
   version: 1
+  /** which age band this player is on */
+  curriculum: Curriculum
   /** levelId ("beach-0") -> best stars earned, 0-3 */
   stars: Record<string, number>
   /** spendable stars (earned minus spent) */

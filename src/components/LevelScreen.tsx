@@ -123,24 +123,37 @@ export function LevelScreen({ region, level, equipped, onFinish, onQuit }: Props
           <Monster equipped={equipped} mood={mood} size={110} className={feedback?.kind === 'correct' ? 'jump' : ''} />
         </div>
 
-        <div className={`equation ${feedback?.kind === 'correct' ? 'equation-right' : ''}`} data-testid="equation">
-          <span className={text.left === '?' ? 'slot unknown' : 'slot'}>
-            {text.left === '?' && q.input === 'pad' && typed ? typed : text.left}
-          </span>
-          <span className="slot op">{text.op}</span>
-          <span className={text.right === '?' ? 'slot unknown' : 'slot'}>
-            {text.right === '?' && q.input === 'pad' && typed ? typed : text.right}
-          </span>
-          <span className="slot op">=</span>
-          <span className={text.result === '?' ? 'slot unknown' : 'slot'}>
-            {text.result === '?' && q.input === 'pad' && typed ? typed : text.result}
-          </span>
-        </div>
+        {q.kind === 'count' ? (
+          <div className={`count-panel ${feedback?.kind === 'correct' ? 'equation-right' : ''}`} data-testid="count-panel">
+            <p className="count-prompt">How many?</p>
+            <div className="count-objects" data-testid="count-objects">
+              {Array.from({ length: q.count ?? 0 }, (_, i) => (
+                <span key={i} className="count-obj" style={{ animationDelay: `${i * 0.06}s` }}>
+                  {q.object}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className={`equation ${feedback?.kind === 'correct' ? 'equation-right' : ''}`} data-testid="equation">
+            <span className={text.left === '?' ? 'slot unknown' : 'slot'}>
+              {text.left === '?' && q.input === 'pad' && typed ? typed : text.left}
+            </span>
+            <span className="slot op">{text.op}</span>
+            <span className={text.right === '?' ? 'slot unknown' : 'slot'}>
+              {text.right === '?' && q.input === 'pad' && typed ? typed : text.right}
+            </span>
+            <span className="slot op">=</span>
+            <span className={text.result === '?' ? 'slot unknown' : 'slot'}>
+              {text.result === '?' && q.input === 'pad' && typed ? typed : text.result}
+            </span>
+          </div>
+        )}
 
         {feedback?.kind === 'wrong' ? (
           <div className="explain-panel" data-testid="explain-panel">
             <p className="explain-title">
-              Nearly! The answer is <strong>{feedback.answer}</strong>. Count the jumps:
+              Nearly! The answer is <strong>{feedback.answer}</strong>. Here’s how:
             </p>
             <div className="chips">
               {feedback.chips.map((c, i) => (

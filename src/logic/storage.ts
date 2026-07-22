@@ -8,6 +8,7 @@ const saveKey = (name: string) => `${LEGACY_KEY}::${name}`
 export function freshSave(): SaveData {
   return {
     version: 1,
+    curriculum: 'main',
     stars: {},
     wallet: 0,
     owned: [],

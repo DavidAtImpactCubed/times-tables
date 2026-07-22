@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { FINALE, REGIONS, regionById } from './data/regions'
+import { finaleFor, regionById, regionsFor } from './data/regions'
 import { WARDROBE } from './data/wardrobe'
 import { setMuted, sfx } from './logic/audio'
 import { TITLE_BG, backgroundFor } from './logic/backgrounds'
 import { starsFor, totalStars } from './logic/progress'
 import { addProfile, freshSave, listProfiles, loadSave, persistSave, removeProfile } from './logic/storage'
-import { levelId, type SaveData } from './types'
+import { levelId, type Curriculum, type SaveData } from './types'
 import { LevelScreen } from './components/LevelScreen'
 import { Monster } from './components/Monster'
 import { ResultsScreen } from './components/ResultsScreen'
@@ -25,7 +25,7 @@ type Screen =
 /** Unlock all levels, own every item and top up stars (tester cheat). */
 function applyCheat(save: SaveData): SaveData {
   const stars = { ...save.stars }
-  for (const region of REGIONS)
+  for (const region of regionsFor(save.curriculum))
     for (let l = 0; l < region.levels.length; l++) {
       const id = levelId(region.id, l)
       stars[id] = Math.max(stars[id] ?? 0, 1)
@@ -74,14 +74,24 @@ export default function App() {
     setScreen({ name: 'map' })
   }
 
-  const createPlayer = () => {
+  const createPlayer = (curriculum: Curriculum) => {
     const name = newName.trim().slice(0, 12)
     if (!name || profiles.includes(name)) return
     addProfile(name)
     setProfiles(listProfiles())
     setNewName('')
     setAdding(false)
-    playAs(name)
+    // start a fresh save on the chosen age band
+    let s: SaveData = { ...freshSave(), curriculum }
+    if (cheatArmed) {
+      s = applyCheat(s)
+      setCheatArmed(false)
+    }
+    setProfile(name)
+    setSave(s)
+    persistSave(name, s)
+    sfx.fanfare()
+    setScreen({ name: 'map' })
   }
 
   const deletePlayer = (name: string) => {
@@ -114,8 +124,10 @@ export default function App() {
     setScreen({ name: 'results', regionId, level, correct, stars, gained })
   }
 
+  const activeRegions = regionsFor(save.curriculum)
+
   const afterResults = (regionId: string, level: number, stars: number) => {
-    const lastRegion = REGIONS[REGIONS.length - 1]
+    const lastRegion = activeRegions[activeRegions.length - 1]
     const isGrandFinale =
       regionId === lastRegion.id && level === lastRegion.levels.length - 1 && stars >= 1 && !save.seenFinale
     if (isGrandFinale) {
@@ -169,16 +181,31 @@ export default function App() {
                   autoFocus
                   placeholder="Type your name"
                   onChange={(e) => setNewName(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && createPlayer()}
                 />
-                <div className="name-buttons">
-                  <button className="btn btn-primary" data-testid="name-go" disabled={!newName.trim()} onClick={createPlayer}>
-                    Let’s go! ▸
+                <p className="age-prompt">How old are you?</p>
+                <div className="age-choice">
+                  <button
+                    className="btn btn-big age-btn age-early"
+                    data-testid="age-early"
+                    disabled={!newName.trim()}
+                    onClick={() => createPlayer('early')}
+                  >
+                    <span className="age-num">4–6</span>
+                    <span className="age-label">Reception &amp; Year 1</span>
                   </button>
-                  <button className="btn btn-quiet" onClick={() => { setAdding(false); setNewName('') }}>
-                    Back
+                  <button
+                    className="btn btn-big age-btn age-main"
+                    data-testid="age-main"
+                    disabled={!newName.trim()}
+                    onClick={() => createPlayer('main')}
+                  >
+                    <span className="age-num">6–8</span>
+                    <span className="age-label">Year 2 &amp; Year 3</span>
                   </button>
                 </div>
+                <button className="btn btn-quiet" onClick={() => { setAdding(false); setNewName('') }}>
+                  Back
+                </button>
               </div>
             ) : (
               <>
@@ -190,6 +217,7 @@ export default function App() {
                         <Monster equipped={ps.equipped} mood="happy" size={72} />
                         <span className="profile-name">{name}</span>
                         <span className="profile-stars">⭐ {totalStars(ps)}</span>
+                        <span className="profile-age">{ps.curriculum === 'early' ? 'Ages 4–6' : 'Ages 6–8'}</span>
                       </button>
                       {confirmDelete === name ? (
                         <div className="profile-del-confirm">
@@ -221,6 +249,7 @@ export default function App() {
       return (
         <WorldMap
           save={save}
+          regions={activeRegions}
           playerName={profile ?? ''}
           onPlayLevel={startLevel}
           onWardrobe={() => setScreen({ name: 'wardrobe' })}
@@ -277,18 +306,20 @@ export default function App() {
       )
     }
 
-    case 'finale':
+    case 'finale': {
+      const lastRegion = activeRegions[activeRegions.length - 1]
       return (
         <StoryScene
-          lines={FINALE}
-          background="#7c3aed"
-          image={backgroundFor('tower', 3)}
+          lines={finaleFor(save.curriculum)}
+          background={lastRegion.color}
+          image={backgroundFor(lastRegion.id, lastRegion.levels.length - 1)}
           imageEnd
           equipped={save.equipped}
           finale
           onDone={() => setScreen({ name: 'map' })}
         />
       )
+    }
 
     case 'wardrobe':
       return <Wardrobe save={save} setSave={setSave} onBack={() => setScreen({ name: 'map' })} />

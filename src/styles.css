@@ -402,6 +402,84 @@ button {
   font-size: 0.8rem;
 }
 
+/* age picker on new-player */
+.age-prompt {
+  margin: 6px 0 0;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+.age-choice {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.age-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1 1 130px;
+  max-width: 170px;
+  padding: 14px 12px;
+  color: #1e1b4b;
+}
+.age-btn:disabled {
+  opacity: 0.5;
+}
+.age-early {
+  background: #34d399;
+}
+.age-main {
+  background: #fbbf24;
+}
+.age-num {
+  font-size: 1.6rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.age-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.profile-age {
+  font-size: 0.7rem;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+/* counting question: objects to count */
+.count-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 22px;
+  padding: 16px 18px;
+  max-width: 92%;
+}
+.count-prompt {
+  margin: 0;
+  color: #1e1b4b;
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+.count-objects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  justify-content: center;
+  max-width: 340px;
+}
+.count-obj {
+  font-size: 2.2rem;
+  line-height: 1;
+  animation: pop-in 0.3s ease both;
+}
+
 .reset-confirm {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 18px;

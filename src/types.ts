@@ -41,7 +41,7 @@ export interface Region {
   intro: StoryLine[]
 }
 
-export type PartSlot = 'body' | 'eyes' | 'horns' | 'hat' | 'face' | 'held' | 'back'
+export type PartSlot = 'body' | 'eyes' | 'glasses' | 'horns' | 'hat' | 'face' | 'held' | 'back'
 
 export interface WardrobeItem {
   id: string

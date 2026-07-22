@@ -14,16 +14,26 @@ export const WARDROBE: WardrobeItem[] = [
   { id: 'body-blue', slot: 'body', name: 'Blue', price: 3, variant: 'blue' },
   { id: 'body-rainbow', slot: 'body', name: 'Rainbow', price: 8, variant: 'rainbow' },
   // Eyes
-  { id: 'eyes-happy', slot: 'eyes', name: 'Happy eyes', price: 2, variant: 'happy' },
+  { id: 'eyes-happy', slot: 'eyes', name: 'Curious eyes', price: 2, variant: 'happy' },
   { id: 'eyes-sleepy', slot: 'eyes', name: 'Sleepy eyes', price: 2, variant: 'sleepy' },
   { id: 'eyes-wink', slot: 'eyes', name: 'Smiley eyes', price: 3, variant: 'wink' },
   { id: 'eyes-angry', slot: 'eyes', name: 'Grumpy eyes', price: 3, variant: 'angry' },
   { id: 'eyes-stars', slot: 'eyes', name: 'Starry eyes', price: 4, variant: 'stars' },
+  // Glasses (overlay the eyes)
+  { id: 'glasses-round', slot: 'glasses', name: 'Round glasses', price: 2, variant: 'round' },
+  { id: 'glasses-blue', slot: 'glasses', name: 'Blue glasses', price: 2, variant: 'blue' },
+  { id: 'glasses-shutter', slot: 'glasses', name: 'Party shades', price: 3, variant: 'shutter' },
+  { id: 'glasses-pixel', slot: 'glasses', name: 'Cool shades', price: 3, variant: 'pixel' },
+  { id: 'glasses-heart', slot: 'glasses', name: 'Heart glasses', price: 4, variant: 'heart' },
+  { id: 'glasses-star', slot: 'glasses', name: 'Star glasses', price: 4, variant: 'star' },
   // Horns
   { id: 'horns-little', slot: 'horns', name: 'Little horns', price: 2, variant: 'little' },
   { id: 'horns-curly', slot: 'horns', name: 'Blue horns', price: 3, variant: 'curly' },
   { id: 'horns-green', slot: 'horns', name: 'Sprout horns', price: 3, variant: 'green' },
   { id: 'horns-antennae', slot: 'horns', name: 'Antennae', price: 3, variant: 'antennae' },
+  { id: 'horns-cream', slot: 'horns', name: 'Ram horns', price: 3, variant: 'cream' },
+  { id: 'horns-teal', slot: 'horns', name: 'Teal horns', price: 3, variant: 'teal' },
+  { id: 'horns-bat', slot: 'horns', name: 'Bat wings', price: 4, variant: 'bat' },
   // Hats
   { id: 'hat-cap', slot: 'hat', name: 'Baseball cap', price: 2, variant: 'cap' },
   { id: 'hat-beanie', slot: 'hat', name: 'Bobble hat', price: 2, variant: 'beanie' },
@@ -35,6 +45,7 @@ export const WARDROBE: WardrobeItem[] = [
   { id: 'face-scarf', slot: 'face', name: 'Red scarf', price: 2, variant: 'scarf' },
   { id: 'face-scarf-green', slot: 'face', name: 'Green scarf', price: 2, variant: 'scarf-green' },
   { id: 'face-scarf-blue', slot: 'face', name: 'Blue scarf', price: 2, variant: 'scarf-blue' },
+  { id: 'face-bowtie', slot: 'face', name: 'Bow tie', price: 2, variant: 'bowtie' },
   { id: 'face-bandana', slot: 'face', name: 'Star bandana', price: 3, variant: 'bandana' },
   { id: 'face-medal', slot: 'face', name: 'Star medal', price: 4, variant: 'medal' },
   // Held
@@ -42,7 +53,11 @@ export const WARDROBE: WardrobeItem[] = [
   { id: 'held-balloon', slot: 'held', name: 'Balloon', price: 3, variant: 'balloon' },
   { id: 'held-flag', slot: 'held', name: 'Star flag', price: 3, variant: 'flag' },
   { id: 'held-lantern', slot: 'held', name: 'Lantern', price: 3, variant: 'lantern' },
-  { id: 'held-wand', slot: 'held', name: 'Magic wand', price: 4, variant: 'wand' },
+  { id: 'held-wand', slot: 'held', name: 'Star wand', price: 4, variant: 'wand' },
+  { id: 'held-moon', slot: 'held', name: 'Moon staff', price: 4, variant: 'moon' },
+  { id: 'held-crystal', slot: 'held', name: 'Crystal staff', price: 5, variant: 'crystal' },
+  { id: 'held-gem', slot: 'held', name: 'Gem staff', price: 5, variant: 'gem' },
+  { id: 'held-orb', slot: 'held', name: 'Orb staff', price: 6, variant: 'orb' },
   { id: 'held-telescope', slot: 'held', name: 'Telescope', price: 4, variant: 'telescope' },
   // Back & body-worn extras
   { id: 'back-belt', slot: 'back', name: 'Explorer belt', price: 3, variant: 'belt' },
@@ -72,6 +87,7 @@ export const RETIRED_ITEM_PRICES: Record<string, number> = {
 export const SLOT_LABELS: Record<PartSlot, string> = {
   body: 'Colour',
   eyes: 'Eyes',
+  glasses: 'Glasses',
   horns: 'Horns',
   hat: 'Hats',
   face: 'Neckwear',
@@ -79,7 +95,7 @@ export const SLOT_LABELS: Record<PartSlot, string> = {
   back: 'Back',
 }
 
-export const SLOTS: PartSlot[] = ['body', 'eyes', 'horns', 'hat', 'face', 'held', 'back']
+export const SLOTS: PartSlot[] = ['body', 'eyes', 'glasses', 'horns', 'hat', 'face', 'held', 'back']
 
 export const itemById = (id: string | undefined): WardrobeItem | undefined =>
   WARDROBE.find((i) => i.id === id)

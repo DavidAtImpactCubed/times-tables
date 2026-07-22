@@ -5,7 +5,7 @@ import { itemById } from '../data/wardrobe'
 export type Mood = 'idle' | 'happy' | 'sad' | 'excited'
 
 /** One compositing layer of the monster; used by the parts sheet to export isolated components. */
-export type MonsterLayer = 'base' | 'back' | 'horns' | 'eyes' | 'mouth' | 'face' | 'hat' | 'held'
+export type MonsterLayer = 'base' | 'back' | 'horns' | 'eyes' | 'glasses' | 'mouth' | 'face' | 'hat' | 'held'
 
 interface Props {
   equipped: Partial<Record<PartSlot, string>>
@@ -52,6 +52,13 @@ const PLACE: Record<string, Placement> = {
   'mouth-happy': { cx: 650, cy: 938, w: 280 },
   'mouth-sad': { cx: 650, cy: 938, w: 150 },
   'mouth-excited': { cx: 650, cy: 938, w: 280 },
+  'glasses-round': { cx: 650, cy: 748, w: 430 },
+  'glasses-blue': { cx: 650, cy: 748, w: 430 },
+  'glasses-pixel': { cx: 650, cy: 742, w: 430 },
+  'glasses-shutter': { cx: 650, cy: 742, w: 430 },
+  'glasses-heart': { cx: 650, cy: 748, w: 430 },
+  'glasses-star': { cx: 650, cy: 742, w: 440 },
+  'face-bowtie': { cx: 650, cy: 1055, w: 300 },
   'face-scarf': { cx: 650, cy: 1075, w: 530 },
   'face-scarf-green': { cx: 650, cy: 1075, w: 530 },
   'face-scarf-blue': { cx: 650, cy: 1075, w: 530 },
@@ -61,6 +68,9 @@ const PLACE: Record<string, Placement> = {
   'horns-curly': { cx: 650, cy: 445, w: 470 },
   'horns-green': { cx: 650, cy: 425, w: 470 },
   'horns-antennae': { cx: 650, cy: 398, w: 420 },
+  'horns-cream': { cx: 650, cy: 425, w: 480 },
+  'horns-teal': { cx: 650, cy: 420, w: 480 },
+  'horns-bat': { cx: 650, cy: 420, w: 470 },
   'hat-crown': { cx: 650, cy: 453, w: 330 },
   'hat-wizard': { cx: 658, cy: 420, w: 420 },
   'hat-pirate': { cx: 650, cy: 448, w: 480 },
@@ -69,7 +79,12 @@ const PLACE: Record<string, Placement> = {
   'hat-beanie': { cx: 652, cy: 450, w: 330 },
   // held items sit in the raised-pose fist
   'held-balloon': { cx: 1110, cy: 640, w: 230 },
-  'held-wand': { cx: 1110, cy: 660, w: 230 },
+  // vertical staffs/wands gripped in the raised fist (handle through the hand)
+  'held-wand': { cx: 1055, cy: 470, w: 150 },
+  'held-moon': { cx: 1055, cy: 475, w: 148 },
+  'held-crystal': { cx: 1055, cy: 460, w: 106 },
+  'held-gem': { cx: 1055, cy: 465, w: 82 },
+  'held-orb': { cx: 1055, cy: 475, w: 210 },
   'held-icecream': { cx: 1078, cy: 760, w: 190 },
   'held-flag': { cx: 945, cy: 610, w: 290 },
   'held-telescope': { cx: 1120, cy: 810, w: 300 },
@@ -118,6 +133,7 @@ export function Monster({ equipped, mood = 'idle', size = 160, className, layer 
     { layer: 'base', stem: bodyStem, place: pose },
     { layer: 'back', stem: backIsFront ? back : undefined },
     { layer: 'eyes', stem: `${eyesBase}${faceSuffix}`, place: eyesBase },
+    { layer: 'glasses', stem: equipped.glasses },
     { layer: 'mouth', stem: `${mouthBase}${faceSuffix}`, place: mouthBase },
     { layer: 'face', stem: equipped.face },
     { layer: 'horns', stem: equipped.horns },

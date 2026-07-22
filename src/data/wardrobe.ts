@@ -44,7 +44,6 @@ export const WARDROBE: WardrobeItem[] = [
   { id: 'held-telescope', slot: 'held', name: 'Telescope', price: 4, variant: 'telescope' },
   // Back & body-worn extras
   { id: 'back-belt', slot: 'back', name: 'Explorer belt', price: 3, variant: 'belt' },
-  { id: 'back-satchel', slot: 'back', name: 'Satchel', price: 4, variant: 'satchel' },
   { id: 'back-cape', slot: 'back', name: 'Hero cape', price: 5, variant: 'cape' },
   { id: 'back-duck', slot: 'back', name: 'Duck ring', price: 5, variant: 'duck' },
   { id: 'back-wings', slot: 'back', name: 'Fairy wings', price: 6, variant: 'wings' },
@@ -65,6 +64,7 @@ export const RETIRED_ITEM_PRICES: Record<string, number> = {
   'face-round': 3,
   'face-sun': 4,
   'face-star': 4,
+  'back-satchel': 4,
 }
 
 export const SLOT_LABELS: Record<PartSlot, string> = {

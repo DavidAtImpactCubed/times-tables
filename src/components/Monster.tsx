@@ -51,9 +51,9 @@ const PLACE: Record<string, Placement> = {
   'mouth-happy': { cx: 650, cy: 658, w: 280 },
   'mouth-sad': { cx: 650, cy: 658, w: 150 },
   'mouth-excited': { cx: 650, cy: 658, w: 280 },
-  'face-scarf': { cx: 650, cy: 803, w: 430 },
-  'face-bandana': { cx: 650, cy: 803, w: 440 },
-  'face-medal': { cx: 650, cy: 783, w: 380 },
+  'face-scarf': { cx: 650, cy: 830, w: 860 },
+  'face-bandana': { cx: 650, cy: 840, w: 880 },
+  'face-medal': { cx: 650, cy: 810, w: 760 },
   'horns-little': { cx: 650, cy: 165, w: 470 },
   'horns-curly': { cx: 650, cy: 165, w: 470 },
   'horns-green': { cx: 650, cy: 145, w: 470 },
@@ -64,23 +64,22 @@ const PLACE: Record<string, Placement> = {
   'hat-aviator': { cx: 650, cy: 198, w: 420 },
   'hat-cap': { cx: 665, cy: 193, w: 420 },
   'hat-beanie': { cx: 650, cy: 168, w: 380 },
-  // held items sit in the raised-pose fist (canvas ~1038, 557)
-  'held-balloon': { cx: 1080, cy: 360, w: 230 },
-  'held-wand': { cx: 1070, cy: 480, w: 300 },
-  'held-icecream': { cx: 1048, cy: 480, w: 190 },
-  'held-flag': { cx: 1060, cy: 460, w: 290 },
-  'held-telescope': { cx: 1090, cy: 530, w: 300 },
-  'held-lantern': { cx: 1045, cy: 620, w: 220 },
+  // held items sit in the raised-pose fist
+  'held-balloon': { cx: 1110, cy: 360, w: 230 },
+  'held-wand': { cx: 1100, cy: 480, w: 300 },
+  'held-icecream': { cx: 1078, cy: 480, w: 190 },
+  'held-flag': { cx: 1090, cy: 460, w: 290 },
+  'held-telescope': { cx: 1120, cy: 530, w: 300 },
+  'held-lantern': { cx: 1075, cy: 620, w: 220 },
   'back-cape': { cx: 650, cy: 908, w: 1150 },
   'back-wings': { cx: 650, cy: 538, w: 1250 },
   'back-batwings': { cx: 650, cy: 518, w: 1420 },
   'back-belt': { cx: 650, cy: 948, w: 620 },
-  'back-satchel': { cx: 320, cy: 918, w: 300 },
   'back-duck': { cx: 650, cy: 988, w: 900 },
 }
 
 /** back-slot items worn on the front of the body (rendered above the base). */
-const FRONT_BACK = new Set(['back-belt', 'back-satchel', 'back-duck'])
+const FRONT_BACK = new Set(['back-belt', 'back-duck'])
 
 function layerStyle(stem: string): CSSProperties {
   const p = PLACE[stem]

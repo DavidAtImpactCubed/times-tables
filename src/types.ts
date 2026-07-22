@@ -36,6 +36,14 @@ export interface LevelDef {
   story: StoryLine[]
 }
 
+/** One card of Olly's optional "clever trick" mini-lesson for a topic. */
+export interface TipStep {
+  /** what Olly says */
+  text: string
+  /** an optional worked example, shown highlighted beneath the text */
+  example?: string
+}
+
 /** Which age band a profile plays: 'early' = Reception/Year 1, 'main' = Year 2/3. */
 export type Curriculum = 'early' | 'main'
 
@@ -63,6 +71,8 @@ export interface Region {
   curriculum?: Curriculum
   /** background art region id to reuse, when this region has no art of its own */
   art?: string
+  /** optional "clever trick" mini-lesson Olly offers when the topic is introduced */
+  tip?: TipStep[]
 }
 
 export type PartSlot = 'body' | 'eyes' | 'glasses' | 'horns' | 'hat' | 'face' | 'held' | 'back'
@@ -87,6 +97,8 @@ export interface SaveData {
   owned: string[]
   equipped: Partial<Record<PartSlot, string>>
   seenStory: string[]
+  /** region ids whose "clever trick" has already been offered */
+  seenTips: string[]
   seenFinale: boolean
   muted: boolean
 }

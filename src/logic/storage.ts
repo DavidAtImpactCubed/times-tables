@@ -14,6 +14,7 @@ export function freshSave(): SaveData {
     owned: [],
     equipped: {},
     seenStory: [],
+    seenTips: [],
     seenFinale: false,
     muted: false,
   }

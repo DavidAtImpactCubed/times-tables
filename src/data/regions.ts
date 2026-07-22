@@ -1,4 +1,4 @@
-import type { Curriculum, Region, StoryLine } from '../types'
+import type { Curriculum, Region, StoryLine, TipStep } from '../types'
 
 const TIMES_LEVELS = (table: number, stories: StoryLine[][]) => [
   { mode: 'choice' as const, title: `Meet the ${table}s`, story: stories[0] },
@@ -305,7 +305,67 @@ export const EARLY_FINALE: StoryLine[] = [
   { speaker: 'goblin', text: 'You’re the cleverest little monster I know. Well done, superstar!' },
 ]
 
+// ---------------------------------------------------------------------------
+// Olly's optional "clever tricks" — a short, age-appropriate strategy per topic.
+// ---------------------------------------------------------------------------
+const T = (text: string, example?: string): TipStep => ({ text, example })
+
+const TIPS: Record<string, TipStep[]> = {
+  // main curriculum
+  beach: [
+    T('The 2 times table is just doubling — two of something! Count up in twos: 2, 4, 6, 8…'),
+    T('Every answer is an even number, so it ends in 0, 2, 4, 6 or 8.', '2 × 4  →  double 4  →  8'),
+  ],
+  mountain: [
+    T('Count up in fives: 5, 10, 15, 20… like counting the fingers on each hand!'),
+    T('Every answer ends in a 5 or a 0. Neat, isn’t it?', '5 × 3  →  5, 10, 15  →  15'),
+  ],
+  lagoon: [
+    T('Times ten is the easiest trick of all — just pop a zero on the end!', '10 × 3  →  30'),
+    T('So 10 × 7 is 70, and 10 × 9 is 90. Easy peasy!'),
+  ],
+  forest: [
+    T('Count up in threes: 3, 6, 9, 12, 15…'),
+    T('Clever trick: double the number, then add one more group.', '3 × 4  →  (2 × 4) + 4  →  8 + 4  →  12'),
+  ],
+  castle: [
+    T('For the elevens up to 9, just say the digit twice!', '11 × 3  →  33      11 × 4  →  44'),
+    T('Another way: do ten times, then add one more group.', '11 × 3  →  (10 × 3) + 3  →  30 + 3  →  33'),
+  ],
+  cavern: [
+    T('Dividing means sharing into equal groups — and it’s multiplying backwards!'),
+    T('To solve 20 ÷ 5, ask: what times 5 makes 20?', '5 × 4 = 20    so    20 ÷ 5 = 4'),
+  ],
+  tower: [
+    T('Time to use your best tricks! Tens: add a zero. Fives: end in 5 or 0. Twos: just double.'),
+    T('For the elevens, do ten times then add one more group.', '11 × 6  →  60 + 6  →  66'),
+    T('And remember — dividing is just multiplying backwards. You’ve got this!'),
+  ],
+  // early years
+  'count-cove': [
+    T('Touch each thing as you count: 1, 2, 3… The last number you say is how many there are!'),
+    T('One more? Count on by one. One less? Count back by one.', 'one more than 4  →  5'),
+  ],
+  'bonds-bay': [
+    T('Some pairs of numbers always make ten. They’re special — try to learn them by heart!', '1&9   2&8   3&7   4&6   5&5'),
+    T('Your fingers can help: hold up some, and the rest make ten.'),
+  ],
+  'add-meadow': [
+    T('To add, start at the bigger number and count on.', '6 + 3  →  6… 7, 8, 9  →  9'),
+    T('For bigger ones, make ten first, then add the rest.', '8 + 5  →  8 + 2 + 3  →  10 + 3  →  13'),
+  ],
+  'sub-trail': [
+    T('Taking away means counting back.', '9 − 3  →  9… 8, 7, 6  →  6'),
+    T('Or count up from the small number to the big one to see how many more.'),
+  ],
+  'doubles-keep': [
+    T('Double means two of the same number added together.', 'double 4  →  4 + 4  →  8'),
+    T('Halving is the opposite — split a number into two equal groups.'),
+  ],
+}
+
 const ALL_REGIONS = [...REGIONS, ...EARLY_REGIONS]
+for (const r of ALL_REGIONS) r.tip = TIPS[r.id]
 
 export const regionsFor = (curriculum: Curriculum): Region[] =>
   curriculum === 'early' ? EARLY_REGIONS : REGIONS

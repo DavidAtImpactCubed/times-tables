@@ -10,6 +10,7 @@ import { LevelScreen } from './components/LevelScreen'
 import { Monster } from './components/Monster'
 import { ResultsScreen } from './components/ResultsScreen'
 import { StoryScene } from './components/StoryScene'
+import { TipScene } from './components/TipScene'
 import { Wardrobe } from './components/Wardrobe'
 import { WorldMap } from './components/WorldMap'
 
@@ -17,6 +18,7 @@ type Screen =
   | { name: 'landing' }
   | { name: 'map' }
   | { name: 'story'; regionId: string; level: number }
+  | { name: 'tip'; regionId: string; level: number; offer: boolean }
   | { name: 'level'; regionId: string; level: number }
   | { name: 'results'; regionId: string; level: number; correct: number; stars: number; gained: number }
   | { name: 'finale' }
@@ -109,8 +111,16 @@ export default function App() {
 
   const storyDone = (regionId: string, level: number) => {
     const id = levelId(regionId, level)
-    setSave((s) => ({ ...s, seenStory: [...s.seenStory, id] }))
-    setScreen({ name: 'level', regionId, level })
+    const region = regionById(regionId)
+    // offer Olly's optional trick the first time a topic is introduced
+    const offerTip = level === 0 && !!region.tip && !save.seenTips.includes(regionId)
+    setSave((s) => ({
+      ...s,
+      seenStory: [...s.seenStory, id],
+      seenTips: offerTip ? [...s.seenTips, regionId] : s.seenTips,
+    }))
+    if (offerTip) setScreen({ name: 'tip', regionId, level, offer: true })
+    else setScreen({ name: 'level', regionId, level })
   }
 
   const levelDone = (regionId: string, level: number, correct: number) => {
@@ -259,6 +269,7 @@ export default function App() {
             setConfirmDelete(null)
             setScreen({ name: 'landing' })
           }}
+          onShowTip={(regionId) => setScreen({ name: 'tip', regionId, level: 0, offer: false })}
         />
       )
 
@@ -271,6 +282,23 @@ export default function App() {
           image={backgroundFor(region.id, screen.level)}
           equipped={save.equipped}
           onDone={() => storyDone(screen.regionId, screen.level)}
+        />
+      )
+    }
+
+    case 'tip': {
+      const region = regionById(screen.regionId)
+      return (
+        <TipScene
+          region={region}
+          offer={screen.offer}
+          onDone={() =>
+            setScreen(
+              screen.offer
+                ? { name: 'level', regionId: screen.regionId, level: screen.level }
+                : { name: 'map' },
+            )
+          }
         />
       )
     }

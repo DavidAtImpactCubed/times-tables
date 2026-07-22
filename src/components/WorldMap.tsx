@@ -33,9 +33,10 @@ interface Props {
   onWardrobe: () => void
   onToggleMute: () => void
   onSwitchPlayer: () => void
+  onShowTip: (regionId: string) => void
 }
 
-export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, onToggleMute, onSwitchPlayer }: Props) {
+export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, onToggleMute, onSwitchPlayer, onShowTip }: Props) {
   return (
     <div className="screen map-screen">
       <header className="map-header">
@@ -86,6 +87,19 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
                   <h2>{region.name}</h2>
                   <p className="region-sub">{regionSubtitle(region)}</p>
                 </div>
+                {unlocked && region.tip && (
+                  <button
+                    className="region-tip-btn"
+                    onClick={() => {
+                      sfx.click()
+                      onShowTip(region.id)
+                    }}
+                    aria-label={`Clever trick for ${region.name}`}
+                    data-testid={`tip-btn-${region.id}`}
+                  >
+                    💡
+                  </button>
+                )}
               </div>
               {!unlocked && (
                 <p className="unlock-hint" data-testid={`unlock-hint-${region.id}`}>

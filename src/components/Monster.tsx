@@ -69,16 +69,16 @@ const PLACE: Record<string, Placement> = {
   'hat-beanie': { cx: 652, cy: 450, w: 330 },
   // held items sit in the raised-pose fist
   'held-balloon': { cx: 1110, cy: 640, w: 230 },
-  'held-wand': { cx: 1100, cy: 760, w: 300 },
+  'held-wand': { cx: 950, cy: 570, w: 300 },
   'held-icecream': { cx: 1078, cy: 760, w: 190 },
-  'held-flag': { cx: 1090, cy: 740, w: 290 },
+  'held-flag': { cx: 945, cy: 592, w: 290 },
   'held-telescope': { cx: 1120, cy: 810, w: 300 },
   'held-lantern': { cx: 1075, cy: 900, w: 220 },
   'back-cape': { cx: 650, cy: 1188, w: 1150 },
   'back-wings': { cx: 650, cy: 818, w: 1250 },
   'back-batwings': { cx: 650, cy: 798, w: 1420 },
   'back-belt': { cx: 650, cy: 1228, w: 620 },
-  'back-duck': { cx: 632, cy: 1230, w: 930 },
+  'back-duck': { cx: 606, cy: 1230, w: 930 },
 }
 
 /** back-slot items worn on the front of the body (rendered above the base). */

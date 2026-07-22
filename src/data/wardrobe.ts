@@ -16,7 +16,7 @@ export const WARDROBE: WardrobeItem[] = [
   // Eyes
   { id: 'eyes-happy', slot: 'eyes', name: 'Happy eyes', price: 2, variant: 'happy' },
   { id: 'eyes-sleepy', slot: 'eyes', name: 'Sleepy eyes', price: 2, variant: 'sleepy' },
-  { id: 'eyes-wink', slot: 'eyes', name: 'Winking eyes', price: 3, variant: 'wink' },
+  { id: 'eyes-wink', slot: 'eyes', name: 'Smiley eyes', price: 3, variant: 'wink' },
   { id: 'eyes-angry', slot: 'eyes', name: 'Grumpy eyes', price: 3, variant: 'angry' },
   { id: 'eyes-stars', slot: 'eyes', name: 'Starry eyes', price: 4, variant: 'stars' },
   // Horns

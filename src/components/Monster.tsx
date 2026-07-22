@@ -38,7 +38,9 @@ interface Placement {
 }
 
 const PLACE: Record<string, Placement> = {
-  'base-body': { cx: 650, cy: 679, w: 954 },
+  // standing base is offset left so the head (skewed by the tail) sits at canvas centre
+  'base-body': { cx: 598, cy: 679, w: 952 },
+  'base-body-raised': { cx: 650, cy: 682, w: 999 },
   'eyes-two': { cx: 650, cy: 468, w: 340 },
   'eyes-happy': { cx: 650, cy: 468, w: 340 },
   'eyes-angry': { cx: 650, cy: 468, w: 340 },
@@ -62,12 +64,13 @@ const PLACE: Record<string, Placement> = {
   'hat-aviator': { cx: 650, cy: 198, w: 420 },
   'hat-cap': { cx: 665, cy: 193, w: 420 },
   'hat-beanie': { cx: 650, cy: 168, w: 380 },
-  'held-balloon': { cx: 1197, cy: 658, w: 230 },
-  'held-wand': { cx: 1187, cy: 898, w: 300 },
-  'held-icecream': { cx: 1167, cy: 898, w: 190 },
-  'held-flag': { cx: 1187, cy: 858, w: 290 },
-  'held-telescope': { cx: 1187, cy: 898, w: 300 },
-  'held-lantern': { cx: 1167, cy: 928, w: 220 },
+  // held items sit in the raised-pose fist (canvas ~1038, 557)
+  'held-balloon': { cx: 1080, cy: 360, w: 230 },
+  'held-wand': { cx: 1070, cy: 480, w: 300 },
+  'held-icecream': { cx: 1048, cy: 480, w: 190 },
+  'held-flag': { cx: 1060, cy: 460, w: 290 },
+  'held-telescope': { cx: 1090, cy: 530, w: 300 },
+  'held-lantern': { cx: 1045, cy: 620, w: 220 },
   'back-cape': { cx: 650, cy: 908, w: 1150 },
   'back-wings': { cx: 650, cy: 538, w: 1250 },
   'back-batwings': { cx: 650, cy: 518, w: 1420 },
@@ -95,7 +98,9 @@ export function Monster({ equipped, mood = 'idle', size = 160, className, layer 
   const L = (l: MonsterLayer) => layer === undefined || layer === l
 
   const bodyVariant = variant('body') ?? 'purple'
-  const bodyStem = bodyVariant === 'purple' ? 'base-body' : `base-body-${bodyVariant}`
+  // holding something switches to the raised-hand pose
+  const pose = equipped.held ? 'base-body-raised' : 'base-body'
+  const bodyStem = bodyVariant === 'purple' ? pose : `${pose}-${bodyVariant}`
   const eyesStem = equipped.eyes ?? 'eyes-two'
   const mouthStem = `mouth-${mood}`
 
@@ -125,7 +130,7 @@ export function Monster({ equipped, mood = 'idle', size = 160, className, layer 
       {stems.map(([l, stem]) => {
         if (!stem || !L(l)) return null
         const url = asset(stem)
-        const placeKey = l === 'base' ? 'base-body' : stem
+        const placeKey = l === 'base' ? pose : stem
         if (!url || !PLACE[placeKey]) return null
         return <img key={stem} src={url} alt="" draggable={false} style={layerStyle(placeKey)} />
       })}

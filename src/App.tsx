@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FINALE, REGIONS, regionById } from './data/regions'
+import { WARDROBE } from './data/wardrobe'
 import { setMuted, sfx } from './logic/audio'
 import { TITLE_BG, backgroundFor } from './logic/backgrounds'
 import { starsFor } from './logic/progress'
@@ -25,6 +26,28 @@ export default function App() {
   const [save, setSave] = useState<SaveData>(loadSave)
   const [screen, setScreen] = useState<Screen>({ name: 'title' })
   const [confirmReset, setConfirmReset] = useState(false)
+  const [cheatOn, setCheatOn] = useState(false)
+  const titleTaps = useRef<number[]>([])
+
+  // Hidden tester cheat: 5 quick taps on the title unlocks all levels and items.
+  const titleTapped = () => {
+    const now = Date.now()
+    titleTaps.current = [...titleTaps.current.filter((t) => now - t < 3000), now]
+    if (titleTaps.current.length >= 5) {
+      titleTaps.current = []
+      sfx.fanfare()
+      setCheatOn(true)
+      setSave((s) => {
+        const stars = { ...s.stars }
+        for (const region of REGIONS)
+          for (let l = 0; l < region.levels.length; l++) {
+            const id = levelId(region.id, l)
+            stars[id] = Math.max(stars[id] ?? 0, 1)
+          }
+        return { ...s, stars, wallet: s.wallet + 99, owned: WARDROBE.map((i) => i.id) }
+      })
+    }
+  }
 
   useEffect(() => {
     persistSave(save)
@@ -86,11 +109,16 @@ export default function App() {
               </span>
             ))}
           </div>
-          <h1 className="game-title">
+          <h1 className="game-title" onClick={titleTapped} data-testid="game-title">
             Monster Maths
             <br />
             Quest
           </h1>
+          {cheatOn && (
+            <div className="cheat-toast" data-testid="cheat-toast">
+              🔓 Tester mode: all levels & items unlocked!
+            </div>
+          )}
           <div className="title-monster">
             <Monster equipped={save.equipped} mood="happy" size={200} className="bounce" />
           </div>

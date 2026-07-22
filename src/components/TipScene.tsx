@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { sfx } from '../logic/audio'
+import { backgroundFor } from '../logic/backgrounds'
 import type { Region } from '../types'
 import owlUrl from '../assets/characters/owl.webp'
 
@@ -31,9 +32,11 @@ export function TipScene({ region, offer, onDone }: Props) {
   }
 
   const step = steps[index]
+  const bg = backgroundFor(region.id, 0)
 
   return (
     <div className="screen tip-screen" style={{ background: `linear-gradient(180deg, ${region.color}cc, #1e1b4b)` }} data-testid="tip-scene">
+      {bg && <div className="story-bg" aria-hidden data-testid="tip-bg" style={{ backgroundImage: `url(${bg})` }} />}
       <div className="tip-owl">
         <img className="story-char" src={owlUrl} alt="Olly the Owl" draggable={false} />
       </div>

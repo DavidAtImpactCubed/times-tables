@@ -69,7 +69,7 @@ const PLACE: Record<string, Placement> = {
   'hat-beanie': { cx: 652, cy: 450, w: 330 },
   // held items sit in the raised-pose fist
   'held-balloon': { cx: 1110, cy: 640, w: 230 },
-  'held-wand': { cx: 1000, cy: 470, w: 230 },
+  'held-wand': { cx: 1110, cy: 660, w: 230 },
   'held-icecream': { cx: 1078, cy: 760, w: 190 },
   'held-flag': { cx: 945, cy: 610, w: 290 },
   'held-telescope': { cx: 1120, cy: 810, w: 300 },

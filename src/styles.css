@@ -380,6 +380,10 @@ button {
 }
 /* switch-player tag on the world map */
 .player-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
   border: none;
   background: rgba(255, 255, 255, 0.18);
   color: #fff;
@@ -390,7 +394,14 @@ button {
   border-radius: 999px;
   cursor: pointer;
   margin-top: 2px;
+  white-space: nowrap;
   transition: background 0.12s ease;
+}
+.player-tag-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 .player-tag:hover,
 .player-tag:focus-visible {

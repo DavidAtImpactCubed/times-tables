@@ -47,7 +47,9 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
           <h1>Monster Island</h1>
           {playerName ? (
             <button className="player-tag" onClick={onSwitchPlayer} data-testid="switch-player" aria-label="Switch player">
-              👤 {playerName} <span className="player-tag-swap">▾</span>
+              <span aria-hidden>👤</span>
+              <span className="player-tag-name">{playerName}</span>
+              <span className="player-tag-swap" aria-hidden>▾</span>
             </button>
           ) : (
             <p>Win the stars back from the Star Goblin!</p>

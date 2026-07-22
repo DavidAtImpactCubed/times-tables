@@ -864,6 +864,31 @@ button {
   border-color: #4ade80;
   background: #f0fdf4;
 }
+.item-card.trying {
+  border-color: #fbbf24;
+  background: #fffbeb;
+}
+.tryon-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  padding: 10px 14px;
+  animation: pop-in 0.2s ease both;
+}
+.tryon-name {
+  color: #fde047;
+  font-weight: 800;
+  font-size: 1rem;
+}
+.tryon-buy,
+.tryon-cancel {
+  font-size: 1rem;
+  padding: 10px 18px;
+}
 .item-card.too-dear {
   opacity: 0.55;
 }

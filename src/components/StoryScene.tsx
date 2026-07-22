@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { sfx } from '../logic/audio'
-import { speak, stopSpeaking } from '../logic/speech'
+import { narrate, stopSpeaking } from '../logic/speech'
 import type { PartSlot, StoryLine } from '../types'
 import { Confetti } from './Confetti'
 import { Monster } from './Monster'
@@ -29,7 +29,7 @@ export function StoryScene({ lines, background, image, imageEnd, equipped, readA
 
   // read each story line aloud as it appears
   useEffect(() => {
-    if (readAloud) speak(line.text)
+    if (readAloud) narrate(line.speaker, line.text)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index])
   useEffect(() => () => stopSpeaking(), [])

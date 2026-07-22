@@ -23,7 +23,7 @@ export const REGIONS: Region[] = [
     levels: TIMES_LEVELS(2, [
       [
         O('Wake up, little monster — disaster! The Star Goblin has stolen every star on Monster Island!'),
-        G('Hee hee hee! They are ALL mine now! Catch me if you can!'),
+        G('Hee hee hee! They’re ALL mine now!'),
         O('His trail starts here on Twinkle Beach. Solve the 2 times table and the stars will shine back to you!'),
         M('Don’t worry, Olly — I’ll win back every last one. Twos first: 2, 4, 6, 8!'),
       ],

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { sfx } from '../logic/audio'
-import { speak, stopSpeaking } from '../logic/speech'
+import { narrate, stopSpeaking } from '../logic/speech'
 import { backgroundFor } from '../logic/backgrounds'
 import type { Region } from '../types'
 import owlUrl from '../assets/characters/owl.webp'
@@ -22,8 +22,8 @@ export function TipScene({ region, offer, readAloud, onDone }: Props) {
   // read the offer, then each trick card, aloud
   useEffect(() => {
     if (!readAloud) return
-    if (phase === 'offer') speak('Would you like to learn a clever trick?')
-    else if (steps[index]) speak(steps[index].text)
+    if (phase === 'offer') narrate('guide', 'Would you like to learn a clever trick?')
+    else if (steps[index]) narrate('guide', steps[index].text)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, index])
   useEffect(() => () => stopSpeaking(), [])

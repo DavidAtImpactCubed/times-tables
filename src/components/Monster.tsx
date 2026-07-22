@@ -60,11 +60,11 @@ const PLACE: Record<string, Placement> = {
   'horns-green': { cx: 650, cy: 425, w: 470 },
   'horns-antennae': { cx: 650, cy: 398, w: 420 },
   'hat-crown': { cx: 650, cy: 453, w: 330 },
-  'hat-wizard': { cx: 664, cy: 360, w: 730 },
+  'hat-wizard': { cx: 658, cy: 420, w: 420 },
   'hat-pirate': { cx: 650, cy: 448, w: 480 },
   'hat-aviator': { cx: 650, cy: 478, w: 420 },
   'hat-cap': { cx: 665, cy: 473, w: 420 },
-  'hat-beanie': { cx: 655, cy: 400, w: 587 },
+  'hat-beanie': { cx: 652, cy: 450, w: 330 },
   // held items sit in the raised-pose fist
   'held-balloon': { cx: 1110, cy: 640, w: 230 },
   'held-wand': { cx: 1100, cy: 760, w: 300 },

@@ -37,6 +37,7 @@ export const WARDROBE: WardrobeItem[] = [
   // Hats
   { id: 'hat-cap', slot: 'hat', name: 'Baseball cap', price: 2, variant: 'cap' },
   { id: 'hat-beanie', slot: 'hat', name: 'Bobble hat', price: 2, variant: 'beanie' },
+  { id: 'hat-viking', slot: 'hat', name: 'Viking helmet', price: 4, variant: 'viking' },
   { id: 'hat-pirate', slot: 'hat', name: 'Pirate hat', price: 4, variant: 'pirate' },
   { id: 'hat-aviator', slot: 'hat', name: 'Flying cap', price: 4, variant: 'aviator' },
   { id: 'hat-wizard', slot: 'hat', name: 'Wizard hat', price: 5, variant: 'wizard' },

@@ -208,18 +208,22 @@ export const EARLY_REGIONS: Region[] = [
     curriculum: 'early',
     art: 'lagoon',
     levels: [
-      EL('choice', 'Add to 5', [
-        O('In Number Bond Bay, stars swim in little groups. Put them together!'),
-        M('2 stars and 3 stars makes 5 stars!'),
+      EL('choice', 'Make ten', [
+        O('In Number Bond Bay, stars love to swim in pairs that make TEN.'),
+        M('7 stars need 3 more to make ten. Together they’re a perfect pair!'),
+        O('Tap the number that makes ten — these pairs are worth remembering!'),
       ]),
-      EL('missing', 'Bonds of 5', [
-        O('These shells always hold 5 pearls. How many are hiding?'),
-        M('3 and how many more make 5? I can find it!'),
+      EL('choice', 'Adding to ten', [
+        M('Now I can add any little groups, all the way up to ten.'),
+        O('Put the two groups together and tap the total.'),
       ]),
-      EL('choice', 'Add to 10', [M('Bigger groups now — all the way to ten!'), O('Add them up and tap the total.')]),
-      EL('missing', 'Bonds of 10', [
-        G('Blub! Bet you can’t find what makes TEN! Hee hee!'),
-        M('7 and 3! Number bonds don’t fool me.'),
+      EL('choice', 'Missing numbers', [
+        O('Some stars are hiding! How many more are needed?'),
+        M('6 and how many make 9? I can work it out — 3!'),
+      ]),
+      EL('type', 'Bond champion', [
+        G('Blub blub! Type the missing number if you’re so clever! Hee hee!'),
+        M('Missing numbers don’t fool me. Watch this!'),
       ]),
     ],
   },

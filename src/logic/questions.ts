@@ -141,20 +141,23 @@ function generateEarlyLevel(region: Region, level: number): Question[] {
         return subQuestion(rnd(1, 10), 1, 'result', 'choice') // one less
 
       case 'bond': {
+        // Progression: make ten → add up to ten → find the missing number within ten.
         if (level === 0) {
-          const [a, b] = splitTotal(rnd(2, 5), 4)
-          return addQuestion(a, b, 'result', 'choice')
+          const a = rnd(1, 9)
+          return addQuestion(a, 10 - a, 'b', 'choice') // a + ? = 10 (the pairs that make ten)
         }
         if (level === 1) {
-          const a = rnd(1, 4)
-          return addQuestion(a, 5 - a, 'b', 'choice') // a + ? = 5
+          const [a, b] = splitTotal(rnd(2, 10), 9)
+          return addQuestion(a, b, 'result', 'choice') // a + b = ? up to ten
         }
         if (level === 2) {
-          const [a, b] = splitTotal(rnd(2, 10), 9)
-          return addQuestion(a, b, 'result', 'choice')
+          const c = rnd(2, 10)
+          const a = rnd(1, c - 1)
+          return addQuestion(a, c - a, 'b', 'choice') // a + ? = c within ten
         }
-        const a = rnd(1, 9)
-        return addQuestion(a, 10 - a, 'b', 'choice') // a + ? = 10
+        const c = rnd(2, 10)
+        const a = rnd(1, c - 1)
+        return addQuestion(a, c - a, 'b', 'pad') // missing number, typed
       }
 
       case 'add': {

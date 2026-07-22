@@ -26,10 +26,11 @@ const asset = (stem: string): string | undefined => {
   return undefined
 }
 
-// Shared compositing canvas (from the art-extraction pipeline): 1300×1240 units,
-// base body 954×1082 at (173, 138). Placements are {cx, cy, w} in canvas units.
+// Shared compositing canvas (from the art-extraction pipeline): 1300×1520 units,
+// base body 952×1082 at (~122, 418). The extra headroom above the body fits tall
+// worn hats (beanie pompom, wizard tip). Placements are {cx, cy, w} in canvas units.
 const CANVAS_W = 1300
-const CANVAS_H = 1240
+const CANVAS_H = 1520
 
 interface Placement {
   cx: number
@@ -39,43 +40,43 @@ interface Placement {
 
 const PLACE: Record<string, Placement> = {
   // standing base is offset left so the head (skewed by the tail) sits at canvas centre
-  'base-body': { cx: 598, cy: 679, w: 952 },
-  'base-body-raised': { cx: 650, cy: 682, w: 999 },
-  'eyes-two': { cx: 650, cy: 468, w: 340 },
-  'eyes-happy': { cx: 650, cy: 468, w: 340 },
-  'eyes-angry': { cx: 650, cy: 468, w: 340 },
-  'eyes-sleepy': { cx: 650, cy: 468, w: 340 },
-  'eyes-wink': { cx: 650, cy: 468, w: 330 },
-  'eyes-stars': { cx: 650, cy: 468, w: 350 },
-  'mouth-idle': { cx: 650, cy: 658, w: 230 },
-  'mouth-happy': { cx: 650, cy: 658, w: 280 },
-  'mouth-sad': { cx: 650, cy: 658, w: 150 },
-  'mouth-excited': { cx: 650, cy: 658, w: 280 },
-  'face-scarf': { cx: 650, cy: 830, w: 860 },
-  'face-bandana': { cx: 650, cy: 840, w: 880 },
-  'face-medal': { cx: 650, cy: 810, w: 760 },
-  'horns-little': { cx: 650, cy: 165, w: 470 },
-  'horns-curly': { cx: 650, cy: 165, w: 470 },
-  'horns-green': { cx: 650, cy: 145, w: 470 },
-  'horns-antennae': { cx: 650, cy: 118, w: 420 },
-  'hat-crown': { cx: 650, cy: 173, w: 330 },
-  'hat-wizard': { cx: 675, cy: 153, w: 470 },
-  'hat-pirate': { cx: 650, cy: 168, w: 480 },
-  'hat-aviator': { cx: 650, cy: 198, w: 420 },
-  'hat-cap': { cx: 665, cy: 193, w: 420 },
-  'hat-beanie': { cx: 650, cy: 168, w: 380 },
+  'base-body': { cx: 598, cy: 959, w: 952 },
+  'base-body-raised': { cx: 650, cy: 962, w: 999 },
+  'eyes-two': { cx: 650, cy: 748, w: 340 },
+  'eyes-happy': { cx: 650, cy: 748, w: 340 },
+  'eyes-angry': { cx: 650, cy: 748, w: 340 },
+  'eyes-sleepy': { cx: 650, cy: 748, w: 340 },
+  'eyes-wink': { cx: 650, cy: 748, w: 330 },
+  'eyes-stars': { cx: 650, cy: 748, w: 350 },
+  'mouth-idle': { cx: 650, cy: 938, w: 230 },
+  'mouth-happy': { cx: 650, cy: 938, w: 280 },
+  'mouth-sad': { cx: 650, cy: 938, w: 150 },
+  'mouth-excited': { cx: 650, cy: 938, w: 280 },
+  'face-scarf': { cx: 650, cy: 1110, w: 860 },
+  'face-bandana': { cx: 650, cy: 1120, w: 880 },
+  'face-medal': { cx: 650, cy: 1090, w: 760 },
+  'horns-little': { cx: 650, cy: 445, w: 470 },
+  'horns-curly': { cx: 650, cy: 445, w: 470 },
+  'horns-green': { cx: 650, cy: 425, w: 470 },
+  'horns-antennae': { cx: 650, cy: 398, w: 420 },
+  'hat-crown': { cx: 650, cy: 453, w: 330 },
+  'hat-wizard': { cx: 664, cy: 360, w: 730 },
+  'hat-pirate': { cx: 650, cy: 448, w: 480 },
+  'hat-aviator': { cx: 650, cy: 478, w: 420 },
+  'hat-cap': { cx: 665, cy: 473, w: 420 },
+  'hat-beanie': { cx: 655, cy: 400, w: 587 },
   // held items sit in the raised-pose fist
-  'held-balloon': { cx: 1110, cy: 360, w: 230 },
-  'held-wand': { cx: 1100, cy: 480, w: 300 },
-  'held-icecream': { cx: 1078, cy: 480, w: 190 },
-  'held-flag': { cx: 1090, cy: 460, w: 290 },
-  'held-telescope': { cx: 1120, cy: 530, w: 300 },
-  'held-lantern': { cx: 1075, cy: 620, w: 220 },
-  'back-cape': { cx: 650, cy: 908, w: 1150 },
-  'back-wings': { cx: 650, cy: 538, w: 1250 },
-  'back-batwings': { cx: 650, cy: 518, w: 1420 },
-  'back-belt': { cx: 650, cy: 948, w: 620 },
-  'back-duck': { cx: 650, cy: 988, w: 900 },
+  'held-balloon': { cx: 1110, cy: 640, w: 230 },
+  'held-wand': { cx: 1100, cy: 760, w: 300 },
+  'held-icecream': { cx: 1078, cy: 760, w: 190 },
+  'held-flag': { cx: 1090, cy: 740, w: 290 },
+  'held-telescope': { cx: 1120, cy: 810, w: 300 },
+  'held-lantern': { cx: 1075, cy: 900, w: 220 },
+  'back-cape': { cx: 650, cy: 1188, w: 1150 },
+  'back-wings': { cx: 650, cy: 818, w: 1250 },
+  'back-batwings': { cx: 650, cy: 798, w: 1420 },
+  'back-belt': { cx: 650, cy: 1228, w: 620 },
+  'back-duck': { cx: 650, cy: 1268, w: 900 },
 }
 
 /** back-slot items worn on the front of the body (rendered above the base). */

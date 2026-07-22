@@ -54,9 +54,9 @@ const PLACE: Record<string, Placement> = {
   'face-scarf': { cx: 650, cy: 803, w: 430 },
   'face-bandana': { cx: 650, cy: 803, w: 440 },
   'face-medal': { cx: 650, cy: 783, w: 380 },
-  'horns-little': { cx: 650, cy: 228, w: 470 },
-  'horns-curly': { cx: 650, cy: 228, w: 470 },
-  'horns-green': { cx: 650, cy: 198, w: 470 },
+  'horns-little': { cx: 650, cy: 165, w: 470 },
+  'horns-curly': { cx: 650, cy: 165, w: 470 },
+  'horns-green': { cx: 650, cy: 145, w: 470 },
   'horns-antennae': { cx: 650, cy: 118, w: 420 },
   'hat-crown': { cx: 650, cy: 173, w: 330 },
   'hat-wizard': { cx: 675, cy: 153, w: 470 },
@@ -101,23 +101,26 @@ export function Monster({ equipped, mood = 'idle', size = 160, className, layer 
   // holding something switches to the raised-hand pose
   const pose = equipped.held ? 'base-body-raised' : 'base-body'
   const bodyStem = bodyVariant === 'purple' ? pose : `${pose}-${bodyVariant}`
-  const eyesStem = equipped.eyes ?? 'eyes-two'
-  const mouthStem = `mouth-${mood}`
+  // eyes/mouths carry monster skin (lids, brows, lips) tinted to match the body;
+  // the rainbow body uses the green-shifted face, matching its gradient at head height
+  const faceSuffix = bodyVariant === 'purple' ? '' : bodyVariant === 'rainbow' ? '-green' : `-${bodyVariant}`
+  const eyesBase = equipped.eyes ?? 'eyes-two'
+  const mouthBase = `mouth-${mood}`
 
   const back = equipped.back
   const backIsFront = back !== undefined && FRONT_BACK.has(back)
 
   // stacking order: back → base → front-worn back items → eyes → mouth → neckwear → horns → hat → held
-  const stems: [MonsterLayer, string | undefined][] = [
-    ['back', backIsFront ? undefined : back],
-    ['base', bodyStem],
-    ['back', backIsFront ? back : undefined],
-    ['eyes', eyesStem],
-    ['mouth', mouthStem],
-    ['face', equipped.face],
-    ['horns', equipped.horns],
-    ['hat', equipped.hat],
-    ['held', equipped.held],
+  const stems: { layer: MonsterLayer; stem?: string; place?: string }[] = [
+    { layer: 'back', stem: backIsFront ? undefined : back },
+    { layer: 'base', stem: bodyStem, place: pose },
+    { layer: 'back', stem: backIsFront ? back : undefined },
+    { layer: 'eyes', stem: `${eyesBase}${faceSuffix}`, place: eyesBase },
+    { layer: 'mouth', stem: `${mouthBase}${faceSuffix}`, place: mouthBase },
+    { layer: 'face', stem: equipped.face },
+    { layer: 'horns', stem: equipped.horns },
+    { layer: 'hat', stem: equipped.hat },
+    { layer: 'held', stem: equipped.held },
   ]
 
   return (
@@ -127,10 +130,10 @@ export function Monster({ equipped, mood = 'idle', size = 160, className, layer 
       aria-label="Your monster"
       style={{ position: 'relative', width: size, height: size * (CANVAS_H / CANVAS_W) }}
     >
-      {stems.map(([l, stem]) => {
+      {stems.map(({ layer: l, stem, place }) => {
         if (!stem || !L(l)) return null
         const url = asset(stem)
-        const placeKey = l === 'base' ? pose : stem
+        const placeKey = place ?? stem
         if (!url || !PLACE[placeKey]) return null
         return <img key={stem} src={url} alt="" draggable={false} style={layerStyle(placeKey)} />
       })}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { finaleFor, regionById, regionsFor } from './data/regions'
 import { WARDROBE } from './data/wardrobe'
 import { setMuted, sfx } from './logic/audio'
+import { setReadAloud } from './logic/speech'
 import { TITLE_BG, backgroundFor } from './logic/backgrounds'
 import { starsFor, totalStars } from './logic/progress'
 import { addProfile, freshSave, listProfiles, loadSave, persistSave, removeProfile } from './logic/storage'
@@ -50,6 +51,7 @@ export default function App() {
   useEffect(() => {
     if (profile) persistSave(profile, save)
     setMuted(save.muted)
+    setReadAloud(save.readAloud)
   }, [save, profile])
 
   // Hidden tester cheat: 5 quick taps on the title arms it for the next player chosen.
@@ -83,8 +85,8 @@ export default function App() {
     setProfiles(listProfiles())
     setNewName('')
     setAdding(false)
-    // start a fresh save on the chosen age band
-    let s: SaveData = { ...freshSave(), curriculum }
+    // start a fresh save on the chosen age band; youngest players get read-aloud on
+    let s: SaveData = { ...freshSave(), curriculum, readAloud: curriculum === 'early' }
     if (cheatArmed) {
       s = applyCheat(s)
       setCheatArmed(false)
@@ -264,6 +266,7 @@ export default function App() {
           onPlayLevel={startLevel}
           onWardrobe={() => setScreen({ name: 'wardrobe' })}
           onToggleMute={() => setSave((s) => ({ ...s, muted: !s.muted }))}
+          onToggleReadAloud={() => setSave((s) => ({ ...s, readAloud: !s.readAloud }))}
           onSwitchPlayer={() => {
             setProfiles(listProfiles())
             setConfirmDelete(null)
@@ -281,6 +284,7 @@ export default function App() {
           background={region.color}
           image={backgroundFor(region.id, screen.level)}
           equipped={save.equipped}
+          readAloud={save.readAloud}
           onDone={() => storyDone(screen.regionId, screen.level)}
         />
       )
@@ -292,6 +296,7 @@ export default function App() {
         <TipScene
           region={region}
           offer={screen.offer}
+          readAloud={save.readAloud}
           onDone={() =>
             setScreen(
               screen.offer
@@ -311,6 +316,7 @@ export default function App() {
           region={region}
           level={screen.level}
           equipped={save.equipped}
+          readAloud={save.readAloud}
           onFinish={(correct) => levelDone(screen.regionId, screen.level, correct)}
           onQuit={() => setScreen({ name: 'map' })}
         />
@@ -343,6 +349,7 @@ export default function App() {
           image={backgroundFor(lastRegion.id, lastRegion.levels.length - 1)}
           imageEnd
           equipped={save.equipped}
+          readAloud={save.readAloud}
           finale
           onDone={() => setScreen({ name: 'map' })}
         />

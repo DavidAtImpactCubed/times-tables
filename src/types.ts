@@ -101,6 +101,8 @@ export interface SaveData {
   seenTips: string[]
   seenFinale: boolean
   muted: boolean
+  /** read questions and tips aloud (defaults on for the early-years band) */
+  readAloud: boolean
 }
 
 export const levelId = (regionId: string, level: number) => `${regionId}-${level}`

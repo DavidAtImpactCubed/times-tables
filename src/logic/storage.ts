@@ -17,6 +17,7 @@ export function freshSave(): SaveData {
     seenTips: [],
     seenFinale: false,
     muted: false,
+    readAloud: false,
   }
 }
 

@@ -55,7 +55,6 @@ const PLACE: Record<string, Placement> = {
   // fingers overlay shares the raised-body frame, drawn over held props so handles look gripped
   fingers: { cx: 650, cy: 962, w: 999 },
   'eyes-two': { cx: 650, cy: 748, w: 340 },
-  'eyes-happy': { cx: 650, cy: 748, w: 340 },
   'eyes-angry': { cx: 650, cy: 748, w: 340 },
   'eyes-sleepy': { cx: 650, cy: 748, w: 340 },
   'eyes-wink': { cx: 650, cy: 748, w: 330 },

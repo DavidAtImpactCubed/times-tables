@@ -403,6 +403,11 @@ button {
   white-space: nowrap;
   min-width: 0;
 }
+/* a round toggle button in its "off" state (e.g. read-aloud disabled) */
+.btn-round.toggle-off {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
 .player-tag:hover,
 .player-tag:focus-visible {
   background: rgba(255, 255, 255, 0.3);

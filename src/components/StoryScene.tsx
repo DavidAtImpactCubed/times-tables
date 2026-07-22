@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { sfx } from '../logic/audio'
+import { speak, stopSpeaking } from '../logic/speech'
 import type { PartSlot, StoryLine } from '../types'
 import { Confetti } from './Confetti'
 import { Monster } from './Monster'
@@ -13,17 +14,25 @@ interface Props {
   image?: string
   imageEnd?: boolean
   equipped: Partial<Record<PartSlot, string>>
+  readAloud?: boolean
   finale?: boolean
   onDone: () => void
 }
 
 const SPEAKER_NAMES = { monster: 'You', goblin: 'Star Goblin', guide: 'Olly the Owl' }
 
-export function StoryScene({ lines, background, image, imageEnd, equipped, finale, onDone }: Props) {
+export function StoryScene({ lines, background, image, imageEnd, equipped, readAloud, finale, onDone }: Props) {
   const [index, setIndex] = useState(0)
   const line = lines[index]
   // only bring on a character who actually has a line in this scene
   const speakers = new Set(lines.map((l) => l.speaker))
+
+  // read each story line aloud as it appears
+  useEffect(() => {
+    if (readAloud) speak(line.text)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index])
+  useEffect(() => () => stopSpeaking(), [])
 
   const advance = () => {
     sfx.click()

@@ -1,4 +1,5 @@
 import { sfx } from '../logic/audio'
+import { readAloudSupported } from '../logic/speech'
 import { backgroundFor } from '../logic/backgrounds'
 import { completedLevels, levelUnlocked, levelsNeededFor, regionUnlocked } from '../logic/progress'
 import { levelId, type Region, type SaveData } from '../types'
@@ -32,11 +33,12 @@ interface Props {
   onPlayLevel: (regionId: string, level: number) => void
   onWardrobe: () => void
   onToggleMute: () => void
+  onToggleReadAloud: () => void
   onSwitchPlayer: () => void
   onShowTip: (regionId: string) => void
 }
 
-export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, onToggleMute, onSwitchPlayer, onShowTip }: Props) {
+export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, onToggleMute, onToggleReadAloud, onSwitchPlayer, onShowTip }: Props) {
   return (
     <div className="screen map-screen">
       <header className="map-header">
@@ -65,6 +67,16 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
           <button className="btn btn-round" onClick={onToggleMute} aria-label="Sound on or off">
             {save.muted ? '🔇' : '🔊'}
           </button>
+          {readAloudSupported() && (
+            <button
+              className={`btn btn-round ${save.readAloud ? '' : 'toggle-off'}`}
+              onClick={onToggleReadAloud}
+              aria-label={save.readAloud ? 'Reading aloud is on' : 'Reading aloud is off'}
+              data-testid="readaloud-toggle"
+            >
+              🗣️
+            </button>
+          )}
         </div>
       </header>
 

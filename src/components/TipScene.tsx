@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { sfx } from '../logic/audio'
+import { speak, stopSpeaking } from '../logic/speech'
 import { backgroundFor } from '../logic/backgrounds'
 import type { Region } from '../types'
 import owlUrl from '../assets/characters/owl.webp'
@@ -8,14 +9,24 @@ interface Props {
   region: Region
   /** true when Olly first offers the trick (shows the yes/maybe-later choice) */
   offer: boolean
+  readAloud?: boolean
   onDone: () => void
 }
 
 /** Olly the Owl's optional "clever trick" mini-lesson for a topic. */
-export function TipScene({ region, offer, onDone }: Props) {
+export function TipScene({ region, offer, readAloud, onDone }: Props) {
   const steps = region.tip ?? []
   const [phase, setPhase] = useState<'offer' | 'cards'>(offer ? 'offer' : 'cards')
   const [index, setIndex] = useState(0)
+
+  // read the offer, then each trick card, aloud
+  useEffect(() => {
+    if (!readAloud) return
+    if (phase === 'offer') speak('Would you like to learn a clever trick?')
+    else if (steps[index]) speak(steps[index].text)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, index])
+  useEffect(() => () => stopSpeaking(), [])
 
   const start = () => {
     sfx.click()

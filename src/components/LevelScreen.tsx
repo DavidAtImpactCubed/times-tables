@@ -1,7 +1,8 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { sfx } from '../logic/audio'
 import { backgroundFor } from '../logic/backgrounds'
-import { QUESTIONS_PER_LEVEL, explain, generateLevel, questionText } from '../logic/questions'
+import { QUESTIONS_PER_LEVEL, explain, generateLevel, questionText, spokenQuestion } from '../logic/questions'
+import { speak, stopSpeaking } from '../logic/speech'
 import type { PartSlot, Question, Region } from '../types'
 import { Monster, type Mood } from './Monster'
 import { NumberPad } from './NumberPad'
@@ -10,6 +11,7 @@ interface Props {
   region: Region
   level: number
   equipped: Partial<Record<PartSlot, string>>
+  readAloud: boolean
   onFinish: (correct: number) => void
   onQuit: () => void
 }
@@ -27,7 +29,7 @@ const STREAK_MESSAGES: Record<number, string> = {
   8: '8 in a row! Unstoppable! 🚀',
 }
 
-export function LevelScreen({ region, level, equipped, onFinish, onQuit }: Props) {
+export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQuit }: Props) {
   const initial = useMemo(() => generateLevel(region, level).map((q): Entry => ({ q, retry: false })), [region, level])
   const [queue, setQueue] = useState<Entry[]>(initial)
   const [pos, setPos] = useState(0)
@@ -41,6 +43,20 @@ export function LevelScreen({ region, level, equipped, onFinish, onQuit }: Props
   const entry = queue[pos]
   const q = entry.q
   const text = questionText(q)
+
+  // read the current question aloud when it first appears
+  useEffect(() => {
+    if (feedback === null) speak(spokenQuestion(q))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pos])
+  // stop any speech when leaving the level
+  useEffect(() => () => stopSpeaking(), [])
+
+  const explainSpeech = (answer: number, body: string) => `The answer is ${answer}. ${body}`
+  const replay = () => {
+    if (feedback?.kind === 'wrong') speak(explainSpeech(feedback.answer, feedback.text))
+    else speak(spokenQuestion(q))
+  }
   const mood: Mood = feedback?.kind === 'correct' ? 'excited' : feedback?.kind === 'wrong' ? 'sad' : 'idle'
 
   const advance = (nextQueue: Entry[], nextCorrect: number) => {
@@ -73,6 +89,7 @@ export function LevelScreen({ region, level, equipped, onFinish, onQuit }: Props
       const nextQueue = entry.retry ? queue : [...queue, { q, retry: true }]
       setQueue(nextQueue)
       setFeedback({ kind: 'wrong', chips: info.chips, text: info.text, answer: q.answer })
+      speak(explainSpeech(q.answer, info.text))
     }
   }
 
@@ -104,6 +121,11 @@ export function LevelScreen({ region, level, equipped, onFinish, onQuit }: Props
             ⭐
           </span>
         </div>
+        {readAloud && (
+          <button className="btn btn-round" onClick={replay} aria-label="Read it again" data-testid="speak-btn">
+            🔊
+          </button>
+        )}
         <div className="level-badge">
           {region.emoji} {level + 1}
         </div>

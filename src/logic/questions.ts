@@ -333,6 +333,15 @@ export function questionText(q: Question): { left: string; op: string; right: st
   }
 }
 
+/** A natural-language reading of a question, for the read-aloud voice. */
+export function spokenQuestion(q: Question): string {
+  if (q.kind === 'count') return 'How many?'
+  const op = q.kind === 'mul' ? 'times' : q.kind === 'div' ? 'divided by' : q.kind === 'add' ? 'plus' : 'take away'
+  if (q.unknown === 'result') return `What is ${q.a} ${op} ${q.b}?`
+  if (q.unknown === 'b') return `${q.a} ${op} what makes ${q.result}?`
+  return `What ${op} ${q.b} makes ${q.result}?`
+}
+
 /**
  * Skip-counting explanation shown after a wrong answer, e.g. for 4 × 5:
  * chips [5, 10, 15, 20] and the sentence "4 jumps of 5 makes 20".

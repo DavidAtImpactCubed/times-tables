@@ -7,6 +7,7 @@ import { TITLE_BG, backgroundFor } from './logic/backgrounds'
 import { starsFor, totalStars } from './logic/progress'
 import { addProfile, freshSave, listProfiles, loadSave, persistSave, removeProfile } from './logic/storage'
 import { levelId, type Curriculum, type SaveData } from './types'
+import { CreditsScreen } from './components/CreditsScreen'
 import { LevelScreen } from './components/LevelScreen'
 import { Monster } from './components/Monster'
 import { ResultsScreen } from './components/ResultsScreen'
@@ -24,6 +25,7 @@ type Screen =
   | { name: 'results'; regionId: string; level: number; correct: number; stars: number; gained: number }
   | { name: 'finale' }
   | { name: 'wardrobe' }
+  | { name: 'credits' }
 
 /** Unlock all levels, own every item and top up stars (tester cheat). */
 function applyCheat(save: SaveData): SaveData {
@@ -253,6 +255,11 @@ export default function App() {
                 </button>
               </>
             )}
+            {!adding && (
+              <button className="credits-link" data-testid="credits-link" onClick={() => setScreen({ name: 'credits' })}>
+                Credits
+              </button>
+            )}
           </div>
         </div>
       )
@@ -358,5 +365,8 @@ export default function App() {
 
     case 'wardrobe':
       return <Wardrobe save={save} setSave={setSave} onBack={() => setScreen({ name: 'map' })} />
+
+    case 'credits':
+      return <CreditsScreen onBack={() => setScreen({ name: 'landing' })} />
   }
 }

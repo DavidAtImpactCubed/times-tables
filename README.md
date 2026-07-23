@@ -34,9 +34,12 @@ Chosen per player when a new game starts (see the landing screen):
 - **Olivia's clever tricks** — when a topic is introduced, Olivia the Owl offers an
   *optional* strategy mini-lesson (e.g. "11× → do 10× then add one more
   group"). Revisit any region's trick from the 💡 button on the map.
-- **Read-aloud** — questions, stories and tips can be spoken using the browser's
-  built-in speech synthesis (no dependency). On by default for the 4–6 band
-  (pre-readers); toggle with 🗣️ in the map header, replay with 🔊 in a level.
+- **Read-aloud** — questions, stories and tips can be spoken. Story, tip and
+  finale lines play pre-recorded **character voices** (the Star Goblin, Olivia
+  the Owl and your monster each have their own), with the browser's built-in
+  speech voice as a fallback for questions and any un-recorded line. On by
+  default for the 4–6 band (pre-readers); toggle with 🗣️ in the map header,
+  replay with 🔊 in a level.
 - **Monster Wardrobe** — ~45 items bought with stars: body colours, eyes,
   glasses, horns, hats, neckwear, held props and wings. Try before you buy.
 - **Story** — a skippable comic-strip arc per region and a celebration finale.
@@ -75,7 +78,8 @@ WebP; all sound is generated at runtime.
 | Question generation (per region kind + level) | `src/logic/questions.ts` |
 | Unlocking & star thresholds | `src/logic/progress.ts` |
 | Save/load, per-name profiles, migrations, item refunds | `src/logic/storage.ts` |
-| Read-aloud (Web Speech API) | `src/logic/speech.ts` |
+| Read-aloud — character clips + Web Speech fallback | `src/logic/speech.ts`, `src/logic/narrationKey.ts` |
+| Narration clip generator (ElevenLabs) | `scripts/gen-narration.mjs` |
 | Layered monster compositing & part placements | `src/components/Monster.tsx` |
 | Wardrobe catalogue | `src/data/wardrobe.ts` |
 | Background art resolution (+ early-years art aliases) | `src/logic/backgrounds.ts` |
@@ -98,6 +102,28 @@ covering `mul`, `div`, `add`, `sub`, plus a visual `count` type. See
   to `RETIRED_ITEM_PRICES` so existing owners are refunded on load.
 - **Difficulty tuning**: star thresholds in `src/logic/progress.ts`; number
   ranges in `src/logic/questions.ts`.
+- **New/changed narration**: clips live in `src/assets/narration/<key>.mp3`,
+  keyed by `narrationKey(speaker, text)`. Regenerate with
+  `ELEVENLABS_API_KEY=… node scripts/gen-narration.mjs [speaker]` (needs API
+  access to a paid tier for custom voices). On the free tier, voice each
+  character in the ElevenLabs UI with `<break time="2.5s" />` between lines,
+  then split the single file on the gaps and drop the clips in under their keys.
+  Any line without a clip falls back to the browser voice automatically.
+
+## Credits
+
+- **Game & code** — Claude (Anthropic)
+- **Character voices** — [ElevenLabs](https://elevenlabs.io): the Star Goblin
+  ("Toby, Little Mythical Monster"), Olivia the Owl ("Lucy") and your monster
+  ("Canny"); questions and any un-recorded lines use the browser's speech voice
+- **Backgrounds & illustrations** — ChatGPT (OpenAI), hand-assembled into the game
+- **Sound effects** — generated live with the Web Audio API
+- **Teaching strategies** — informed by the [NCETM](https://www.ncetm.org.uk),
+  [Oxford Owl](https://home.oxfordowl.co.uk) and
+  [Third Space Learning](https://thirdspacelearning.com)
+- **Built with** — React, Vite and TypeScript; hosted free on GitHub Pages
+
+There is also an in-game Credits page (link on the landing screen).
 
 ## Checks
 

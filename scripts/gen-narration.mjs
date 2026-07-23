@@ -2,7 +2,7 @@
 //
 //   ELEVENLABS_API_KEY=sk_... node scripts/gen-narration.mjs [speaker ...]
 //
-// Speakers: goblin, guide (Olly), monster (You). With no speaker arguments it
+// Speakers: goblin, guide (Olivia), monster (You). With no speaker arguments it
 // generates every speaker that has a voice assigned in VOICES below. Clips that
 // already exist are skipped, so it is safe to re-run and cheap on quota. Output
 // goes to src/assets/narration/<narrationKey>.mp3 and is played back at runtime
@@ -19,7 +19,7 @@ import { narrationKey } from '../src/logic/narrationKey.ts'
 // Fill in guide/monster once their voices are chosen, then re-run.
 const VOICES = {
   goblin: 'Z7RrOqZFTyLpIlzCgfsp', // Toby – Little Mythical Monster
-  guide: null, // Olly the Owl — TODO: paste voice id
+  guide: null, // Olivia the Owl — TODO: paste voice id
   monster: null, // You (the little monster) — TODO: paste voice id
 }
 
@@ -44,7 +44,7 @@ for (const band of [REGIONS, EARLY_REGIONS]) {
 }
 for (const l of [...FINALE, ...EARLY_FINALE]) add(l.speaker, l.text)
 add('guide', 'Would you like to learn a clever trick?') // tip offer line
-// Olly reads every clever-trick card text
+// Olivia reads every clever-trick card text
 for (const band of [REGIONS, EARLY_REGIONS]) for (const r of band) for (const t of r.tip ?? []) add('guide', t.text)
 
 // --- run -------------------------------------------------------------------

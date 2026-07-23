@@ -114,7 +114,7 @@ export default function App() {
   const storyDone = (regionId: string, level: number) => {
     const id = levelId(regionId, level)
     const region = regionById(regionId)
-    // offer Olly's optional trick the first time a topic is introduced
+    // offer Olivia's optional trick the first time a topic is introduced
     const offerTip = level === 0 && !!region.tip && !save.seenTips.includes(regionId)
     setSave((s) => ({
       ...s,

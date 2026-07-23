@@ -31,7 +31,7 @@ Chosen per player when a new game starts (see the landing screen):
 - **Gentle mistakes** — a wrong answer shows the correct one with a
   count-on / count-back / skip-counting explanation, and the question returns
   later in the level for another (unscored) go.
-- **Olly's clever tricks** — when a topic is introduced, Olly the Owl offers an
+- **Olivia's clever tricks** — when a topic is introduced, Olivia the Owl offers an
   *optional* strategy mini-lesson (e.g. "11× → do 10× then add one more
   group"). Revisit any region's trick from the 💡 button on the map.
 - **Read-aloud** — questions, stories and tips can be spoken using the browser's
@@ -70,7 +70,7 @@ WebP; all sound is generated at runtime.
 | Area | Where |
 |------|-------|
 | Screen flow (landing → map → story → tip → level → results → wardrobe/finale) | `src/App.tsx` (simple state machine) |
-| Regions, level definitions, story beats, Olly's tips | `src/data/regions.ts` |
+| Regions, level definitions, story beats, Olivia's tips | `src/data/regions.ts` |
 | Which region set a player sees | `regionsFor(curriculum)` in `src/data/regions.ts` |
 | Question generation (per region kind + level) | `src/logic/questions.ts` |
 | Unlocking & star thresholds | `src/logic/progress.ts` |

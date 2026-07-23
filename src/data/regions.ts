@@ -25,7 +25,7 @@ export const REGIONS: Region[] = [
         O('Wake up, little monster — disaster! The Star Goblin has stolen every star on Monster Island!'),
         G('Hee hee hee! They’re ALL mine now!'),
         O('His trail starts here on Twinkle Beach. Solve the 2 times table and the stars will shine back to you!'),
-        M('Don’t worry, Olly — I’ll win back every last one. Twos first: 2, 4, 6, 8!'),
+        M('Don’t worry, Olivia — I’ll win back every last one. Twos first: 2, 4, 6, 8!'),
       ],
       [O('Look — glowing footprints in the sand, counting up in twos!'), M('The goblin went this way. Follow the twos!')],
       [
@@ -306,7 +306,7 @@ export const EARLY_FINALE: StoryLine[] = [
 ]
 
 // ---------------------------------------------------------------------------
-// Olly's optional "clever tricks" — a short, age-appropriate strategy per topic.
+// Olivia's optional "clever tricks" — a short, age-appropriate strategy per topic.
 // ---------------------------------------------------------------------------
 const T = (text: string, example?: string): TipStep => ({ text, example })
 

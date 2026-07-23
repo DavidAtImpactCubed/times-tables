@@ -19,7 +19,7 @@ interface Props {
   onDone: () => void
 }
 
-const SPEAKER_NAMES = { monster: 'You', goblin: 'Star Goblin', guide: 'Olly the Owl' }
+const SPEAKER_NAMES = { monster: 'You', goblin: 'Star Goblin', guide: 'Olivia the Owl' }
 
 export function StoryScene({ lines, background, image, imageEnd, equipped, readAloud, finale, onDone }: Props) {
   const [index, setIndex] = useState(0)
@@ -62,7 +62,7 @@ export function StoryScene({ lines, background, image, imageEnd, equipped, readA
         </div>
         {speakers.has('guide') && (
           <div className={`story-avatar ${line.speaker === 'guide' ? 'talking' : 'quiet'}`}>
-            <img className="story-char" src={owlUrl} alt="Olly the Owl" draggable={false} />
+            <img className="story-char" src={owlUrl} alt="Olivia the Owl" draggable={false} />
           </div>
         )}
         {speakers.has('goblin') && (

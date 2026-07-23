@@ -36,9 +36,9 @@ export interface LevelDef {
   story: StoryLine[]
 }
 
-/** One card of Olly's optional "clever trick" mini-lesson for a topic. */
+/** One card of Olivia's optional "clever trick" mini-lesson for a topic. */
 export interface TipStep {
-  /** what Olly says */
+  /** what Olivia says */
   text: string
   /** an optional worked example, shown highlighted beneath the text */
   example?: string
@@ -71,7 +71,7 @@ export interface Region {
   curriculum?: Curriculum
   /** background art region id to reuse, when this region has no art of its own */
   art?: string
-  /** optional "clever trick" mini-lesson Olly offers when the topic is introduced */
+  /** optional "clever trick" mini-lesson Olivia offers when the topic is introduced */
   tip?: TipStep[]
 }
 

@@ -7,13 +7,13 @@ import owlUrl from '../assets/characters/owl.webp'
 
 interface Props {
   region: Region
-  /** true when Olly first offers the trick (shows the yes/maybe-later choice) */
+  /** true when Olivia first offers the trick (shows the yes/maybe-later choice) */
   offer: boolean
   readAloud?: boolean
   onDone: () => void
 }
 
-/** Olly the Owl's optional "clever trick" mini-lesson for a topic. */
+/** Olivia the Owl's optional "clever trick" mini-lesson for a topic. */
 export function TipScene({ region, offer, readAloud, onDone }: Props) {
   const steps = region.tip ?? []
   const [phase, setPhase] = useState<'offer' | 'cards'>(offer ? 'offer' : 'cards')
@@ -49,12 +49,12 @@ export function TipScene({ region, offer, readAloud, onDone }: Props) {
     <div className="screen tip-screen" style={{ background: `linear-gradient(180deg, ${region.color}cc, #1e1b4b)` }} data-testid="tip-scene">
       {bg && <div className="story-bg" aria-hidden data-testid="tip-bg" style={{ backgroundImage: `url(${bg})` }} />}
       <div className="tip-owl">
-        <img className="story-char" src={owlUrl} alt="Olly the Owl" draggable={false} />
+        <img className="story-char" src={owlUrl} alt="Olivia the Owl" draggable={false} />
       </div>
 
       {phase === 'offer' ? (
         <div className="tip-card tip-offer">
-          <div className="speech-name">Olly the Owl</div>
+          <div className="speech-name">Olivia the Owl</div>
           <p className="tip-offer-text">Before we start… would you like to learn a clever trick? 💡</p>
           <div className="tip-buttons">
             <button className="btn btn-primary" onClick={start} data-testid="tip-yes">
@@ -67,7 +67,7 @@ export function TipScene({ region, offer, readAloud, onDone }: Props) {
         </div>
       ) : (
         <div className="tip-card" onClick={advance} data-testid="tip-card">
-          <div className="speech-name">Olly’s clever trick 💡</div>
+          <div className="speech-name">Olivia’s clever trick 💡</div>
           <p className="tip-text">{step.text}</p>
           {step.example && <div className="tip-example">{step.example}</div>}
           <div className="tip-progress">

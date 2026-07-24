@@ -25,8 +25,8 @@ Chosen per player when a new game starts (see the landing screen):
 - **Multiple players** — each name has its own save (progress, wallet,
   wardrobe, age band). Chosen from the landing screen; switch any time via the
   tag in the map header.
-- **4 levels per region**, ramping in difficulty. Region *n* unlocks once
-  3×*n* stages are complete anywhere on the island.
+- **4 levels per region**, ramping in difficulty. A region unlocks once every
+  level of the region before it is complete.
 - **Up to 3 stars per level** (10/10 → ⭐⭐⭐); replay to improve.
 - **Gentle mistakes** — a wrong answer shows the correct one with a
   count-on / count-back / skip-counting explanation, and the question returns

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { sfx } from '../logic/audio'
 import { readAloudSupported } from '../logic/speech'
 import { backgroundFor } from '../logic/backgrounds'
-import { completedLevels, levelUnlocked, levelsNeededFor, regionUnlocked } from '../logic/progress'
+import { levelUnlocked, levelsLeftToUnlock, regionUnlocked } from '../logic/progress'
 import { levelId, type Region, type SaveData } from '../types'
 import { Monster } from './Monster'
 
@@ -42,7 +42,7 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
   // the furthest level the player can currently play (their progress frontier)
   let frontier: { ri: number; li: number } | null = null
   regions.forEach((region, ri) => {
-    if (!regionUnlocked(save, ri)) return
+    if (!regionUnlocked(save, regions, ri)) return
     region.levels.forEach((_, li) => {
       if (levelUnlocked(save, regions, ri, li)) frontier = { ri, li }
     })
@@ -104,8 +104,8 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
 
       <div className="region-list">
         {regions.map((region, ri) => {
-          const unlocked = regionUnlocked(save, ri)
-          const missing = levelsNeededFor(ri) - completedLevels(save)
+          const unlocked = regionUnlocked(save, regions, ri)
+          const missing = levelsLeftToUnlock(save, regions, ri)
           const art = backgroundFor(region.id, 0)
           return (
             <section
@@ -126,7 +126,7 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
               </div>
               {!unlocked && (
                 <p className="unlock-hint" data-testid={`unlock-hint-${region.id}`}>
-                  Finish {missing} more stage{missing === 1 ? '' : 's'} to unlock!
+                  Finish {missing} more stage{missing === 1 ? '' : 's'} in {regions[ri - 1].name} to unlock!
                 </p>
               )}
               {unlocked && (

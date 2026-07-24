@@ -12,15 +12,31 @@ export function completedLevels(save: SaveData): number {
   return Object.values(save.stars).filter((s) => s >= 1).length
 }
 
-/** Region n unlocks once 3×n stages are complete (region 0 is always open). */
-export const levelsNeededFor = (regionIndex: number): number => regionIndex * 3
+/** How many of a region's levels are finished (≥1 star). */
+export function regionLevelsDone(save: SaveData, region: Region): number {
+  return region.levels.filter((_, i) => (save.stars[levelId(region.id, i)] ?? 0) >= 1).length
+}
 
-export function regionUnlocked(save: SaveData, regionIndex: number): boolean {
-  return completedLevels(save) >= levelsNeededFor(regionIndex)
+/** A region is complete when every one of its levels has ≥1 star. */
+export function regionComplete(save: SaveData, region: Region): boolean {
+  return regionLevelsDone(save, region) >= region.levels.length
+}
+
+/** Region 0 is always open; region n unlocks once region n-1 is fully complete. */
+export function regionUnlocked(save: SaveData, regions: Region[], regionIndex: number): boolean {
+  if (regionIndex === 0) return true
+  return regionComplete(save, regions[regionIndex - 1])
+}
+
+/** Levels still to finish in the previous region before this one unlocks. */
+export function levelsLeftToUnlock(save: SaveData, regions: Region[], regionIndex: number): number {
+  if (regionIndex === 0) return 0
+  const prev = regions[regionIndex - 1]
+  return prev.levels.length - regionLevelsDone(save, prev)
 }
 
 export function levelUnlocked(save: SaveData, regions: Region[], regionIndex: number, level: number): boolean {
-  if (!regionUnlocked(save, regionIndex)) return false
+  if (!regionUnlocked(save, regions, regionIndex)) return false
   if (level === 0) return true
   return (save.stars[levelId(regions[regionIndex].id, level - 1)] ?? 0) >= 1
 }

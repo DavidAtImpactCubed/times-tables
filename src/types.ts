@@ -49,10 +49,10 @@ export interface LevelDef {
  * Number-line visuals plot the ticks `min` (default 0) … `max`.
  */
 export type TipVisual =
-  | { kind: 'count'; to: number }
+  | { kind: 'count'; to: number; hands?: boolean }
   | { kind: 'tenframe'; a: number; b: number }
-  | { kind: 'countOn'; from: number; add: number; min?: number; max: number }
-  | { kind: 'countBack'; from: number; sub: number; min?: number; max: number }
+  | { kind: 'countOn'; from: number; add: number; min?: number; max: number; hands?: boolean }
+  | { kind: 'countBack'; from: number; sub: number; min?: number; max: number; hands?: boolean }
   | { kind: 'double'; n: number }
 
 /** One card of Olivia's optional "clever trick" mini-lesson for a topic. */

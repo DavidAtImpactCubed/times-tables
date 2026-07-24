@@ -33,6 +33,7 @@ export function CreditsScreen({ onBack }: Props) {
         <section>
           <h2>🎨 Art</h2>
           <p>Background scenes and illustrations generated with ChatGPT (OpenAI), then hand-assembled into the game.</p>
+          <p className="credits-note">Counting-hand illustrations by dkdlv, from OpenClipart (public domain).</p>
         </section>
 
         <section>

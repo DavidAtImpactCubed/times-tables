@@ -1,5 +1,35 @@
 import { useEffect, useState } from 'react'
 import type { TipVisual } from '../types'
+import hand1 from '../assets/hands/hand-1.svg'
+import hand2 from '../assets/hands/hand-2.svg'
+import hand3 from '../assets/hands/hand-3.svg'
+import hand4 from '../assets/hands/hand-4.svg'
+import hand5 from '../assets/hands/hand-5.svg'
+
+// index by number of raised fingers (1–5); 0 renders an empty slot
+const HAND_SRC = [null, hand1, hand2, hand3, hand4, hand5]
+
+/** One hand showing `fingers` (0–5) raised; optionally mirrored for the other hand. */
+function Hand({ fingers, mirror }: { fingers: number; mirror?: boolean }) {
+  const src = HAND_SRC[Math.max(0, Math.min(5, fingers))]
+  return (
+    <span className={`tip-hand ${mirror ? 'mirror' : ''}`} aria-hidden>
+      {src && <img src={src} alt="" draggable={false} />}
+    </span>
+  )
+}
+
+/** Show `value` (0–10) across up to two hands: the first fills, then the second. */
+function Hands({ value, max }: { value: number; max: number }) {
+  const left = Math.min(value, 5)
+  const right = Math.max(0, value - 5)
+  return (
+    <div className="tip-hands" aria-hidden>
+      <Hand fingers={left} />
+      {max > 5 && <Hand fingers={right} mirror />}
+    </div>
+  )
+}
 
 const prefersReduced = () =>
   typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
@@ -21,7 +51,7 @@ function useFrameLoop(total: number, ms: number): number {
 }
 
 /** Count objects one at a time, calling out the running number, then the total. */
-function CountArt({ to }: { to: number }) {
+function CountArt({ to, hands }: { to: number; hands?: boolean }) {
   // frames: 1…to light that many, then two "hold" frames show the total
   const total = to + 3
   const frame = useFrameLoop(total, 640)
@@ -41,6 +71,7 @@ function CountArt({ to }: { to: number }) {
           )
         })}
       </div>
+      {hands && <Hands value={showTotal ? to : lit} max={to} />}
       <div className={`tip-count-total ${showTotal ? 'show' : ''}`} aria-hidden>
         = {to}
       </div>
@@ -84,6 +115,7 @@ function NumberLineArt({
   dir,
   min,
   max,
+  hands,
   testid,
 }: {
   from: number
@@ -91,6 +123,7 @@ function NumberLineArt({
   dir: 1 | -1
   min: number
   max: number
+  hands?: boolean
   testid: string
 }) {
   const total = count + 3
@@ -136,6 +169,7 @@ function NumberLineArt({
           </text>
         </g>
       </svg>
+      {hands && <Hands value={hops} max={count} />}
     </div>
   )
 }
@@ -171,16 +205,16 @@ function DoubleArt({ n }: { n: number }) {
 export function TipArt({ visual }: { visual: TipVisual }) {
   switch (visual.kind) {
     case 'count':
-      return <CountArt to={visual.to} />
+      return <CountArt to={visual.to} hands={visual.hands} />
     case 'tenframe':
       return <TenFrameArt a={visual.a} b={visual.b} />
     case 'countOn':
       return (
-        <NumberLineArt from={visual.from} count={visual.add} dir={1} min={visual.min ?? 0} max={visual.max} testid="tip-art-counton" />
+        <NumberLineArt from={visual.from} count={visual.add} dir={1} min={visual.min ?? 0} max={visual.max} hands={visual.hands} testid="tip-art-counton" />
       )
     case 'countBack':
       return (
-        <NumberLineArt from={visual.from} count={visual.sub} dir={-1} min={visual.min ?? 0} max={visual.max} testid="tip-art-countback" />
+        <NumberLineArt from={visual.from} count={visual.sub} dir={-1} min={visual.min ?? 0} max={visual.max} hands={visual.hands} testid="tip-art-countback" />
       )
     case 'double':
       return <DoubleArt n={visual.n} />

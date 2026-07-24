@@ -358,16 +358,16 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
   ],
   // ---- early years ---------------------------------------------------------
   'count-cove': [
-    [T('Touch each thing as you count: 1, 2, 3, 4, 5. The last number you say is how many there are!', undefined, { kind: 'count', to: 5 })],
+    [T('Touch each thing as you count: 1, 2, 3, 4, 5. The last number you say is how many there are!', undefined, { kind: 'count', to: 5, hands: true })],
     [T('Keep touching each star as you count all the way to ten — don’t count any star twice!', undefined, { kind: 'count', to: 10 })],
     [T('One more? Just count on by one — say the very next number.', 'one more than 4  →  5', { kind: 'countOn', from: 4, add: 1, max: 8 })],
     [T('One less? Count back by one — say the number that comes just before.', 'one less than 6  →  5', { kind: 'countBack', from: 6, sub: 1, max: 8 })],
   ],
   'bonds-bay': [
     [T('Some pairs of numbers always make ten. They’re special — try to learn them by heart!', '1&9   2&8   3&7   4&6   5&5', { kind: 'tenframe', a: 7, b: 3 })],
-    [T('Start with the bigger number, then count on. Your fingers help you keep track.', '6 + 3  →  6… 7, 8, 9  →  9', { kind: 'countOn', from: 6, add: 3, max: 10 })],
-    [T('Start at the number you have and count ON to the total. Put up a finger for each count — that’s your answer!', '6 and how many make 9?  →  6… 7, 8, 9  →  3 fingers', { kind: 'countOn', from: 6, add: 3, max: 10 })],
-    [T('To find a missing number, count on from what you have up to the total, keeping track on your fingers.', '7 + ? = 10  →  7… 8, 9, 10  →  3', { kind: 'countOn', from: 7, add: 3, max: 10 })],
+    [T('Start with the bigger number, then count on. Your fingers help you keep track.', '6 + 3  →  6… 7, 8, 9  →  9', { kind: 'countOn', from: 6, add: 3, max: 10, hands: true })],
+    [T('Start at the number you have and count ON to the total. Put up a finger for each count — that’s your answer!', '6 and how many make 9?  →  6… 7, 8, 9  →  3 fingers', { kind: 'countOn', from: 6, add: 3, max: 10, hands: true })],
+    [T('To find a missing number, count on from what you have up to the total, keeping track on your fingers.', '7 + ? = 10  →  7… 8, 9, 10  →  3', { kind: 'countOn', from: 7, add: 3, max: 10, hands: true })],
   ],
   'add-meadow': [
     [T('Start with the BIGGER number, then count on the smaller one. It’s much quicker!', '3 + 6  →  start at 6… 7, 8, 9  →  9', { kind: 'countOn', from: 6, add: 3, max: 10 })],

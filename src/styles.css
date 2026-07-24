@@ -858,6 +858,29 @@ button {
   font-weight: 800;
 }
 
+/* counting hands (public-domain OpenClipart, recoloured) */
+.tip-hands {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 66px;
+}
+.tip-hand {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 52px;
+  height: 66px;
+}
+.tip-hand img {
+  max-width: 100%;
+  max-height: 100%;
+}
+.tip-hand.mirror img {
+  transform: scaleX(-1);
+}
+
 /* doubling: two mirrored groups */
 .dbl-row {
   display: flex;

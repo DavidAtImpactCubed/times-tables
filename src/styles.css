@@ -1171,7 +1171,9 @@ button.map-monster {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-size: auto 100%;
+  /* cover: identical to height-fit for the wide panoramas, but portrait art
+     (e.g. the wardrobe room) fills the width instead of leaving a gap */
+  background-size: cover;
   background-repeat: no-repeat;
 }
 .story-bg::after {

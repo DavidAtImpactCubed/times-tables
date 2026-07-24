@@ -5,14 +5,26 @@ import { setMuted, sfx } from './logic/audio'
 import { setReadAloud } from './logic/speech'
 import { TITLE_BG, backgroundFor } from './logic/backgrounds'
 import { starsFor } from './logic/progress'
-import { addProfile, freshSave, listProfiles, loadSave, persistSave, removeProfile } from './logic/storage'
+import {
+  addProfile,
+  clearTransferParam,
+  freshSave,
+  importPlayer,
+  listProfiles,
+  loadSave,
+  persistSave,
+  readTransferParam,
+  removeProfile,
+} from './logic/storage'
 import { levelId, type Curriculum, type SaveData } from './types'
 import { CreditsScreen } from './components/CreditsScreen'
+import { ImportScreen } from './components/ImportScreen'
 import { LevelScreen } from './components/LevelScreen'
 import { Monster } from './components/Monster'
 import { ResultsScreen } from './components/ResultsScreen'
 import { StoryScene } from './components/StoryScene'
 import { TipScene } from './components/TipScene'
+import { TransferScreen } from './components/TransferScreen'
 import { Wardrobe } from './components/Wardrobe'
 import { WorldMap } from './components/WorldMap'
 
@@ -26,6 +38,8 @@ type Screen =
   | { name: 'finale' }
   | { name: 'wardrobe' }
   | { name: 'credits' }
+  | { name: 'transfer' }
+  | { name: 'import' }
 
 /** Unlock all levels, own every item and top up stars (tester cheat). */
 function applyCheat(save: SaveData): SaveData {
@@ -42,7 +56,8 @@ export default function App() {
   const [profiles, setProfiles] = useState<string[]>(() => listProfiles())
   const [profile, setProfile] = useState<string | null>(null)
   const [save, setSave] = useState<SaveData>(freshSave)
-  const [screen, setScreen] = useState<Screen>({ name: 'landing' })
+  const [incoming, setIncoming] = useState(readTransferParam)
+  const [screen, setScreen] = useState<Screen>(incoming ? { name: 'import' } : { name: 'landing' })
   const [adding, setAdding] = useState(false)
   const [newName, setNewName] = useState('')
   const [cheatArmed, setCheatArmed] = useState(false)
@@ -87,8 +102,8 @@ export default function App() {
     setProfiles(listProfiles())
     setNewName('')
     setAdding(false)
-    // start a fresh save on the chosen age band; youngest players get read-aloud on
-    let s: SaveData = { ...freshSave(), curriculum, readAloud: curriculum === 'early' }
+    // start a fresh save on the chosen age band (read-aloud defaults on)
+    let s: SaveData = { ...freshSave(), curriculum }
     if (cheatArmed) {
       s = applyCheat(s)
       setCheatArmed(false)
@@ -104,6 +119,24 @@ export default function App() {
     removeProfile(name)
     setProfiles(listProfiles())
     setConfirmDelete(null)
+  }
+
+  // bring an imported player's game onto this device, then play as them
+  const doImport = (name: string, imported: SaveData) => {
+    importPlayer(name, imported)
+    clearTransferParam()
+    setIncoming(null)
+    setProfiles(listProfiles())
+    setProfile(name)
+    setSave(imported)
+    sfx.fanfare()
+    setScreen({ name: 'map' })
+  }
+
+  const cancelImport = () => {
+    clearTransferParam()
+    setIncoming(null)
+    setScreen({ name: 'landing' })
   }
 
   const startLevel = (regionId: string, level: number) => {
@@ -256,9 +289,16 @@ export default function App() {
               </>
             )}
             {!adding && (
-              <button className="credits-link" data-testid="credits-link" onClick={() => setScreen({ name: 'credits' })}>
-                Credits
-              </button>
+              <div className="landing-footer">
+                {profileCards.length > 0 && (
+                  <button className="credits-link" data-testid="transfer-link" onClick={() => setScreen({ name: 'transfer' })}>
+                    Move a player to another phone
+                  </button>
+                )}
+                <button className="credits-link" data-testid="credits-link" onClick={() => setScreen({ name: 'credits' })}>
+                  Credits
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -368,5 +408,15 @@ export default function App() {
 
     case 'credits':
       return <CreditsScreen onBack={() => setScreen({ name: 'landing' })} />
+
+    case 'transfer':
+      return <TransferScreen profiles={profiles} onBack={() => setScreen({ name: 'landing' })} />
+
+    case 'import':
+      return incoming ? (
+        <ImportScreen incoming={incoming} profiles={profiles} onImport={doImport} onCancel={cancelImport} />
+      ) : (
+        <></>
+      )
   }
 }

@@ -112,18 +112,43 @@ function splitTotal(total: number, maxPart = 12): [number, number] {
   return [a, total - a]
 }
 
-/** Build `n` questions from a factory, avoiding two identical questions in a row. */
+/**
+ * Build `n` questions from a factory. Uses only distinct questions when the
+ * factory can produce at least `n` of them; if its pool is smaller (e.g. "count
+ * to 5"), it tops up with repeats but never places the same question twice in a
+ * row.
+ */
 function fill(n: number, factory: () => Question): Question[] {
   const out: Question[] = []
-  let prev = ''
-  for (let i = 0; i < n; i++) {
-    let q = factory()
-    let guard = 0
-    while (qKey(q) === prev && guard++ < 25) q = factory()
+  const seen = new Set<string>()
+  let guard = 0
+  // first, gather as many distinct questions as we can
+  while (out.length < n && guard++ < 1000) {
+    const q = factory()
+    const k = qKey(q)
+    if (seen.has(k)) continue
+    seen.add(k)
     out.push(q)
-    prev = qKey(q)
   }
-  return out
+  // small pool: top up with repeats, just not back-to-back
+  guard = 0
+  while (out.length < n && guard++ < 1000) {
+    const q = factory()
+    if (out.length && qKey(q) === qKey(out[out.length - 1])) continue
+    out.push(q)
+  }
+  // shuffle, then repair any accidental back-to-back duplicates
+  const arr = shuffle(out)
+  for (let i = 1; i < arr.length; i++) {
+    if (qKey(arr[i]) !== qKey(arr[i - 1])) continue
+    for (let j = i + 1; j < arr.length; j++) {
+      if (qKey(arr[j]) !== qKey(arr[i]) && qKey(arr[j]) !== qKey(arr[i - 1])) {
+        ;[arr[i], arr[j]] = [arr[j], arr[i]]
+        break
+      }
+    }
+  }
+  return arr
 }
 
 const EARLY_KINDS = new Set(['count', 'bond', 'add', 'sub', 'double'])

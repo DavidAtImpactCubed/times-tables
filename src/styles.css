@@ -418,7 +418,14 @@ button {
   font-size: 0.8rem;
 }
 
-/* credits link on the landing screen */
+/* footer links on the landing screen */
+.landing-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
 .credits-link {
   margin-top: 4px;
   border: none;
@@ -491,6 +498,89 @@ button {
   font-weight: 800;
   color: #7c3aed;
   margin-top: 4px;
+}
+
+/* transfer (move to another phone) */
+.transfer-screen {
+  gap: 16px;
+  align-items: stretch;
+  overflow-y: auto;
+}
+.transfer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.transfer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f5f3ff;
+  border-radius: 14px;
+  padding: 6px 12px;
+}
+.transfer-name {
+  flex: 1;
+  font-weight: 800;
+  color: #1e1b4b;
+}
+.transfer-result {
+  margin-top: 14px;
+  border-top: 1px solid #ede9fe;
+  padding-top: 12px;
+}
+.transfer-url {
+  width: 100%;
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 10px 12px;
+  border: 2px solid #c4b5fd;
+  border-radius: 12px;
+  background: #fff;
+  color: #4c1d95;
+}
+
+/* import (opened via a transfer link) */
+.import-screen {
+  justify-content: center;
+  text-align: center;
+}
+.import-card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 24px;
+  padding: 22px;
+  max-width: 420px;
+  width: 100%;
+  color: #1e1b4b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.import-card h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+.import-sub {
+  margin: 0;
+  font-weight: 800;
+  color: #7c3aed;
+}
+.import-warn {
+  color: #b45309;
+  font-weight: 700;
+}
+.import-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+}
+.import-buttons .btn {
+  width: 100%;
+  max-width: 280px;
 }
 
 /* age picker on new-player */

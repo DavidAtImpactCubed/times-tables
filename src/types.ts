@@ -53,7 +53,8 @@ export type TipVisual =
   | { kind: 'tenframe'; a: number; b: number }
   | { kind: 'countOn'; from: number; add: number; min?: number; max: number; hands?: boolean }
   | { kind: 'countBack'; from: number; sub: number; min?: number; max: number; hands?: boolean }
-  | { kind: 'double'; n: number }
+  | { kind: 'double'; n: number; hands?: boolean }
+  | { kind: 'hands'; show: number; of?: number }
 
 /** One card of Olivia's optional "clever trick" mini-lesson for a topic. */
 export interface TipStep {

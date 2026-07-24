@@ -175,7 +175,7 @@ function NumberLineArt({
 }
 
 /** Two mirrored groups of n stars combine into the total (doubling). */
-function DoubleArt({ n }: { n: number }) {
+function DoubleArt({ n, hands }: { n: number; hands?: boolean }) {
   const frame = useFrameLoop(4, 680)
   const showRight = frame >= 1
   const showTotal = frame >= 2
@@ -195,9 +195,28 @@ function DoubleArt({ n }: { n: number }) {
         <span className="dbl-mirror" aria-hidden />
         <span className={`dbl-second ${showRight ? 'show' : ''}`}>{group}</span>
       </div>
+      {hands && n <= 5 && (
+        <div className="tip-hands" aria-hidden>
+          <Hand fingers={n} />
+          <Hand fingers={showRight ? n : 0} mirror />
+        </div>
+      )}
       <div className={`dbl-eq ${showTotal ? 'show' : ''}`} aria-hidden>
         {n} + {n} = {n * 2}
       </div>
+    </div>
+  )
+}
+
+/** Fingers rise one at a time to `show`, then hold — the rest stay folded. */
+function HandsArt({ show, of }: { show: number; of?: number }) {
+  const total = show + 3
+  const frame = useFrameLoop(total, 520)
+  const value = Math.min(frame, show)
+  const max = of ?? (show > 5 ? 10 : 5)
+  return (
+    <div className="tip-art" data-testid="tip-art-hands">
+      <Hands value={value} max={max} />
     </div>
   )
 }
@@ -217,6 +236,8 @@ export function TipArt({ visual }: { visual: TipVisual }) {
         <NumberLineArt from={visual.from} count={visual.sub} dir={-1} min={visual.min ?? 0} max={visual.max} hands={visual.hands} testid="tip-art-countback" />
       )
     case 'double':
-      return <DoubleArt n={visual.n} />
+      return <DoubleArt n={visual.n} hands={visual.hands} />
+    case 'hands':
+      return <HandsArt show={visual.show} of={visual.of} />
   }
 }

@@ -357,35 +357,96 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
     [T('Remember — dividing is just multiplying backwards. You know every fact family. You’ve got this!')],
   ],
   // ---- early years ---------------------------------------------------------
+  // These are the primary lesson before each quiz, so most levels get a short
+  // sequence of cards: the idea, a demonstration, then "try it with fingers".
+  // The read-aloud voice only speaks `text`, so everything important is said
+  // in words there; the `example` line is written reinforcement.
   'count-cove': [
-    [T('Touch each thing as you count: 1, 2, 3, 4, 5. The last number you say is how many there are!', undefined, { kind: 'count', to: 5, hands: true })],
-    [T('Keep touching each star as you count all the way to ten — don’t count any star twice!', undefined, { kind: 'count', to: 10 })],
-    [T('One more? Just count on by one — say the very next number.', 'one more than 4  →  5', { kind: 'countOn', from: 4, add: 1, max: 8 })],
-    [T('One less? Count back by one — say the number that comes just before.', 'one less than 6  →  5', { kind: 'countBack', from: 6, sub: 1, max: 8 })],
+    [
+      T('Let’s count the stars together! Touch each one as you say the number: one, two, three, four, five.', undefined, { kind: 'count', to: 5, hands: true }),
+      T('The LAST number you say tells you how many there are. Five stars!', '1, 2, 3, 4, 5  →  5 stars', { kind: 'count', to: 5, hands: true }),
+    ],
+    [
+      T('Bigger piles now! Count slowly and touch every star exactly once — don’t skip any, and don’t count one twice.', undefined, { kind: 'count', to: 10, hands: true }),
+      T('Ten is special — it fills up BOTH your hands!', 'all 10 fingers  →  10', { kind: 'hands', show: 10, of: 10 }),
+    ],
+    [
+      T('One more just means the very next number you say when you count.', undefined, { kind: 'countOn', from: 4, add: 1, max: 8, hands: true }),
+      T('Try it: start at four, hop one step… you land on five!', 'one more than 4  →  5', { kind: 'countOn', from: 4, add: 1, max: 8, hands: true }),
+    ],
+    [
+      T('One less means the number that comes just before.', undefined, { kind: 'countBack', from: 6, sub: 1, max: 8, hands: true }),
+      T('Start at six and hop one step back… you land on five!', 'one less than 6  →  5', { kind: 'countBack', from: 6, sub: 1, max: 8, hands: true }),
+    ],
   ],
   'bonds-bay': [
-    [T('Some pairs of numbers always make ten. They’re special — try to learn them by heart!', '1&9   2&8   3&7   4&6   5&5', { kind: 'tenframe', a: 7, b: 3 })],
-    [T('Start with the bigger number, then count on. Your fingers help you keep track.', '6 + 3  →  6… 7, 8, 9  →  9', { kind: 'countOn', from: 6, add: 3, max: 10, hands: true })],
-    [T('Start at the number you have and count ON to the total. Put up a finger for each count — that’s your answer!', '6 and how many make 9?  →  6… 7, 8, 9  →  3 fingers', { kind: 'countOn', from: 6, add: 3, max: 10, hands: true })],
-    [T('To find a missing number, count on from what you have up to the total, keeping track on your fingers.', '7 + ? = 10  →  7… 8, 9, 10  →  3', { kind: 'countOn', from: 7, add: 3, max: 10, hands: true })],
+    [
+      T('Some pairs of numbers are best friends — together they always make TEN!', '1&9   2&8   3&7   4&6   5&5', { kind: 'tenframe', a: 7, b: 3 }),
+      T('Watch the frame fill up: seven gold stars, then three blue ones. Seven and three make ten!', '7 + 3 = 10', { kind: 'tenframe', a: 7, b: 3 }),
+      T('Your hands know it too! Hold up seven fingers — the fingers still folded down are the three that make ten.', undefined, { kind: 'hands', show: 7, of: 10 }),
+    ],
+    [
+      T('To add, start with the BIGGER number, then count on the smaller one.', undefined, { kind: 'countOn', from: 6, add: 3, max: 10, hands: true }),
+      T('Say six… then hop: seven, eight, nine. Put up a finger for each hop!', '6 + 3  →  6… 7, 8, 9  →  9', { kind: 'countOn', from: 6, add: 3, max: 10, hands: true }),
+    ],
+    [
+      T('Some stars are hiding! Start at the number you HAVE, and count on until you reach the total.', undefined, { kind: 'countOn', from: 6, add: 3, max: 10, hands: true }),
+      T('Put up a finger for each hop, then count your fingers — that’s how many were hiding!', '6 and how many make 9?  →  3 fingers', { kind: 'countOn', from: 6, add: 3, max: 10, hands: true }),
+    ],
+    [
+      T('You know the trick: start at the number, count on to the total, and keep track on your fingers.', '7 + ? = 10  →  7… 8, 9, 10  →  3', { kind: 'countOn', from: 7, add: 3, max: 10, hands: true }),
+      T('Then type how many fingers you’re holding up. You’ve got this!'),
+    ],
   ],
   'add-meadow': [
-    [T('Start with the BIGGER number, then count on the smaller one. It’s much quicker!', '3 + 6  →  start at 6… 7, 8, 9  →  9', { kind: 'countOn', from: 6, add: 3, max: 10 })],
-    [T('Still start with the bigger number and count on. Use your fingers to keep track.', '5 + 8  →  8… 9, 10, 11, 12, 13  →  13', { kind: 'countOn', from: 8, add: 5, min: 5, max: 15 })],
-    [T('Count on from the bigger number, then type the total you land on.', '9 + 4  →  9… 10, 11, 12, 13  →  13', { kind: 'countOn', from: 9, add: 4, min: 5, max: 15 })],
-    [T('Start at the number you have and count on to the total — how many did you add on?', '6 + ? = 9  →  6… 7, 8, 9  →  3', { kind: 'countOn', from: 6, add: 3, max: 10 })],
+    [
+      T('To add two numbers, start with the BIGGER one, then count on the smaller one. It’s much quicker!', undefined, { kind: 'countOn', from: 6, add: 3, max: 10, hands: true }),
+      T('Three plus six? Flip it round! Start at six and hop three times: seven, eight, nine.', '3 + 6  →  6… 7, 8, 9  →  9', { kind: 'countOn', from: 6, add: 3, max: 10, hands: true }),
+    ],
+    [
+      T('Bigger sums, same trick: start at the bigger number, and your fingers keep track of the hops.', undefined, { kind: 'countOn', from: 8, add: 5, min: 5, max: 15, hands: true }),
+      T('Five plus eight: start at eight… nine, ten, eleven, twelve, thirteen!', '5 + 8  →  13', { kind: 'countOn', from: 8, add: 5, min: 5, max: 15, hands: true }),
+    ],
+    [
+      T('Count on from the bigger number, then type the number you land on.', '9 + 4  →  9… 10, 11, 12, 13  →  13', { kind: 'countOn', from: 9, add: 4, min: 5, max: 15, hands: true }),
+    ],
+    [
+      T('A number is hiding! Start at the number you have, count on to the total, and count your fingers.', '6 + ? = 9  →  6… 7, 8, 9  →  3', { kind: 'countOn', from: 6, add: 3, max: 10, hands: true }),
+    ],
   ],
   'sub-trail': [
-    [T('Taking away means counting back. Start at the big number and count back.', '7 − 2  →  7… 6, 5  →  5', { kind: 'countBack', from: 7, sub: 2, max: 10 })],
-    [T('Count back on your fingers, then type how many are left.', '8 − 3  →  8… 7, 6, 5  →  5', { kind: 'countBack', from: 8, sub: 3, max: 10 })],
-    [T('For bigger numbers, count back one at a time — take your time.', '15 − 3  →  15… 14, 13, 12  →  12', { kind: 'countBack', from: 15, sub: 3, min: 9, max: 16 })],
-    [T('Plus means count ON to get more; take-away means count BACK to get fewer. Read each one carefully!')],
+    [
+      T('Taking away means counting BACK. Start at the big number and hop backwards.', undefined, { kind: 'countBack', from: 7, sub: 2, max: 10, hands: true }),
+      T('Seven take away two: hop back… six, five. Five left!', '7 − 2  →  5', { kind: 'countBack', from: 7, sub: 2, max: 10, hands: true }),
+    ],
+    [
+      T('Put up a finger for each one you take away — stop when your fingers match the number.', '8 − 3  →  8… 7, 6, 5  →  5', { kind: 'countBack', from: 8, sub: 3, max: 10, hands: true }),
+      T('Then type the number you landed on.'),
+    ],
+    [
+      T('Bigger numbers, same trick — count back one hop at a time, nice and slow.', '15 − 3  →  15… 14, 13, 12  →  12', { kind: 'countBack', from: 15, sub: 3, min: 9, max: 16, hands: true }),
+    ],
+    [
+      T('Read the sign first! PLUS means count ON — hop forwards.', '5 + 3  →  5… 6, 7, 8  →  8', { kind: 'countOn', from: 5, add: 3, max: 10, hands: true }),
+      T('TAKE-AWAY means count BACK — hop backwards.', '8 − 3  →  8… 7, 6, 5  →  5', { kind: 'countBack', from: 8, sub: 3, max: 10, hands: true }),
+    ],
   ],
   'doubles-keep': [
-    [T('Double means two of the same number added together.', 'double 4  →  4 + 4  →  8', { kind: 'double', n: 4 })],
-    [T('Add the number to itself, then type the answer.', 'double 5  →  5 + 5  →  10', { kind: 'double', n: 5 })],
-    [T('Plus means more (count on), take-away means fewer (count back). Look at the sign!')],
-    [T('Use all your tricks: count on to add, count back to take away, and double by adding a number to itself!')],
+    [
+      T('Double means two of the SAME number added together — like looking in a mirror!', undefined, { kind: 'double', n: 4, hands: true }),
+      T('Show double four on your hands: four fingers on each hand. Count them all — eight!', 'double 4  →  4 + 4  →  8', { kind: 'double', n: 4, hands: true }),
+    ],
+    [
+      T('Add the number to itself, then type the answer.', 'double 5  →  5 + 5  →  10', { kind: 'double', n: 5, hands: true }),
+    ],
+    [
+      T('Look at the sign! PLUS means hop forwards.', '6 + 2  →  6… 7, 8  →  8', { kind: 'countOn', from: 6, add: 2, max: 10, hands: true }),
+      T('TAKE-AWAY means hop backwards.', '9 − 2  →  9… 8, 7  →  7', { kind: 'countBack', from: 9, sub: 2, max: 10, hands: true }),
+    ],
+    [
+      T('Use all your tricks: count ON to add, count BACK to take away, and doubles are two of the same!', undefined, { kind: 'double', n: 3, hands: true }),
+      T('You know everything you need. Go and win those stars!'),
+    ],
   ],
 }
 

@@ -208,6 +208,92 @@ function DoubleArt({ n, hands }: { n: number; hands?: boolean }) {
   )
 }
 
+/**
+ * An array builds one row at a time while skip-counting, then shows the
+ * multiplication fact — and, with `divide`, the same array read backwards
+ * as its division fact (the fact-family picture).
+ */
+function ArrayArt({ rows, cols, divide }: { rows: number; cols: number; divide?: boolean }) {
+  const total = rows + 3
+  const frame = useFrameLoop(total, 760)
+  const visible = Math.min(frame, rows)
+  const done = frame >= rows + 1
+  const skipCount = Array.from({ length: visible }, (_, i) => (i + 1) * cols).join(', ')
+  return (
+    <div className="tip-art tip-arrayart" data-testid="tip-art-array">
+      <div className="arr-grid" style={{ gridTemplateColumns: `repeat(${cols}, auto)` }}>
+        {Array.from({ length: rows * cols }, (_, i) => {
+          const row = Math.floor(i / cols)
+          const on = row < visible
+          const current = row === visible - 1 && !done
+          return (
+            <span key={i} className={`arr-star ${on ? 'on' : ''} ${current ? 'current' : ''}`} aria-hidden>
+              ⭐
+            </span>
+          )
+        })}
+      </div>
+      <div className="arr-eq" aria-hidden>
+        {done ? (
+          <>
+            <span>
+              {rows} × {cols} = {rows * cols}
+            </span>
+            {divide && (
+              <span className="arr-div">
+                {rows * cols} ÷ {cols} = {rows}
+              </span>
+            )}
+          </>
+        ) : (
+          <span className="arr-skip">{skipCount || '…'}</span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/** A marker hops along a number line in jumps of `step`: 5, 10, 15, 20… */
+function SkipArt({ step, times, hands }: { step: number; times: number; hands?: boolean }) {
+  const total = times + 3
+  const frame = useFrameLoop(total, 760)
+  const hops = Math.min(frame, times)
+  const S = 46
+  const padX = 24
+  const y = 54
+  const x = (i: number) => padX + i * S
+  const width = padX * 2 + times * S
+  const arcs = Array.from({ length: hops }, (_, i) => {
+    const midX = (x(i) + x(i + 1)) / 2
+    return `M ${x(i)} ${y} Q ${midX} ${y - 26} ${x(i + 1)} ${y}`
+  })
+  return (
+    <div className="tip-art tip-numberline" data-testid="tip-art-skip">
+      <svg viewBox={`0 0 ${width} 78`} width="100%" role="img" aria-label={`Counting in ${step}s`}>
+        <line x1={x(0)} y1={y} x2={x(times)} y2={y} className="nl-axis" />
+        {Array.from({ length: times + 1 }, (_, i) => (
+          <g key={i}>
+            <line x1={x(i)} y1={y - 5} x2={x(i)} y2={y + 5} className="nl-tick" />
+            <text x={x(i)} y={y + 20} className={`nl-label ${i === 0 ? 'start' : ''} ${i === hops && hops > 0 ? 'here' : ''}`} textAnchor="middle">
+              {i * step}
+            </text>
+          </g>
+        ))}
+        {arcs.map((d, i) => (
+          <path key={i} d={d} className="nl-hop" fill="none" />
+        ))}
+        <g className="nl-marker" transform={`translate(${x(hops)}, ${y - 30})`}>
+          <circle r="14" />
+          <text textAnchor="middle" dy="5">
+            {hops * step}
+          </text>
+        </g>
+      </svg>
+      {hands && <Hands value={hops} max={times} />}
+    </div>
+  )
+}
+
 /** Fingers rise one at a time to `show`, then hold — the rest stay folded. */
 function HandsArt({ show, of }: { show: number; of?: number }) {
   const total = show + 3
@@ -239,5 +325,9 @@ export function TipArt({ visual }: { visual: TipVisual }) {
       return <DoubleArt n={visual.n} hands={visual.hands} />
     case 'hands':
       return <HandsArt show={visual.show} of={visual.of} />
+    case 'array':
+      return <ArrayArt rows={visual.rows} cols={visual.cols} divide={visual.divide} />
+    case 'skip':
+      return <SkipArt step={visual.step} times={visual.times} hands={visual.hands} />
   }
 }

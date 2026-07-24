@@ -314,47 +314,128 @@ const T = (text: string, example?: string, visual?: TipStep['visual']): TipStep 
 
 const LEVEL_TIPS: Record<string, TipStep[][]> = {
   // ---- main curriculum -----------------------------------------------------
+  // Like the early band, these are the lesson before the quiz: idea, then a
+  // demonstration with arrays / skip-count lines, then the trick in symbols.
   beach: [
-    [T('The 2 times table is just doubling — two of something! Count up in twos: 2, 4, 6, 8…', '2 × 4  →  double 4  →  8')],
-    [T('Every answer is an even number, so it ends in 0, 2, 4, 6 or 8. Count up in twos to check.')],
-    [T('Missing number? Count up in twos until you reach the total, then count how many jumps it took.', '2 × ? = 8  →  2, 4, 6, 8  →  4 jumps')],
-    [T('Sharing is timesing backwards. If 2 × 4 = 8, then 8 ÷ 2 = 4 — the same fact family!')],
+    [
+      T('The two times table is just DOUBLING — two groups of the same number!', undefined, { kind: 'double', n: 4, hands: true }),
+      T('You can also count up in twos: two, four, six, eight, ten!', '2, 4, 6, 8, 10…', { kind: 'skip', step: 2, times: 5 }),
+      T('Two times four means two rows of four. Count the stars — eight!', '2 × 4 = 8', { kind: 'array', rows: 2, cols: 4 }),
+    ],
+    [
+      T('Every answer in the two times table is EVEN — it always ends in 0, 2, 4, 6 or 8.', '2, 4, 6, 8, 10…', { kind: 'skip', step: 2, times: 5 }),
+      T('Double the number, then type it in. Double seven is fourteen!', '2 × 7  →  double 7  →  14'),
+    ],
+    [
+      T('A number is missing! Count up in twos until you reach the total, and count the jumps on your fingers.', undefined, { kind: 'skip', step: 2, times: 4, hands: true }),
+      T('Two, four, six, eight — that took four jumps, so the missing number is four!', '2 × ? = 8  →  4 jumps  →  4'),
+    ],
+    [
+      T('An array shows times AND sharing at once. Two rows of four make eight…', '2 × 4 = 8', { kind: 'array', rows: 2, cols: 4 }),
+      T('…and eight shared into fours makes two. The same picture, read backwards!', '8 ÷ 4 = 2', { kind: 'array', rows: 2, cols: 4, divide: true }),
+    ],
   ],
   mountain: [
-    [T('Count up in fives: 5, 10, 15, 20… like counting the fingers on each hand!')],
-    [T('Every answer ends in a 5 or a 0. That’s the fives’ special pattern.', '5 × 3  →  5, 10, 15  →  15')],
-    [T('Count up in fives until you reach the total; the number of jumps is your answer.', '5 × ? = 20  →  5, 10, 15, 20  →  4')],
-    [T('5 × 4 = 20, so 20 ÷ 5 = 4. Timesing and sharing are the same fact family.')],
+    [
+      T('Count up in fives — like counting whole hands of fingers: five, ten, fifteen, twenty!', '5, 10, 15, 20…', { kind: 'skip', step: 5, times: 4 }),
+      T('Five times three is three rows of five. Count the rows: five, ten, fifteen!', '5 × 3 = 15', { kind: 'array', rows: 3, cols: 5 }),
+    ],
+    [
+      T('Every answer ends in five or zero — that’s the fives’ secret pattern. Check before you type!', '5, 10, 15, 20, 25…', { kind: 'skip', step: 5, times: 5 }),
+      T('Clever shortcut: five is HALF of ten. Five times six is half of sixty — thirty!', '5 × 6  →  half of 60  →  30'),
+    ],
+    [
+      T('Count up in fives until you reach the total, counting the jumps on your fingers.', undefined, { kind: 'skip', step: 5, times: 4, hands: true }),
+      T('Five, ten, fifteen, twenty — four jumps! The missing number is four.', '5 × ? = 20  →  4'),
+    ],
+    [
+      T('Four rows of five make twenty…', '4 × 5 = 20', { kind: 'array', rows: 4, cols: 5 }),
+      T('…so twenty shared into fives makes four. Times and sharing are one fact family!', '20 ÷ 5 = 4', { kind: 'array', rows: 4, cols: 5, divide: true }),
+    ],
   ],
   lagoon: [
-    [T('Times ten is the easiest trick of all — just pop a zero on the end!', '10 × 3  →  30')],
-    [T('So 10 × 7 is 70, and 10 × 9 is 90. Add a zero every time.')],
-    [T('To find the missing number, take the zero off the total.', '10 × ? = 70  →  7')],
-    [T('70 ÷ 10 = 7 — just take the zero off. Sharing is timesing backwards!')],
+    [
+      T('Times ten is the friendliest trick of all — just pop a ZERO on the end!', '10 × 3  →  30'),
+      T('See it on the line: ten, twenty, thirty. Every jump adds another ten.', '10, 20, 30…', { kind: 'skip', step: 10, times: 3 }),
+    ],
+    [
+      T('Add a zero every time: ten times seven is seventy, ten times nine is ninety.', '10 × 7  →  70'),
+      T('All the answers end in zero — if yours doesn’t, have another look!', '10, 20, 30, 40, 50…', { kind: 'skip', step: 10, times: 5 }),
+    ],
+    [
+      T('To find the missing number, just take the zero OFF the total.', '10 × ? = 70  →  7'),
+    ],
+    [
+      T('Dividing by ten? Take the zero off! Seventy shared into tens is seven.', '70 ÷ 10 = 7'),
+      T('Times ten and divide by ten undo each other — add the zero, take the zero.', '7 → 70 → 7'),
+    ],
   ],
   forest: [
-    [T('Count up in threes: 3, 6, 9, 12, 15…')],
-    [T('Clever trick: double the number, then add one more group.', '3 × 4  →  (2 × 4) + 4  →  8 + 4  →  12')],
-    [T('Count up in threes until you reach the total, then count the jumps.', '3 × ? = 12  →  3, 6, 9, 12  →  4')],
-    [T('3 × 4 = 12, so 12 ÷ 3 = 4. Same fact family, just backwards!')],
+    [
+      T('Count up in threes: three, six, nine, twelve, fifteen!', '3, 6, 9, 12, 15…', { kind: 'skip', step: 3, times: 5 }),
+      T('Three times four is three rows of four — count them: four, eight, twelve!', '3 × 4 = 12', { kind: 'array', rows: 3, cols: 4 }),
+    ],
+    [
+      T('Clever trick: three of something is DOUBLE it, plus one more group.', undefined, { kind: 'double', n: 4, hands: true }),
+      T('Three times four: double four is eight, add one more four — twelve!', '3 × 4  →  8 + 4  →  12'),
+    ],
+    [
+      T('Count up in threes until you reach the total, counting the jumps on your fingers.', undefined, { kind: 'skip', step: 3, times: 4, hands: true }),
+      T('Three, six, nine, twelve — four jumps, so the missing number is four!', '3 × ? = 12  →  4'),
+    ],
+    [
+      T('Three rows of four make twelve…', '3 × 4 = 12', { kind: 'array', rows: 3, cols: 4 }),
+      T('…and twelve shared into fours makes three. One array, two facts!', '12 ÷ 4 = 3', { kind: 'array', rows: 3, cols: 4, divide: true }),
+    ],
   ],
   castle: [
-    [T('For the elevens up to 9, just say the digit twice!', '11 × 3  →  33      11 × 4  →  44')],
-    [T('Another way: do ten times, then add one more group.', '11 × 3  →  (10 × 3) + 3  →  30 + 3  →  33')],
-    [T('For a double-digit answer like 33 or 66, the missing number is just that repeated digit.', '11 × ? = 55  →  5')],
-    [T('11 × 4 = 44, so 44 ÷ 11 = 4. Timesing and sharing together!')],
+    [
+      T('The elevens have a magic pattern — up to nine, just write the digit TWICE!', '11 × 3 → 33      11 × 4 → 44'),
+      T('See the pattern on the line: eleven, twenty-two, thirty-three, forty-four!', '11, 22, 33, 44…', { kind: 'skip', step: 11, times: 4 }),
+    ],
+    [
+      T('Another way: eleven times is TEN times, plus one more group.', '11 × 3  →  30 + 3  →  33'),
+      T('Ten times is easy — add a zero — then add the number once more.', '11 × 6  →  60 + 6  →  66'),
+    ],
+    [
+      T('If the total is a doubled digit like fifty-five, the missing number is that digit — five!', '11 × ? = 55  →  5'),
+      T('Or count the jumps: how many elevens fit into the total?', undefined, { kind: 'skip', step: 11, times: 4, hands: true }),
+    ],
+    [
+      T('Eleven times four is forty-four, so forty-four shared by eleven is four. Same fact family!', '11 × 4 = 44  →  44 ÷ 11 = 4'),
+    ],
   ],
   cavern: [
-    [T('Dividing means sharing into equal groups — and it’s multiplying backwards!')],
-    [T('To solve 20 ÷ 5, ask: what times 5 makes 20?', '5 × 4 = 20    so    20 ÷ 5 = 4')],
-    [T('Stuck? Count up in the group size until you reach the total, and count the jumps.', '15 ÷ 3  →  3, 6, 9, 12, 15  →  5')],
-    [T('Every division has a times fact hiding inside it — think of the fact family you already know!')],
+    [
+      T('Dividing means SHARING into equal groups — and every share hides a times fact!', undefined, { kind: 'array', rows: 4, cols: 5, divide: true }),
+      T('Twenty shared into rows of five makes four rows — because four fives are twenty!', '20 ÷ 5 = 4    because    5 × 4 = 20', { kind: 'array', rows: 4, cols: 5, divide: true }),
+    ],
+    [
+      T('To solve a divide, ask the TIMES question: what times five makes twenty?', '20 ÷ 5  →  5 × ? = 20  →  4'),
+      T('Stuck? Count up in fives to the total, and count the jumps on your fingers.', undefined, { kind: 'skip', step: 5, times: 4, hands: true }),
+    ],
+    [
+      T('Trickier splits, same trick: count up in the group size until you reach the total.', '15 ÷ 3  →  3, 6, 9, 12, 15  →  5', { kind: 'skip', step: 3, times: 5, hands: true }),
+    ],
+    [
+      T('Every fact family has four facts — two times, two sharing. Find the one you already know!', '3 × 4 = 12   4 × 3 = 12   12 ÷ 3 = 4   12 ÷ 4 = 3', { kind: 'array', rows: 3, cols: 4, divide: true }),
+    ],
   ],
   tower: [
-    [T('Use your best tricks! Tens: add a zero. Fives: end in 5 or 0. Twos: just double.')],
-    [T('For the elevens, do ten times then add one more group.', '11 × 6  →  60 + 6  →  66')],
-    [T('Missing number? Turn it into a division.', '5 × ? = 30  →  30 ÷ 5  →  6')],
-    [T('Remember — dividing is just multiplying backwards. You know every fact family. You’ve got this!')],
+    [
+      T('Time for your best tricks! Tens: pop a zero. Fives: end in five or zero. Twos: just double.', '10×6→60    5×6→30    2×6→12'),
+      T('Elevens: write the digit twice, or do ten times plus one more group.', '11 × 6  →  66'),
+    ],
+    [
+      T('Take each one slowly: spot WHICH table it is first, then pick your trick.', undefined, { kind: 'skip', step: 5, times: 4 }),
+    ],
+    [
+      T('Missing number? Turn it into a division — or count up in jumps on your fingers.', '5 × ? = 30  →  30 ÷ 5  →  6', { kind: 'skip', step: 5, times: 6, hands: true }),
+    ],
+    [
+      T('Remember: dividing is just multiplying backwards — you know every fact family!', '4 × 5 = 20  ⇄  20 ÷ 5 = 4', { kind: 'array', rows: 4, cols: 5, divide: true }),
+      T('This is it — every trick you’ve learned, for all of Monster Island. Go shine!'),
+    ],
   ],
   // ---- early years ---------------------------------------------------------
   // These are the primary lesson before each quiz, so most levels get a short

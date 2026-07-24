@@ -881,6 +881,42 @@ button {
   transform: scaleX(-1);
 }
 
+/* array: rows build up while skip-counting, then read as ×/÷ facts */
+.arr-grid {
+  display: grid;
+  gap: 3px 6px;
+  justify-content: center;
+}
+.arr-star {
+  font-size: 1.15rem;
+  line-height: 1;
+  opacity: 0.22;
+  filter: grayscale(0.7);
+  transition: opacity 0.25s ease, filter 0.25s ease, transform 0.25s ease;
+}
+.arr-star.on {
+  opacity: 1;
+  filter: none;
+}
+.arr-star.current {
+  transform: scale(1.15);
+}
+.arr-eq {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  min-height: 1.5em;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #4c1d95;
+}
+.arr-eq .arr-div {
+  color: #0e7490;
+}
+.arr-eq .arr-skip {
+  color: #7c3aed;
+}
+
 /* doubling: two mirrored groups */
 .dbl-row {
   display: flex;

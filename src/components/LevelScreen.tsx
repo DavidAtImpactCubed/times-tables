@@ -3,9 +3,10 @@ import { sfx } from '../logic/audio'
 import { backgroundFor } from '../logic/backgrounds'
 import { QUESTIONS_PER_LEVEL, explain, generateLevel, questionText, spokenQuestion } from '../logic/questions'
 import { speak, stopSpeaking } from '../logic/speech'
-import type { PartSlot, Question, Region } from '../types'
+import type { PartSlot, Question, Region, TipVisual } from '../types'
 import { Monster, type Mood } from './Monster'
 import { NumberPad } from './NumberPad'
+import { TipArt } from './TipArt'
 
 interface Props {
   region: Region
@@ -21,7 +22,7 @@ interface Entry {
   retry: boolean
 }
 
-type Feedback = null | { kind: 'correct' } | { kind: 'wrong'; chips: number[]; text: string; answer: number }
+type Feedback = null | { kind: 'correct' } | { kind: 'wrong'; text: string; answer: number; visual?: TipVisual }
 
 const STREAK_MESSAGES: Record<number, string> = {
   3: '3 in a row! 🔥',
@@ -88,7 +89,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
       // Give the same question another (unscored) go later in the level.
       const nextQueue = entry.retry ? queue : [...queue, { q, retry: true }]
       setQueue(nextQueue)
-      setFeedback({ kind: 'wrong', chips: info.chips, text: info.text, answer: q.answer })
+      setFeedback({ kind: 'wrong', text: info.text, answer: q.answer, visual: info.visual })
       speak(explainSpeech(q.answer, info.text))
     }
   }
@@ -177,13 +178,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             <p className="explain-title">
               Nearly! The answer is <strong>{feedback.answer}</strong>. Here’s how:
             </p>
-            <div className="chips">
-              {feedback.chips.map((c, i) => (
-                <span key={i} className="chip" style={{ animationDelay: `${i * 0.12}s` }}>
-                  {c}
-                </span>
-              ))}
-            </div>
+            {feedback.visual && <TipArt visual={feedback.visual} />}
             <p className="explain-text">{feedback.text}</p>
             <button className="btn btn-primary" onClick={gotIt} data-testid="got-it">
               Got it! 👍

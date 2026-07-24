@@ -1441,27 +1441,6 @@ button {
   color: #16a34a;
   font-size: 1.4rem;
 }
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  justify-content: center;
-}
-.chip {
-  background: #ede9fe;
-  border: 2px solid #8b5cf6;
-  color: #5b21b6;
-  font-weight: 800;
-  border-radius: 999px;
-  min-width: 40px;
-  padding: 6px 8px;
-  animation: pop-in 0.25s ease both;
-}
-.chip:last-child {
-  background: #fde047;
-  border-color: #d97706;
-  color: #713f12;
-}
 .explain-text {
   margin: 0;
   color: #4b5563;

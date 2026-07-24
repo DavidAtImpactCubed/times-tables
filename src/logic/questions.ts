@@ -1,4 +1,4 @@
-import type { Question, Region } from '../types'
+import type { Question, Region, TipVisual } from '../types'
 
 export const QUESTIONS_PER_LEVEL = 10
 const MAX_N = 12
@@ -371,28 +371,188 @@ export function spokenQuestion(q: Question): string {
  * Skip-counting explanation shown after a wrong answer, e.g. for 4 × 5:
  * chips [5, 10, 15, 20] and the sentence "4 jumps of 5 makes 20".
  */
-export function explain(q: Question): { chips: number[]; text: string } {
+// ---------------------------------------------------------------------------
+// Wrong-answer explanations. Instead of one generic message, pick the BEST
+// strategy for this exact question — the same tricks Olivia teaches in the
+// tips — and use the question the child just got wrong as the worked example.
+// Visuals reuse the tip illustrations (skip lines, arrays, ten-frames, hands).
+// ---------------------------------------------------------------------------
+
+export interface Explanation {
+  text: string
+  visual?: TipVisual
+}
+
+const groups = (k: number, n: number) => (n === 1 ? `one more ${k}` : `${n} more ${k}s`)
+
+/** Window a count-on/count-back line so big numbers stay readable. */
+const onWindow = (from: number, add: number) => {
+  const total = from + add
+  return total <= 10 ? { min: 0, max: 10 } : { min: from - 1, max: total + 1 }
+}
+const backWindow = (from: number, sub: number) => {
+  const result = from - sub
+  return from <= 10 ? { min: 0, max: 10 } : { min: result - 1, max: from + 1 }
+}
+
+function explainAdd(q: Question): Explanation {
+  const { a, b, result, unknown, answer } = q
+  if (unknown === 'result') {
+    if (a === b) {
+      return {
+        text: `Double ${a}! ${a} plus ${a} makes ${result}.`,
+        visual: a <= 6 ? { kind: 'double', n: a, hands: a <= 5 } : undefined,
+      }
+    }
+    if (result === 10) {
+      return {
+        text: `${a} and ${b} are a make-ten pair — they always make ten together!`,
+        visual: { kind: 'tenframe', a, b },
+      }
+    }
+    const from = Math.max(a, b)
+    const add = Math.min(a, b)
+    return {
+      text: `Start at the bigger number, ${from}, and count on ${add}: you reach ${result}.`,
+      visual: { kind: 'countOn', from, add, ...onWindow(from, add), hands: true },
+    }
+  }
+  // missing addend: count on from what you have, keeping track on fingers
+  const known = unknown === 'a' ? b : a
+  if (result === 10) {
+    return {
+      text: `${known} and ${answer} make ten — one of the special pairs!`,
+      visual: { kind: 'tenframe', a: known, b: answer },
+    }
+  }
+  return {
+    text: `Start at ${known} and count on to ${result}, putting up a finger each time: ${answer} fingers.`,
+    visual: { kind: 'countOn', from: known, add: answer, ...onWindow(known, answer), hands: true },
+  }
+}
+
+function explainSub(q: Question): Explanation {
+  const { a, b, result, unknown, answer } = q
+  if (unknown === 'result') {
+    return {
+      text: `Start at ${a} and count back ${b}: you land on ${result}.`,
+      visual: { kind: 'countBack', from: a, sub: b, ...backWindow(a, b), hands: true },
+    }
+  }
+  if (unknown === 'b') {
+    return {
+      text: `Count on from ${result} up to ${a} — that takes ${answer} hops.`,
+      visual: { kind: 'countOn', from: result, add: answer, ...onWindow(result, answer), hands: true },
+    }
+  }
+  return {
+    text: `Put the ${b} back: ${result} plus ${b} is ${answer}.`,
+    visual: { kind: 'countOn', from: result, add: b, ...onWindow(result, b), hands: true },
+  }
+}
+
+/** The five-and-ten anchor, in words: 27 is "ten threes, take one three away". */
+function anchorText(k: number, m: number, total: number): string {
+  if (m === 9) return `Ten ${k}s are ${10 * k}; take one ${k} away — ${total}.`
+  if (m === 11) return `Ten ${k}s are ${10 * k}; add one more ${k} — ${total}.`
+  if (m === 12) return `Ten ${k}s are ${10 * k}; add two more ${k}s — ${total}.`
+  return `Five ${k}s are ${5 * k}; keep counting in ${k}s up to ${total}.`
+}
+
+function explainMul(q: Question): Explanation {
+  const { a, b, result, unknown, answer } = q
+  if (unknown === 'result') {
+    // pick the trick operand: easiest table wins
+    const t = [10, 11, 2, 5, 3].find((k) => a === k || b === k) ?? Math.min(a, b)
+    const n = a === t ? b : a
+    if (t === 10) {
+      return {
+        text: `Times ten? Pop a zero on the end of ${n}: ${result}!`,
+        visual: n <= 5 ? { kind: 'skip', step: 10, times: n } : undefined,
+      }
+    }
+    if (t === 11) {
+      if (n <= 9) return { text: `Eleven magic: write ${n} twice — ${result}!` }
+      return { text: `Eleven ${n}s: ten ${n}s are ${10 * n}, plus one more ${n} — ${result}.` }
+    }
+    if (t === 2) {
+      return {
+        text: `Two times ${n} is double ${n}: ${n} plus ${n} is ${result}.`,
+        visual: n <= 6 ? { kind: 'double', n, hands: n <= 5 } : undefined,
+      }
+    }
+    if (t === 5) {
+      if (n <= 6) {
+        const seq = Array.from({ length: n }, (_, i) => (i + 1) * 5).join(', ')
+        return { text: `Count up in fives: ${seq}. ${n} jumps lands on ${result}.`, visual: { kind: 'skip', step: 5, times: n } }
+      }
+      return { text: `Five is HALF of ten: ten ${n}s are ${10 * n}, and half of that is ${result}.` }
+    }
+    // threes: skip-count small ones, anchor the big ones on easy multiples
+    if (n <= 5) {
+      const seq = Array.from({ length: n }, (_, i) => (i + 1) * 3).join(', ')
+      return { text: `Count up in threes: ${seq}. So ${result}.`, visual: { kind: 'array', rows: n, cols: 3 } }
+    }
+    if (n <= 7) {
+      return {
+        text: `Five threes are 15 — add ${groups(3, n - 5)}: ${result}.`,
+        visual: { kind: 'array', rows: n, cols: 3, split: 5 },
+      }
+    }
+    if (n === 8) return { text: `Double ${n} is ${2 * n}, plus one more ${n}: ${result}.` }
+    return { text: anchorText(3, n, result) }
+  }
+  // missing number: how many jumps of the known table reach the total?
+  const k = unknown === 'a' ? b : a
+  if (k === 10) return { text: `Take the zero off ${result}: ${answer}!` }
+  if (k === 11 && answer <= 9) return { text: `${result} is just ${answer} written twice — so ${answer}.` }
+  if (answer <= 6) {
+    return {
+      text: `Count up in ${k}s until you reach ${result}: ${answer} jumps.`,
+      visual: { kind: 'skip', step: k, times: answer, hands: true },
+    }
+  }
+  return { text: anchorText(k, answer, result) }
+}
+
+function explainDiv(q: Question): Explanation {
+  const { a, b, result, unknown, answer } = q
+  if (unknown === 'result') {
+    if (b === 10) return { text: `Dividing by ten? Take the zero off ${a}: ${result}.` }
+    if (b === 11 && result <= 9) return { text: `${a} is ${result} written twice, so ${a} ÷ 11 = ${result}.` }
+    if (b === 2) {
+      return {
+        text: `Half of ${a} is ${result} — because double ${result} makes ${a}.`,
+        visual: result <= 6 ? { kind: 'double', n: result, hands: result <= 5 } : undefined,
+      }
+    }
+    if (result <= 6) {
+      return {
+        text: `Ask the times question: what times ${b} makes ${a}? Count up in ${b}s: ${result} jumps.`,
+        visual: { kind: 'skip', step: b, times: result, hands: true },
+      }
+    }
+    return { text: anchorText(b, result, a) }
+  }
+  if (unknown === 'a') {
+    return {
+      text: `A times fact is hiding here: ${b} × ${result} = ${answer}.`,
+      visual: b <= 5 && result <= 5 ? { kind: 'array', rows: result, cols: b, divide: true } : undefined,
+    }
+  }
+  return { text: `Ask: what times ${result} makes ${a}? ${answer}!` }
+}
+
+export function explain(q: Question): Explanation {
   if (q.kind === 'count') {
     const n = q.count ?? q.result
-    return { chips: Array.from({ length: n }, (_, i) => i + 1), text: `Count them one by one — there are ${n}.` }
+    return {
+      text: `Touch each one as you count — the last number you say is how many. There are ${n}.`,
+      visual: { kind: 'count', to: n, hands: n <= 10 },
+    }
   }
-  if (q.kind === 'add') {
-    const chips = Array.from({ length: q.result - q.a + 1 }, (_, i) => q.a + i)
-    return { chips, text: `Start at ${q.a} and count on ${q.b}: you reach ${q.result}. So ${q.a} + ${q.b} = ${q.result}.` }
-  }
-  if (q.kind === 'sub') {
-    const chips = Array.from({ length: q.a - q.result + 1 }, (_, i) => q.a - i)
-    return { chips, text: `Start at ${q.a} and count back ${q.b}: you reach ${q.result}. So ${q.a} − ${q.b} = ${q.result}.` }
-  }
-  if (q.kind === 'mul') {
-    const table = Math.min(q.a, q.b)
-    const jumps = Math.max(q.a, q.b)
-    const chips = Array.from({ length: jumps }, (_, i) => (i + 1) * table)
-    return { chips, text: `${jumps} jumps of ${table} makes ${q.result}. So ${q.a} × ${q.b} = ${q.result}.` }
-  }
-  const chips = Array.from({ length: q.result }, (_, i) => (i + 1) * q.b)
-  return {
-    chips,
-    text: `Count up in ${q.b}s to reach ${q.a} — that takes ${q.result} jumps. So ${q.a} ÷ ${q.b} = ${q.result}.`,
-  }
+  if (q.kind === 'add') return explainAdd(q)
+  if (q.kind === 'sub') return explainSub(q)
+  if (q.kind === 'mul') return explainMul(q)
+  return explainDiv(q)
 }

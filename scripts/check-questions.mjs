@@ -15,6 +15,47 @@ const fail = (msg) => {
 const EARLY_KINDS = new Set(['count', 'bond', 'add', 'sub', 'double'])
 const ROUNDS = 50
 
+// Every wrong-answer explanation must have text, and any visual it picks must
+// be mathematically consistent with the question it explains.
+function checkExplanation(q) {
+  const e = explain(q)
+  if (!e.text || typeof e.text !== 'string') fail(`explain(${q.kind}) has no text`)
+  const v = e.visual
+  if (!v) return
+  const id = `${q.kind} ${q.a}/${q.b}/${q.result} (${q.unknown})`
+  switch (v.kind) {
+    case 'count':
+      if (v.to !== (q.count ?? q.result)) fail(`${id}: count visual to=${v.to}`)
+      break
+    case 'tenframe':
+      if (v.a + v.b !== 10) fail(`${id}: tenframe ${v.a}+${v.b} ≠ 10`)
+      break
+    case 'countOn':
+      if (v.from + v.add > (v.max ?? 99)) fail(`${id}: countOn lands past max`)
+      if ((v.min ?? 0) > v.from) fail(`${id}: countOn starts before min`)
+      break
+    case 'countBack':
+      if (v.from - v.sub < (v.min ?? 0)) fail(`${id}: countBack lands before min`)
+      if (v.from > (v.max ?? 99)) fail(`${id}: countBack starts past max`)
+      break
+    case 'double':
+      if (q.kind === 'add' && q.a === q.b && v.n !== q.a) fail(`${id}: double n=${v.n}`)
+      break
+    case 'skip':
+      if (q.kind === 'mul' && q.unknown === 'result' && v.step * v.times !== q.result)
+        fail(`${id}: skip ${v.step}×${v.times} ≠ ${q.result}`)
+      if (q.kind === 'div' && q.unknown === 'result' && v.step * v.times !== q.a)
+        fail(`${id}: skip ${v.step}×${v.times} ≠ ${q.a}`)
+      break
+    case 'array': {
+      const total = v.rows * v.cols
+      const want = q.kind === 'div' ? q.a : q.result
+      if (total !== want) fail(`${id}: array ${v.rows}×${v.cols} ≠ ${want}`)
+      break
+    }
+  }
+}
+
 function checkCommon(region, level, qs) {
   checks++
   if (qs.length !== QUESTIONS_PER_LEVEL) fail(`${region.id} L${level}: got ${qs.length} questions`)
@@ -60,9 +101,7 @@ for (const region of REGIONS) {
           }
         }
 
-        const e = explain(q)
-        if (q.kind === 'mul' && e.chips.at(-1) !== q.result) fail(`mul chips end on ${e.chips.at(-1)}, want ${q.result}`)
-        if (q.kind === 'div' && e.chips.at(-1) !== q.a) fail(`div chips end on ${e.chips.at(-1)}, want ${q.a}`)
+        checkExplanation(q)
       }
     }
     console.log(`  L${level + 1} (${region.levels[level].mode}): ${ROUNDS} rounds ok`)
@@ -101,9 +140,7 @@ for (const region of EARLY_REGIONS) {
           }
         }
 
-        const e = explain(q)
-        if (e.chips.at(-1) !== (q.kind === 'count' ? q.count : q.result))
-          fail(`${region.id} ${q.kind} chips end on ${e.chips.at(-1)}`)
+        checkExplanation(q)
       }
     }
     console.log(`  L${level + 1} (${region.levels[level].mode}): ${ROUNDS} rounds ok`)

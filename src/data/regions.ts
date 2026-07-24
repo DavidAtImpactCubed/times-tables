@@ -358,7 +358,7 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
   ],
   // ---- early years ---------------------------------------------------------
   'count-cove': [
-    [T('Touch each thing as you count: 1, 2, 3… The last number you say is how many there are!', undefined, { kind: 'count', to: 5 })],
+    [T('Touch each thing as you count: 1, 2, 3, 4, 5. The last number you say is how many there are!', undefined, { kind: 'count', to: 5 })],
     [T('Keep touching each star as you count all the way to ten — don’t count any star twice!', undefined, { kind: 'count', to: 10 })],
     [T('One more? Just count on by one — say the very next number.', 'one more than 4  →  5', { kind: 'countOn', from: 4, add: 1, max: 8 })],
     [T('One less? Count back by one — say the number that comes just before.', 'one less than 6  →  5', { kind: 'countBack', from: 6, sub: 1, max: 8 })],

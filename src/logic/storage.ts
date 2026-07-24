@@ -1,10 +1,10 @@
 import { RETIRED_ITEM_PRICES, itemById } from '../data/wardrobe'
 import type { SaveData } from '../types'
 
-const LEGACY_KEY = 'monster-maths-save-v1'
+const SAVE_PREFIX = 'monster-maths-save-v1'
 const PROFILES_KEY = 'monster-maths-profiles-v1'
 const NARRATION_DEFAULT_KEY = 'monster-maths-narration-default-v1'
-const saveKey = (name: string) => `${LEGACY_KEY}::${name}`
+const saveKey = (name: string) => `${SAVE_PREFIX}::${name}`
 
 export function freshSave(): SaveData {
   return {
@@ -56,25 +56,8 @@ function writeProfiles(names: string[]): void {
   }
 }
 
-/**
- * List the saved player profiles. On first run this migrates a legacy
- * single-player save into a profile named "Elyse".
- */
+/** List the saved player profiles. */
 export function listProfiles(): string[] {
-  try {
-    if (localStorage.getItem(PROFILES_KEY) === null) {
-      const legacy = localStorage.getItem(LEGACY_KEY)
-      if (legacy) {
-        localStorage.setItem(saveKey('Elyse'), legacy)
-        localStorage.removeItem(LEGACY_KEY)
-        writeProfiles(['Elyse'])
-      } else {
-        writeProfiles([])
-      }
-    }
-  } catch {
-    // ignore — fall through to reading whatever exists
-  }
   // One-time: turn read-aloud on for pre-existing profiles (it's now the default).
   try {
     if (localStorage.getItem(NARRATION_DEFAULT_KEY) === null) {

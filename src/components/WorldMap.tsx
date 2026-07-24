@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { sfx } from '../logic/audio'
 import { readAloudSupported } from '../logic/speech'
 import { backgroundFor } from '../logic/backgrounds'
@@ -39,6 +40,28 @@ interface Props {
 }
 
 export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, onToggleMute, onToggleReadAloud, onSwitchPlayer, onShowTip }: Props) {
+  // the furthest level the player can currently play (their progress frontier)
+  let frontier: { ri: number; li: number } | null = null
+  regions.forEach((region, ri) => {
+    if (!regionUnlocked(save, ri)) return
+    region.levels.forEach((_, li) => {
+      if (levelUnlocked(save, regions, ri, li)) frontier = { ri, li }
+    })
+  })
+
+  // On open, start at the top and smoothly glide down to that frontier level.
+  const frontierRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    window.scrollTo(0, 0)
+    const el = frontierRef.current
+    if (!el) return
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const t = window.setTimeout(() => {
+      el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' })
+    }, 400)
+    return () => window.clearTimeout(t)
+  }, [])
+
   return (
     <div className="screen map-screen">
       <header className="map-header">
@@ -128,6 +151,7 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
                     return (
                       <button
                         key={li}
+                        ref={frontier?.ri === ri && frontier?.li === li ? frontierRef : undefined}
                         className={`level-btn ${open ? '' : 'locked'} ${stars > 0 ? 'done' : ''}`}
                         disabled={!open}
                         onClick={() => {

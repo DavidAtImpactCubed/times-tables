@@ -72,6 +72,20 @@ function checkCommon(region, level, qs) {
   }
 }
 
+// ---- tip lessons: arrays/skip lines must count in a table the region teaches ----
+for (const region of REGIONS) {
+  region.levels.forEach((lvl, li) => {
+    for (const step of lvl.tip ?? []) {
+      const v = step.visual
+      if (!v) continue
+      if (v.kind === 'array' && !region.tables.includes(v.cols))
+        fail(`${region.id} L${li} tip array counts in ${v.cols}s — not a table this region teaches`)
+      if (v.kind === 'skip' && !region.tables.includes(v.step))
+        fail(`${region.id} L${li} tip skip line counts in ${v.step}s — not a table this region teaches`)
+    }
+  })
+}
+
 // ---- main curriculum (times tables & division) ----
 for (const region of REGIONS) {
   console.log(`Region ${region.name}`)
@@ -91,6 +105,15 @@ for (const region of REGIONS) {
         if (!factors.some((f) => region.tables.includes(f)))
           fail(`${region.id} L${level}: fact outside region tables: ${q.a} ${q.kind} ${q.b}`)
         if (factors.every((f) => f < 1 || f > 12)) fail(`no factor in 1..12 for ${q.a} ${q.kind} ${q.b}`)
+
+        // Missing-number questions must hide the multiplier, never the table:
+        // the child solves them by counting in a table they've been taught.
+        if (q.kind === 'mul' && q.unknown !== 'result') {
+          const known = q.unknown === 'a' ? q.b : q.a
+          if (!region.tables.includes(known))
+            fail(`${region.id} L${level}: missing-number leaves untaught ${known}s visible (${questionText(q).left} × ${questionText(q).right})`)
+        }
+        if (q.kind === 'div' && q.unknown === 'b') fail(`${region.id} L${level}: division hides the divisor`)
 
         if (q.input === 'choice') {
           if (!q.choices || q.choices.length !== 3) fail('choice question without 3 options')

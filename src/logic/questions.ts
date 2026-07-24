@@ -37,6 +37,10 @@ function mulQuestion(table: number, n: number, unknown: Question['unknown'], inp
   const flip = Math.random() < 0.5
   const a = flip ? table : n
   const b = flip ? n : table
+  // A missing-number question always hides the MULTIPLIER, never the table —
+  // "3 × ? = 27" is solved by counting in threes, but "? × 9 = 27" would need
+  // the nine times table, which the child hasn't been taught.
+  if (unknown !== 'result') unknown = flip ? 'b' : 'a'
   const result = table * n
   const answer = unknown === 'result' ? result : unknown === 'a' ? a : b
   const q: Question = { kind: 'mul', a, b, result, unknown, answer, input }
@@ -311,8 +315,9 @@ export function generateLevel(region: Region, level: number): Question[] {
     } else {
       const ns = multipliers()
       ns.slice(0, 7).forEach((n) => qs.push(divQuestion(pick(region.tables), n, 'result', 'pad')))
-      // A few "12 ÷ ? = 4" style stretch questions with small numbers.
-      ns.slice(7, 12).forEach((n) => qs.push(divQuestion(pick([2, 3, 5]), Math.min(n, 6), 'b', 'choice')))
+      // A few "? ÷ 3 = 4" style stretch questions with small numbers. (The
+      // divisor is never hidden — "12 ÷ ? = 4" would need an untaught table.)
+      ns.slice(7, 12).forEach((n) => qs.push(divQuestion(pick([2, 3, 5]), Math.min(n, 6), 'a', 'choice')))
     }
   } else {
     // Goblin's Tower: everything mixed.
@@ -454,6 +459,7 @@ function explainSub(q: Question): Explanation {
 /** The five-and-ten anchor, in words: 27 is "ten threes, take one three away". */
 function anchorText(k: number, m: number, total: number): string {
   if (m === 9) return `Ten ${k}s are ${10 * k}; take one ${k} away — ${total}.`
+  if (m === 10) return `Ten ${k}s are exactly ${total} — ten!`
   if (m === 11) return `Ten ${k}s are ${10 * k}; add one more ${k} — ${total}.`
   if (m === 12) return `Ten ${k}s are ${10 * k}; add two more ${k}s — ${total}.`
   return `Five ${k}s are ${5 * k}; keep counting in ${k}s up to ${total}.`

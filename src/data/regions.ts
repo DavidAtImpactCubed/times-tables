@@ -320,7 +320,7 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
     [
       T('The two times table is just DOUBLING — two groups of the same number!', undefined, { kind: 'double', n: 4, hands: true }),
       T('You can also count up in twos: two, four, six, eight, ten!', '2, 4, 6, 8, 10…', { kind: 'skip', step: 2, times: 5 }),
-      T('Two times four means two rows of four. Count the stars — eight!', '2 × 4 = 8', { kind: 'array', rows: 2, cols: 4 }),
+      T('Two times four is four twos! Count up in twos: two, four, six, eight.', '2 × 4 = 8', { kind: 'array', rows: 4, cols: 2 }),
     ],
     [
       T('Every answer in the two times table is EVEN — it always ends in 0, 2, 4, 6 or 8.', '2, 4, 6, 8, 10…', { kind: 'skip', step: 2, times: 5 }),
@@ -331,8 +331,8 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('Two, four, six, eight — that took four jumps, so the missing number is four!', '2 × ? = 8  →  4 jumps  →  4'),
     ],
     [
-      T('An array shows times AND sharing at once. Two rows of four make eight…', '2 × 4 = 8', { kind: 'array', rows: 2, cols: 4 }),
-      T('…and eight shared into fours makes two. The same picture, read backwards!', '8 ÷ 4 = 2', { kind: 'array', rows: 2, cols: 4, divide: true }),
+      T('An array shows times AND sharing at once. Four rows of two make eight…', '4 × 2 = 8', { kind: 'array', rows: 4, cols: 2 }),
+      T('…and eight shared into twos makes four. The same picture, read backwards!', '8 ÷ 2 = 4', { kind: 'array', rows: 4, cols: 2, divide: true }),
     ],
   ],
   mountain: [
@@ -373,7 +373,8 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
   forest: [
     [
       T('Count up in threes: three, six, nine, twelve, fifteen!', '3, 6, 9, 12, 15…', { kind: 'skip', step: 3, times: 5 }),
-      T('Three times four is three rows of four — count them: four, eight, twelve!', '3 × 4 = 12', { kind: 'array', rows: 3, cols: 4 }),
+      T('Three times four is four rows of three — count up in threes: three, six, nine, twelve!', '3 × 4 = 12', { kind: 'array', rows: 4, cols: 3 }),
+      T('Swapping the order never changes the answer: three fives and five threes are both fifteen!', '3 × 5 = 15      5 × 3 = 15', { kind: 'array', rows: 5, cols: 3 }),
     ],
     [
       T('Clever trick: three of something is DOUBLE it, plus one more group.', undefined, { kind: 'double', n: 4, hands: true }),
@@ -386,8 +387,8 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('For a big total, start from ten: ten threes are thirty, so twenty-seven is one three LESS — nine!', '3 × ? = 27  →  30 − 3  →  9'),
     ],
     [
-      T('Three rows of four make twelve…', '3 × 4 = 12', { kind: 'array', rows: 3, cols: 4 }),
-      T('…and twelve shared into fours makes three. One array, two facts!', '12 ÷ 4 = 3', { kind: 'array', rows: 3, cols: 4, divide: true }),
+      T('Four rows of three make twelve…', '4 × 3 = 12', { kind: 'array', rows: 4, cols: 3 }),
+      T('…and twelve shared into threes makes four. One array, two facts!', '12 ÷ 3 = 4', { kind: 'array', rows: 4, cols: 3, divide: true }),
       T('Sharing big numbers? Same trick: ten threes are thirty, so twenty-seven shared by three is nine.', '27 ÷ 3  →  one less than 10  →  9'),
     ],
   ],
@@ -422,7 +423,7 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('For big splits, start from an easy multiple: ten threes are thirty, so twenty-seven shared by three is one less than ten — nine!', '27 ÷ 3  →  10 − 1  →  9'),
     ],
     [
-      T('Every fact family has four facts — two times, two sharing. Find the one you already know!', '3 × 4 = 12   4 × 3 = 12   12 ÷ 3 = 4   12 ÷ 4 = 3', { kind: 'array', rows: 3, cols: 4, divide: true }),
+      T('Every fact family has four facts — two times, two sharing. Find the one you already know!', '3 × 4 = 12   4 × 3 = 12   12 ÷ 3 = 4   12 ÷ 4 = 3', { kind: 'array', rows: 4, cols: 3, divide: true }),
     ],
   ],
   tower: [

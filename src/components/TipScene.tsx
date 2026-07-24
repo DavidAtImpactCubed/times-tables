@@ -3,6 +3,7 @@ import { sfx } from '../logic/audio'
 import { narrate, stopSpeaking } from '../logic/speech'
 import { backgroundFor } from '../logic/backgrounds'
 import type { Region } from '../types'
+import { TipArt } from './TipArt'
 import owlUrl from '../assets/characters/owl.webp'
 
 interface Props {
@@ -69,6 +70,7 @@ export function TipScene({ region, level, readAloud, onDone }: Props) {
         <div className="tip-card" onClick={advance} data-testid="tip-card">
           <div className="speech-name">Olivia’s clever trick 💡</div>
           <p className="tip-text">{step.text}</p>
+          {step.visual && <TipArt visual={step.visual} />}
           {step.example && <div className="tip-example">{step.example}</div>}
           <div className="tip-progress">
             {steps.map((_, i) => (

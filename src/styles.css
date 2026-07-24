@@ -722,6 +722,142 @@ button {
   font-weight: 800;
   letter-spacing: 0.5px;
 }
+/* ---- animated tip illustrations (coded, no image assets) ---- */
+.tip-art {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 8px;
+  background: rgba(124, 58, 237, 0.07);
+  border-radius: 16px;
+}
+
+/* counting: one-to-one correspondence + cardinality */
+.tip-count-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.tip-count-star {
+  position: relative;
+  font-size: 2rem;
+  line-height: 1;
+  opacity: 0.28;
+  filter: grayscale(0.7);
+  transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+}
+.tip-count-star.on {
+  opacity: 1;
+  filter: none;
+}
+.tip-count-star.current {
+  transform: scale(1.3) translateY(-2px);
+}
+.tip-count-num {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #7c3aed;
+}
+.tip-count-total {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #7c3aed;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.tip-count-total.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ten-frame for number bonds */
+.tenframe-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  padding: 4px;
+  background: #4c1d95;
+  border-radius: 10px;
+}
+.tenframe-cell {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  background: #ede9fe;
+  border-radius: 7px;
+  color: transparent;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+.tenframe-cell.fill-a {
+  background: #fbbf24;
+  color: #78350f;
+  transform: scale(1.04);
+}
+.tenframe-cell.fill-b {
+  background: #22d3ee;
+  color: #0e7490;
+  transform: scale(1.04);
+}
+.tip-tenframe-eq {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #4c1d95;
+}
+
+/* number line for counting on */
+.tip-numberline {
+  width: 100%;
+  align-self: stretch;
+}
+.tip-numberline svg {
+  display: block;
+  overflow: visible;
+}
+.nl-axis {
+  stroke: #6d28d9;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.nl-tick {
+  stroke: #a78bfa;
+  stroke-width: 2;
+}
+.nl-label {
+  fill: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+}
+.nl-label.start {
+  fill: #7c3aed;
+}
+.nl-label.here {
+  fill: #059669;
+}
+.nl-hop {
+  stroke: #f59e0b;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 3 5;
+}
+.nl-marker circle {
+  fill: #7c3aed;
+}
+.nl-marker text {
+  fill: #fff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .tip-buttons {
   display: flex;
   gap: 12px;

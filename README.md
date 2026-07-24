@@ -68,8 +68,9 @@ bookmark it on a tablet and it plays full screen. Progress is per browser/device
 
 ## How it's built
 
-Zero-runtime-dependency **React + Vite + TypeScript**. All art is pre-rendered
-WebP; all sound is generated at runtime.
+Zero-runtime-dependency **React + Vite + TypeScript**. Characters, wardrobe and
+backdrops are pre-rendered WebP; the animated tip illustrations are drawn in code
+(SVG + CSS, in `src/components/TipArt.tsx`); all sound is generated at runtime.
 
 | Area | Where |
 |------|-------|

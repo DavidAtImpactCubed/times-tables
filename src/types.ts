@@ -38,12 +38,26 @@ export interface LevelDef {
   tip?: TipStep[]
 }
 
+/**
+ * An optional animated illustration for a tip card. Rendered in code
+ * (SVG + CSS) so it stays crisp and can loop gently — no image assets.
+ *   count:   highlight objects one at a time, then show the total (cardinality)
+ *   tenframe: fill a ten-frame with a gold group then a second group
+ *   countOn: a marker hops forward along a number line (counting on)
+ */
+export type TipVisual =
+  | { kind: 'count'; to: number }
+  | { kind: 'tenframe'; a: number; b: number }
+  | { kind: 'countOn'; from: number; add: number; max: number }
+
 /** One card of Olivia's optional "clever trick" mini-lesson for a topic. */
 export interface TipStep {
   /** what Olivia says */
   text: string
   /** an optional worked example, shown highlighted beneath the text */
   example?: string
+  /** an optional animated illustration shown above the example */
+  visual?: TipVisual
 }
 
 /** Which age band a profile plays: 'early' = Reception/Year 1, 'main' = Year 2/3. */

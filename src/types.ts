@@ -41,14 +41,19 @@ export interface LevelDef {
 /**
  * An optional animated illustration for a tip card. Rendered in code
  * (SVG + CSS) so it stays crisp and can loop gently — no image assets.
- *   count:   highlight objects one at a time, then show the total (cardinality)
+ *   count:    highlight objects one at a time, then show the total (cardinality)
  *   tenframe: fill a ten-frame with a gold group then a second group
- *   countOn: a marker hops forward along a number line (counting on)
+ *   countOn:  a marker hops forward along a number line (counting on)
+ *   countBack: a marker hops backward along a number line (taking away)
+ *   double:   two mirrored groups of n combine into the total (doubling)
+ * Number-line visuals plot the ticks `min` (default 0) … `max`.
  */
 export type TipVisual =
   | { kind: 'count'; to: number }
   | { kind: 'tenframe'; a: number; b: number }
-  | { kind: 'countOn'; from: number; add: number; max: number }
+  | { kind: 'countOn'; from: number; add: number; min?: number; max: number }
+  | { kind: 'countBack'; from: number; sub: number; min?: number; max: number }
+  | { kind: 'double'; n: number }
 
 /** One card of Olivia's optional "clever trick" mini-lesson for a topic. */
 export interface TipStep {

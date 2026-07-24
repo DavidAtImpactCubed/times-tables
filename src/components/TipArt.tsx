@@ -74,33 +74,54 @@ function TenFrameArt({ a, b }: { a: number; b: number }) {
   )
 }
 
-/** A marker hops forward along a number line, counting on from `from`. */
-function CountOnArt({ from, add, max }: { from: number; add: number; max: number }) {
-  const total = add + 3
+/**
+ * A marker hops along a number line, `count` steps in direction `dir`
+ * (+1 counting on, −1 taking away), from `from`. Ticks run min…max.
+ */
+function NumberLineArt({
+  from,
+  count,
+  dir,
+  min,
+  max,
+  testid,
+}: {
+  from: number
+  count: number
+  dir: 1 | -1
+  min: number
+  max: number
+  testid: string
+}) {
+  const total = count + 3
   const frame = useFrameLoop(total, 720)
-  const hops = Math.min(frame, add)
-  const pos = from + hops
-  // layout in an SVG unit grid
+  const hops = Math.min(frame, count)
+  const pos = from + dir * hops
   const step = 30
   const padX = 20
   const y = 54
-  const x = (n: number) => padX + n * step
-  const width = padX * 2 + max * step
+  const x = (n: number) => padX + (n - min) * step
+  const width = padX * 2 + (max - min) * step
   const arcs = Array.from({ length: hops }, (_, i) => {
-    const n = from + i
-    const x0 = x(n)
-    const x1 = x(n + 1)
-    const midX = (x0 + x1) / 2
-    return `M ${x0} ${y} Q ${midX} ${y - 26} ${x1} ${y}`
+    const a = from + dir * i
+    const bx = from + dir * (i + 1)
+    const midX = (x(a) + x(bx)) / 2
+    return `M ${x(a)} ${y} Q ${midX} ${y - 26} ${x(bx)} ${y}`
   })
+  const ticks = Array.from({ length: max - min + 1 }, (_, i) => min + i)
   return (
-    <div className="tip-art tip-numberline" data-testid="tip-art-counton">
-      <svg viewBox={`0 0 ${width} 78`} width="100%" role="img" aria-label={`Counting on from ${from}`}>
-        <line x1={x(0)} y1={y} x2={x(max)} y2={y} className="nl-axis" />
-        {Array.from({ length: max + 1 }, (_, n) => (
+    <div className="tip-art tip-numberline" data-testid={testid}>
+      <svg viewBox={`0 0 ${width} 78`} width="100%" role="img" aria-label={`Number line from ${from}`}>
+        <line x1={x(min)} y1={y} x2={x(max)} y2={y} className="nl-axis" />
+        {ticks.map((n) => (
           <g key={n}>
             <line x1={x(n)} y1={y - 5} x2={x(n)} y2={y + 5} className="nl-tick" />
-            <text x={x(n)} y={y + 20} className={`nl-label ${n === from ? 'start' : ''} ${n === pos && hops > 0 ? 'here' : ''}`} textAnchor="middle">
+            <text
+              x={x(n)}
+              y={y + 20}
+              className={`nl-label ${n === from ? 'start' : ''} ${n === pos && hops > 0 ? 'here' : ''}`}
+              textAnchor="middle"
+            >
               {n}
             </text>
           </g>
@@ -119,6 +140,34 @@ function CountOnArt({ from, add, max }: { from: number; add: number; max: number
   )
 }
 
+/** Two mirrored groups of n stars combine into the total (doubling). */
+function DoubleArt({ n }: { n: number }) {
+  const frame = useFrameLoop(4, 680)
+  const showRight = frame >= 1
+  const showTotal = frame >= 2
+  const group = (
+    <span className="dbl-group" aria-hidden>
+      {Array.from({ length: n }, (_, i) => (
+        <span key={i} className="dbl-star">
+          ⭐
+        </span>
+      ))}
+    </span>
+  )
+  return (
+    <div className="tip-art tip-double" data-testid="tip-art-double">
+      <div className="dbl-row">
+        {group}
+        <span className="dbl-mirror" aria-hidden />
+        <span className={`dbl-second ${showRight ? 'show' : ''}`}>{group}</span>
+      </div>
+      <div className={`dbl-eq ${showTotal ? 'show' : ''}`} aria-hidden>
+        {n} + {n} = {n * 2}
+      </div>
+    </div>
+  )
+}
+
 export function TipArt({ visual }: { visual: TipVisual }) {
   switch (visual.kind) {
     case 'count':
@@ -126,6 +175,14 @@ export function TipArt({ visual }: { visual: TipVisual }) {
     case 'tenframe':
       return <TenFrameArt a={visual.a} b={visual.b} />
     case 'countOn':
-      return <CountOnArt from={visual.from} add={visual.add} max={visual.max} />
+      return (
+        <NumberLineArt from={visual.from} count={visual.add} dir={1} min={visual.min ?? 0} max={visual.max} testid="tip-art-counton" />
+      )
+    case 'countBack':
+      return (
+        <NumberLineArt from={visual.from} count={visual.sub} dir={-1} min={visual.min ?? 0} max={visual.max} testid="tip-art-countback" />
+      )
+    case 'double':
+      return <DoubleArt n={visual.n} />
   }
 }

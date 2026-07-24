@@ -858,6 +858,49 @@ button {
   font-weight: 800;
 }
 
+/* doubling: two mirrored groups */
+.dbl-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.dbl-group {
+  display: inline-flex;
+  gap: 3px;
+  padding: 6px 8px;
+  background: #fef3c7;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.dbl-mirror {
+  width: 0;
+  align-self: stretch;
+  border-left: 3px dashed #7c3aed;
+}
+.dbl-second {
+  opacity: 0;
+  transform: scaleX(-1) translateX(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.dbl-second.show {
+  opacity: 1;
+  transform: scaleX(-1) translateX(0);
+}
+.dbl-eq {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #7c3aed;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.dbl-eq.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .tip-buttons {
   display: flex;
   gap: 12px;

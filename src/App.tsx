@@ -4,7 +4,7 @@ import { WARDROBE } from './data/wardrobe'
 import { setMuted, sfx } from './logic/audio'
 import { setReadAloud } from './logic/speech'
 import { TITLE_BG, backgroundFor } from './logic/backgrounds'
-import { starsFor, totalStars } from './logic/progress'
+import { starsFor } from './logic/progress'
 import { addProfile, freshSave, listProfiles, loadSave, persistSave, removeProfile } from './logic/storage'
 import { levelId, type Curriculum, type SaveData } from './types'
 import { CreditsScreen } from './components/CreditsScreen'
@@ -230,7 +230,7 @@ export default function App() {
                       <button className="profile-chip" data-testid={`profile-${name}`} onClick={() => playAs(name)}>
                         <Monster equipped={ps.equipped} mood="happy" size={72} />
                         <span className="profile-name">{name}</span>
-                        <span className="profile-stars">⭐ {totalStars(ps)}</span>
+                        <span className="profile-stars">⭐ {ps.wallet}</span>
                         <span className="profile-age">{ps.curriculum === 'early' ? 'Ages 4–6' : 'Ages 6–8'}</span>
                       </button>
                       {confirmDelete === name ? (

@@ -67,36 +67,33 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
         <div className="map-monster">
           <Monster equipped={save.equipped} mood="idle" size={72} className="bounce-slow" />
         </div>
-        <div className="map-title">
-          <h1>Monster Island</h1>
-          {playerName ? (
+        <div className="map-side">
+          <div className="map-actions">
+            <span className="wallet" data-testid="wallet">
+              ⭐ {save.wallet}
+            </span>
+            <button className="btn btn-round" onClick={onWardrobe} aria-label="Monster wardrobe" data-testid="wardrobe-btn">
+              👕
+            </button>
+            <button className="btn btn-round" onClick={onToggleMute} aria-label="Sound on or off">
+              {save.muted ? '🔇' : '🔊'}
+            </button>
+            {readAloudSupported() && (
+              <button
+                className={`btn btn-round ${save.readAloud ? '' : 'toggle-off'}`}
+                onClick={onToggleReadAloud}
+                aria-label={save.readAloud ? 'Reading aloud is on' : 'Reading aloud is off'}
+                data-testid="readaloud-toggle"
+              >
+                🗣️
+              </button>
+            )}
+          </div>
+          {playerName && (
             <button className="player-tag" onClick={onSwitchPlayer} data-testid="switch-player" aria-label="Switch player">
               <span aria-hidden>👤</span>
               <span className="player-tag-name">{playerName}</span>
               <span className="player-tag-swap" aria-hidden>▾</span>
-            </button>
-          ) : (
-            <p>Win the stars back from the Star Goblin!</p>
-          )}
-        </div>
-        <div className="map-actions">
-          <span className="wallet" data-testid="wallet">
-            ⭐ {save.wallet}
-          </span>
-          <button className="btn btn-round" onClick={onWardrobe} aria-label="Monster wardrobe" data-testid="wardrobe-btn">
-            👕
-          </button>
-          <button className="btn btn-round" onClick={onToggleMute} aria-label="Sound on or off">
-            {save.muted ? '🔇' : '🔊'}
-          </button>
-          {readAloudSupported() && (
-            <button
-              className={`btn btn-round ${save.readAloud ? '' : 'toggle-off'}`}
-              onClick={onToggleReadAloud}
-              aria-label={save.readAloud ? 'Reading aloud is on' : 'Reading aloud is off'}
-              data-testid="readaloud-toggle"
-            >
-              🗣️
             </button>
           )}
         </div>

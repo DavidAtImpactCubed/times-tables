@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { finaleFor, regionById, regionsFor } from './data/regions'
+import { INTRO, WARDROBE_INTRO, finaleFor, regionById, regionsFor } from './data/regions'
 import { WARDROBE } from './data/wardrobe'
 import { setMuted, sfx } from './logic/audio'
 import { setReadAloud } from './logic/speech'
@@ -306,6 +306,19 @@ export default function App() {
       )
 
     case 'map':
+      // first landing on the island: Olivia explains how the game works
+      if (!save.seenStory.includes('intro')) {
+        return (
+          <StoryScene
+            lines={INTRO}
+            background="#4c1d95"
+            image={TITLE_BG}
+            equipped={save.equipped}
+            readAloud={save.readAloud}
+            onDone={() => setSave((s) => ({ ...s, seenStory: [...s.seenStory, 'intro'] }))}
+          />
+        )
+      }
       return (
         <WorldMap
           save={save}
@@ -398,6 +411,18 @@ export default function App() {
     }
 
     case 'wardrobe':
+      // first visit: Olivia explains trying on, buying and earning stars
+      if (!save.seenStory.includes('wardrobe-intro')) {
+        return (
+          <StoryScene
+            lines={WARDROBE_INTRO}
+            background="#7c3aed"
+            equipped={save.equipped}
+            readAloud={save.readAloud}
+            onDone={() => setSave((s) => ({ ...s, seenStory: [...s.seenStory, 'wardrobe-intro'] }))}
+          />
+        )
+      }
       return <Wardrobe save={save} setSave={setSave} onBack={() => setScreen({ name: 'map' })} />
 
     case 'credits':

@@ -1049,6 +1049,20 @@ button {
   padding: 8px 14px;
   font-size: 1.05rem;
   box-shadow: 0 3px 0 #ca8a04;
+  /* tappable: opens the wardrobe */
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+button.wallet:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #ca8a04;
+}
+button.map-monster {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 .region-list {
   width: 100%;

@@ -153,6 +153,24 @@ export const REGIONS: Region[] = [
   },
 ]
 
+// One-time tutorial shown the first time a player lands on the map.
+export const INTRO: StoryLine[] = [
+  O('Welcome to Monster Island — home of your very own monster!'),
+  G('And home of MY star collection now! Hee hee hee!'),
+  O('Play a level and answer the questions to win stars back from the Star Goblin.'),
+  O('Stars are yours to spend! Tap your monster or the star count at the top of the map to open the wardrobe and dress up your monster.'),
+  M('And when I finish every level in a stage, the next stage unlocks!'),
+  O('Win back every star on the island to finish the adventure. Good luck, little monster!'),
+]
+
+// One-time tutorial shown the first time the wardrobe opens.
+export const WARDROBE_INTRO: StoryLine[] = [
+  O('Welcome to the Monster Wardrobe!'),
+  O('Tap anything to try it on — trying things on is always free.'),
+  O('When you love a look, spend your stars to buy it. Win more stars by playing levels!'),
+  M('New colours, hats, glasses… I’m going to look AMAZING!'),
+]
+
 export const FINALE: StoryLine[] = [
   { speaker: 'goblin', text: 'Nooo! You answered EVERYTHING! Fine… take your sparkly stars back.' },
   { speaker: 'guide', text: 'You did it! Every star is home and Monster Island is twinkling again — all thanks to you!' },

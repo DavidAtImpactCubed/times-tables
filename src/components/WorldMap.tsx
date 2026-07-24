@@ -64,14 +64,14 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
   return (
     <div className="screen map-screen">
       <header className="map-header">
-        <div className="map-monster">
+        <button className="map-monster" onClick={onWardrobe} aria-label="Open the wardrobe" data-testid="map-monster">
           <Monster equipped={save.equipped} mood="idle" size={72} className="bounce-slow" />
-        </div>
+        </button>
         <div className="map-side">
           <div className="map-actions">
-            <span className="wallet" data-testid="wallet">
+            <button className="wallet" onClick={onWardrobe} aria-label="Your stars — spend them in the wardrobe" data-testid="wallet">
               ⭐ {save.wallet}
-            </span>
+            </button>
             <button className="btn btn-round" onClick={onWardrobe} aria-label="Monster wardrobe" data-testid="wardrobe-btn">
               👕
             </button>

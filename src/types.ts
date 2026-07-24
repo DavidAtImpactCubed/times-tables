@@ -55,7 +55,7 @@ export type TipVisual =
   | { kind: 'countBack'; from: number; sub: number; min?: number; max: number; hands?: boolean }
   | { kind: 'double'; n: number; hands?: boolean }
   | { kind: 'hands'; show: number; of?: number }
-  | { kind: 'array'; rows: number; cols: number; divide?: boolean }
+  | { kind: 'array'; rows: number; cols: number; divide?: boolean; split?: number }
   | { kind: 'skip'; step: number; times: number; hands?: boolean }
 
 /** One card of Olivia's optional "clever trick" mini-lesson for a topic. */

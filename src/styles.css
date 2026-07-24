@@ -721,6 +721,8 @@ button {
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: 0.5px;
+  /* keep the wide gaps that separate multiple worked examples on one line */
+  white-space: pre-wrap;
 }
 /* ---- animated tip illustrations (coded, no image assets) ---- */
 .tip-art {
@@ -897,6 +899,9 @@ button {
 .arr-star.on {
   opacity: 1;
   filter: none;
+}
+.arr-star.on.extra {
+  filter: hue-rotate(160deg) saturate(1.4);
 }
 .arr-star.current {
   transform: scale(1.15);

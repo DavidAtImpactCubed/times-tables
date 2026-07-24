@@ -378,14 +378,17 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
     [
       T('Clever trick: three of something is DOUBLE it, plus one more group.', undefined, { kind: 'double', n: 4, hands: true }),
       T('Three times four: double four is eight, add one more four — twelve!', '3 × 4  →  8 + 4  →  12'),
+      T('For BIG threes, start from an easy multiple. Five threes are fifteen, so six threes are fifteen plus one more three!', '3 × 6 → 15 + 3 → 18      3 × 12 → 30 + 3 + 3 → 36', { kind: 'array', rows: 6, cols: 3, split: 5 }),
     ],
     [
       T('Count up in threes until you reach the total, counting the jumps on your fingers.', undefined, { kind: 'skip', step: 3, times: 4, hands: true }),
       T('Three, six, nine, twelve — four jumps, so the missing number is four!', '3 × ? = 12  →  4'),
+      T('For a big total, start from ten: ten threes are thirty, so twenty-seven is one three LESS — nine!', '3 × ? = 27  →  30 − 3  →  9'),
     ],
     [
       T('Three rows of four make twelve…', '3 × 4 = 12', { kind: 'array', rows: 3, cols: 4 }),
       T('…and twelve shared into fours makes three. One array, two facts!', '12 ÷ 4 = 3', { kind: 'array', rows: 3, cols: 4, divide: true }),
+      T('Sharing big numbers? Same trick: ten threes are thirty, so twenty-seven shared by three is nine.', '27 ÷ 3  →  one less than 10  →  9'),
     ],
   ],
   castle: [
@@ -416,6 +419,7 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
     ],
     [
       T('Trickier splits, same trick: count up in the group size until you reach the total.', '15 ÷ 3  →  3, 6, 9, 12, 15  →  5', { kind: 'skip', step: 3, times: 5, hands: true }),
+      T('For big splits, start from an easy multiple: ten threes are thirty, so twenty-seven shared by three is one less than ten — nine!', '27 ÷ 3  →  10 − 1  →  9'),
     ],
     [
       T('Every fact family has four facts — two times, two sharing. Find the one you already know!', '3 × 4 = 12   4 × 3 = 12   12 ÷ 3 = 4   12 ÷ 4 = 3', { kind: 'array', rows: 3, cols: 4, divide: true }),
@@ -425,6 +429,7 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
     [
       T('Time for your best tricks! Tens: pop a zero. Fives: end in five or zero. Twos: just double.', '10×6→60    5×6→30    2×6→12'),
       T('Elevens: write the digit twice, or do ten times plus one more group.', '11 × 6  →  66'),
+      T('And when a fact feels hard, start from an easy multiple of five or ten, then add or take away groups.', '3 × 6 → 15 + 3 → 18      3 × 9 → 30 − 3 → 27', { kind: 'array', rows: 6, cols: 3, split: 5 }),
     ],
     [
       T('Take each one slowly: spot WHICH table it is first, then pick your trick.', undefined, { kind: 'skip', step: 5, times: 4 }),

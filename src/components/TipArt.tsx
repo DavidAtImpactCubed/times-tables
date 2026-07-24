@@ -211,9 +211,11 @@ function DoubleArt({ n, hands }: { n: number; hands?: boolean }) {
 /**
  * An array builds one row at a time while skip-counting, then shows the
  * multiplication fact — and, with `divide`, the same array read backwards
- * as its division fact (the fact-family picture).
+ * as its division fact (the fact-family picture). With `split`, the first
+ * `split` rows form the "easy multiple" block and the extra rows are tinted,
+ * showing the derived-fact trick: (5 × 3) + 3 = 18.
  */
-function ArrayArt({ rows, cols, divide }: { rows: number; cols: number; divide?: boolean }) {
+function ArrayArt({ rows, cols, divide, split }: { rows: number; cols: number; divide?: boolean; split?: number }) {
   const total = rows + 3
   const frame = useFrameLoop(total, 760)
   const visible = Math.min(frame, rows)
@@ -226,8 +228,9 @@ function ArrayArt({ rows, cols, divide }: { rows: number; cols: number; divide?:
           const row = Math.floor(i / cols)
           const on = row < visible
           const current = row === visible - 1 && !done
+          const extra = split !== undefined && row >= split
           return (
-            <span key={i} className={`arr-star ${on ? 'on' : ''} ${current ? 'current' : ''}`} aria-hidden>
+            <span key={i} className={`arr-star ${on ? 'on' : ''} ${current ? 'current' : ''} ${extra ? 'extra' : ''}`} aria-hidden>
               ⭐
             </span>
           )
@@ -235,16 +238,23 @@ function ArrayArt({ rows, cols, divide }: { rows: number; cols: number; divide?:
       </div>
       <div className="arr-eq" aria-hidden>
         {done ? (
-          <>
+          split !== undefined ? (
             <span>
-              {rows} × {cols} = {rows * cols}
+              ({split} × {cols})<span className="arr-div">{Array.from({ length: rows - split }, () => ` + ${cols}`).join('')}</span> ={' '}
+              {rows * cols}
             </span>
-            {divide && (
-              <span className="arr-div">
-                {rows * cols} ÷ {cols} = {rows}
+          ) : (
+            <>
+              <span>
+                {rows} × {cols} = {rows * cols}
               </span>
-            )}
-          </>
+              {divide && (
+                <span className="arr-div">
+                  {rows * cols} ÷ {cols} = {rows}
+                </span>
+              )}
+            </>
+          )
         ) : (
           <span className="arr-skip">{skipCount || '…'}</span>
         )}
@@ -326,7 +336,7 @@ export function TipArt({ visual }: { visual: TipVisual }) {
     case 'hands':
       return <HandsArt show={visual.show} of={visual.of} />
     case 'array':
-      return <ArrayArt rows={visual.rows} cols={visual.cols} divide={visual.divide} />
+      return <ArrayArt rows={visual.rows} cols={visual.cols} divide={visual.divide} split={visual.split} />
     case 'skip':
       return <SkipArt step={visual.step} times={visual.times} hands={visual.hands} />
   }

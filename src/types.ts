@@ -34,6 +34,8 @@ export interface LevelDef {
   title: string
   /** story beat shown before this level (first time only) */
   story: StoryLine[]
+  /** Olivia's optional "how to" tip, offered before every play of this level */
+  tip?: TipStep[]
 }
 
 /** One card of Olivia's optional "clever trick" mini-lesson for a topic. */
@@ -71,8 +73,6 @@ export interface Region {
   curriculum?: Curriculum
   /** background art region id to reuse, when this region has no art of its own */
   art?: string
-  /** optional "clever trick" mini-lesson Olivia offers when the topic is introduced */
-  tip?: TipStep[]
 }
 
 export type PartSlot = 'body' | 'eyes' | 'glasses' | 'horns' | 'hat' | 'face' | 'held' | 'back'
@@ -97,7 +97,7 @@ export interface SaveData {
   owned: string[]
   equipped: Partial<Record<PartSlot, string>>
   seenStory: string[]
-  /** region ids whose "clever trick" has already been offered */
+  /** legacy: region ids whose tip was offered (tips are now offered before every play) */
   seenTips: string[]
   seenFinale: boolean
   muted: boolean

@@ -32,7 +32,7 @@ type Screen =
   | { name: 'landing' }
   | { name: 'map' }
   | { name: 'story'; regionId: string; level: number }
-  | { name: 'tip'; regionId: string; level: number; offer: boolean }
+  | { name: 'tip'; regionId: string; level: number }
   | { name: 'level'; regionId: string; level: number }
   | { name: 'results'; regionId: string; level: number; correct: number; stars: number; gained: number }
   | { name: 'finale' }
@@ -139,25 +139,26 @@ export default function App() {
     setScreen({ name: 'landing' })
   }
 
+  // After any story, head into the level — but offer this level's tip first
+  // (every play, including replays). The child can always tap "Not now".
+  const goToLevel = (regionId: string, level: number) => {
+    const region = regionById(regionId)
+    const tip = region.levels[level]?.tip
+    if (tip && tip.length) setScreen({ name: 'tip', regionId, level })
+    else setScreen({ name: 'level', regionId, level })
+  }
+
   const startLevel = (regionId: string, level: number) => {
     sfx.click()
     const id = levelId(regionId, level)
     if (!save.seenStory.includes(id)) setScreen({ name: 'story', regionId, level })
-    else setScreen({ name: 'level', regionId, level })
+    else goToLevel(regionId, level)
   }
 
   const storyDone = (regionId: string, level: number) => {
     const id = levelId(regionId, level)
-    const region = regionById(regionId)
-    // offer Olivia's optional trick the first time a topic is introduced
-    const offerTip = level === 0 && !!region.tip && !save.seenTips.includes(regionId)
-    setSave((s) => ({
-      ...s,
-      seenStory: [...s.seenStory, id],
-      seenTips: offerTip ? [...s.seenTips, regionId] : s.seenTips,
-    }))
-    if (offerTip) setScreen({ name: 'tip', regionId, level, offer: true })
-    else setScreen({ name: 'level', regionId, level })
+    setSave((s) => ({ ...s, seenStory: [...s.seenStory, id] }))
+    goToLevel(regionId, level)
   }
 
   const levelDone = (regionId: string, level: number, correct: number) => {
@@ -319,7 +320,6 @@ export default function App() {
             setConfirmDelete(null)
             setScreen({ name: 'landing' })
           }}
-          onShowTip={(regionId) => setScreen({ name: 'tip', regionId, level: 0, offer: false })}
         />
       )
 
@@ -342,15 +342,9 @@ export default function App() {
       return (
         <TipScene
           region={region}
-          offer={screen.offer}
+          level={screen.level}
           readAloud={save.readAloud}
-          onDone={() =>
-            setScreen(
-              screen.offer
-                ? { name: 'level', regionId: screen.regionId, level: screen.level }
-                : { name: 'map' },
-            )
-          }
+          onDone={() => setScreen({ name: 'level', regionId: screen.regionId, level: screen.level })}
         />
       )
     }
@@ -380,7 +374,7 @@ export default function App() {
           stars={screen.stars}
           gained={screen.gained}
           equipped={save.equipped}
-          onReplay={() => setScreen({ name: 'level', regionId: screen.regionId, level: screen.level })}
+          onReplay={() => goToLevel(screen.regionId, screen.level)}
           onContinue={() => afterResults(screen.regionId, screen.level, screen.stars)}
           onWardrobe={() => setScreen({ name: 'wardrobe' })}
         />

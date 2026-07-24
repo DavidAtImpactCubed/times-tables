@@ -306,66 +306,94 @@ export const EARLY_FINALE: StoryLine[] = [
 ]
 
 // ---------------------------------------------------------------------------
-// Olivia's optional "clever tricks" — a short, age-appropriate strategy per topic.
+// Olivia's optional tips — a short, research-informed "how to" for EVERY level.
+// Offered (with an easy "Not now") before every play, so a child can have the
+// strategy fresh in mind — especially the younger ones. One entry per level.
 // ---------------------------------------------------------------------------
 const T = (text: string, example?: string): TipStep => ({ text, example })
 
-const TIPS: Record<string, TipStep[]> = {
-  // main curriculum
+const LEVEL_TIPS: Record<string, TipStep[][]> = {
+  // ---- main curriculum -----------------------------------------------------
   beach: [
-    T('The 2 times table is just doubling — two of something! Count up in twos: 2, 4, 6, 8…'),
-    T('Every answer is an even number, so it ends in 0, 2, 4, 6 or 8.', '2 × 4  →  double 4  →  8'),
+    [T('The 2 times table is just doubling — two of something! Count up in twos: 2, 4, 6, 8…', '2 × 4  →  double 4  →  8')],
+    [T('Every answer is an even number, so it ends in 0, 2, 4, 6 or 8. Count up in twos to check.')],
+    [T('Missing number? Count up in twos until you reach the total, then count how many jumps it took.', '2 × ? = 8  →  2, 4, 6, 8  →  4 jumps')],
+    [T('Sharing is timesing backwards. If 2 × 4 = 8, then 8 ÷ 2 = 4 — the same fact family!')],
   ],
   mountain: [
-    T('Count up in fives: 5, 10, 15, 20… like counting the fingers on each hand!'),
-    T('Every answer ends in a 5 or a 0. Neat, isn’t it?', '5 × 3  →  5, 10, 15  →  15'),
+    [T('Count up in fives: 5, 10, 15, 20… like counting the fingers on each hand!')],
+    [T('Every answer ends in a 5 or a 0. That’s the fives’ special pattern.', '5 × 3  →  5, 10, 15  →  15')],
+    [T('Count up in fives until you reach the total; the number of jumps is your answer.', '5 × ? = 20  →  5, 10, 15, 20  →  4')],
+    [T('5 × 4 = 20, so 20 ÷ 5 = 4. Timesing and sharing are the same fact family.')],
   ],
   lagoon: [
-    T('Times ten is the easiest trick of all — just pop a zero on the end!', '10 × 3  →  30'),
-    T('So 10 × 7 is 70, and 10 × 9 is 90. Easy peasy!'),
+    [T('Times ten is the easiest trick of all — just pop a zero on the end!', '10 × 3  →  30')],
+    [T('So 10 × 7 is 70, and 10 × 9 is 90. Add a zero every time.')],
+    [T('To find the missing number, take the zero off the total.', '10 × ? = 70  →  7')],
+    [T('70 ÷ 10 = 7 — just take the zero off. Sharing is timesing backwards!')],
   ],
   forest: [
-    T('Count up in threes: 3, 6, 9, 12, 15…'),
-    T('Clever trick: double the number, then add one more group.', '3 × 4  →  (2 × 4) + 4  →  8 + 4  →  12'),
+    [T('Count up in threes: 3, 6, 9, 12, 15…')],
+    [T('Clever trick: double the number, then add one more group.', '3 × 4  →  (2 × 4) + 4  →  8 + 4  →  12')],
+    [T('Count up in threes until you reach the total, then count the jumps.', '3 × ? = 12  →  3, 6, 9, 12  →  4')],
+    [T('3 × 4 = 12, so 12 ÷ 3 = 4. Same fact family, just backwards!')],
   ],
   castle: [
-    T('For the elevens up to 9, just say the digit twice!', '11 × 3  →  33      11 × 4  →  44'),
-    T('Another way: do ten times, then add one more group.', '11 × 3  →  (10 × 3) + 3  →  30 + 3  →  33'),
+    [T('For the elevens up to 9, just say the digit twice!', '11 × 3  →  33      11 × 4  →  44')],
+    [T('Another way: do ten times, then add one more group.', '11 × 3  →  (10 × 3) + 3  →  30 + 3  →  33')],
+    [T('For a double-digit answer like 33 or 66, the missing number is just that repeated digit.', '11 × ? = 55  →  5')],
+    [T('11 × 4 = 44, so 44 ÷ 11 = 4. Timesing and sharing together!')],
   ],
   cavern: [
-    T('Dividing means sharing into equal groups — and it’s multiplying backwards!'),
-    T('To solve 20 ÷ 5, ask: what times 5 makes 20?', '5 × 4 = 20    so    20 ÷ 5 = 4'),
+    [T('Dividing means sharing into equal groups — and it’s multiplying backwards!')],
+    [T('To solve 20 ÷ 5, ask: what times 5 makes 20?', '5 × 4 = 20    so    20 ÷ 5 = 4')],
+    [T('Stuck? Count up in the group size until you reach the total, and count the jumps.', '15 ÷ 3  →  3, 6, 9, 12, 15  →  5')],
+    [T('Every division has a times fact hiding inside it — think of the fact family you already know!')],
   ],
   tower: [
-    T('Time to use your best tricks! Tens: add a zero. Fives: end in 5 or 0. Twos: just double.'),
-    T('For the elevens, do ten times then add one more group.', '11 × 6  →  60 + 6  →  66'),
-    T('And remember — dividing is just multiplying backwards. You’ve got this!'),
+    [T('Use your best tricks! Tens: add a zero. Fives: end in 5 or 0. Twos: just double.')],
+    [T('For the elevens, do ten times then add one more group.', '11 × 6  →  60 + 6  →  66')],
+    [T('Missing number? Turn it into a division.', '5 × ? = 30  →  30 ÷ 5  →  6')],
+    [T('Remember — dividing is just multiplying backwards. You know every fact family. You’ve got this!')],
   ],
-  // early years
+  // ---- early years ---------------------------------------------------------
   'count-cove': [
-    T('Touch each thing as you count: 1, 2, 3… The last number you say is how many there are!'),
-    T('One more? Count on by one. One less? Count back by one.', 'one more than 4  →  5'),
+    [T('Touch each thing as you count: 1, 2, 3… The last number you say is how many there are!')],
+    [T('Keep touching each star as you count all the way to ten — don’t count any star twice!')],
+    [T('One more? Just count on by one — say the very next number.', 'one more than 4  →  5')],
+    [T('One less? Count back by one — say the number that comes just before.', 'one less than 6  →  5')],
   ],
   'bonds-bay': [
-    T('Some pairs of numbers always make ten. They’re special — try to learn them by heart!', '1&9   2&8   3&7   4&6   5&5'),
-    T('Your fingers can help: hold up some, and the rest make ten.'),
+    [T('Some pairs of numbers always make ten. They’re special — try to learn them by heart!', '1&9   2&8   3&7   4&6   5&5')],
+    [T('Start with the bigger number, then count on. Your fingers help you keep track.', '6 + 3  →  6… 7, 8, 9  →  9')],
+    [T('Start at the number you have and count ON to the total. Put up a finger for each count — that’s your answer!', '6 and how many make 9?  →  6… 7, 8, 9  →  3 fingers')],
+    [T('To find a missing number, count on from what you have up to the total, keeping track on your fingers.', '7 + ? = 10  →  7… 8, 9, 10  →  3')],
   ],
   'add-meadow': [
-    T('To add, start at the bigger number and count on.', '6 + 3  →  6… 7, 8, 9  →  9'),
-    T('For bigger ones, make ten first, then add the rest.', '8 + 5  →  8 + 2 + 3  →  10 + 3  →  13'),
+    [T('Start with the BIGGER number, then count on the smaller one. It’s much quicker!', '3 + 6  →  start at 6… 7, 8, 9  →  9')],
+    [T('Still start with the bigger number and count on. Use your fingers to keep track.', '5 + 8  →  8… 9, 10, 11, 12, 13  →  13')],
+    [T('Count on from the bigger number, then type the total you land on.')],
+    [T('Start at the number you have and count on to the total — how many did you add on?', '6 + ? = 9  →  6… 7, 8, 9  →  3')],
   ],
   'sub-trail': [
-    T('Taking away means counting back.', '9 − 3  →  9… 8, 7, 6  →  6'),
-    T('Or count up from the small number to the big one to see how many more.'),
+    [T('Taking away means counting back. Start at the big number and count back.', '7 − 2  →  7… 6, 5  →  5')],
+    [T('Count back on your fingers, then type how many are left.')],
+    [T('For bigger numbers, count back one at a time — take your time.', '15 − 3  →  15… 14, 13, 12  →  12')],
+    [T('Plus means count ON to get more; take-away means count BACK to get fewer. Read each one carefully!')],
   ],
   'doubles-keep': [
-    T('Double means two of the same number added together.', 'double 4  →  4 + 4  →  8'),
-    T('Halving is the opposite — split a number into two equal groups.'),
+    [T('Double means two of the same number added together.', 'double 4  →  4 + 4  →  8')],
+    [T('Add the number to itself, then type the answer.', 'double 5  →  5 + 5  →  10')],
+    [T('Plus means more (count on), take-away means fewer (count back). Look at the sign!')],
+    [T('Use all your tricks: count on to add, count back to take away, and double by adding a number to itself!')],
   ],
 }
 
 const ALL_REGIONS = [...REGIONS, ...EARLY_REGIONS]
-for (const r of ALL_REGIONS) r.tip = TIPS[r.id]
+for (const r of ALL_REGIONS) {
+  const tips = LEVEL_TIPS[r.id]
+  if (tips) r.levels.forEach((lvl, i) => { if (tips[i]) lvl.tip = tips[i] })
+}
 
 export const regionsFor = (curriculum: Curriculum): Region[] =>
   curriculum === 'early' ? EARLY_REGIONS : REGIONS

@@ -36,10 +36,9 @@ interface Props {
   onToggleMute: () => void
   onToggleReadAloud: () => void
   onSwitchPlayer: () => void
-  onShowTip: (regionId: string) => void
 }
 
-export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, onToggleMute, onToggleReadAloud, onSwitchPlayer, onShowTip }: Props) {
+export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, onToggleMute, onToggleReadAloud, onSwitchPlayer }: Props) {
   // the furthest level the player can currently play (their progress frontier)
   let frontier: { ri: number; li: number } | null = null
   regions.forEach((region, ri) => {
@@ -57,7 +56,7 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
     if (!el) return
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     const t = window.setTimeout(() => {
-      el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' })
+      el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'end' })
     }, 400)
     return () => window.clearTimeout(t)
   }, [])
@@ -124,19 +123,6 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
                   <h2>{region.name}</h2>
                   <p className="region-sub">{regionSubtitle(region)}</p>
                 </div>
-                {unlocked && region.tip && (
-                  <button
-                    className="region-tip-btn"
-                    onClick={() => {
-                      sfx.click()
-                      onShowTip(region.id)
-                    }}
-                    aria-label={`Clever trick for ${region.name}`}
-                    data-testid={`tip-btn-${region.id}`}
-                  >
-                    💡
-                  </button>
-                )}
               </div>
               {!unlocked && (
                 <p className="unlock-hint" data-testid={`unlock-hint-${region.id}`}>

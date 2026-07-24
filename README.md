@@ -31,9 +31,10 @@ Chosen per player when a new game starts (see the landing screen):
 - **Gentle mistakes** — a wrong answer shows the correct one with a
   count-on / count-back / skip-counting explanation, and the question returns
   later in the level for another (unscored) go.
-- **Olivia's clever tricks** — when a topic is introduced, Olivia the Owl offers an
-  *optional* strategy mini-lesson (e.g. "11× → do 10× then add one more
-  group"). Revisit any region's trick from the 💡 button on the map.
+- **Olivia's tips** — before every level (including replays), Olivia the Owl
+  offers an *optional* how-to for that exact level — a research-informed strategy
+  such as "start with the bigger number, then count on" or "11× → do 10× then add
+  one more group". A child can always tap **Not now** to skip straight in.
 - **Read-aloud** — questions, stories and tips can be spoken. Story, tip and
   finale lines play pre-recorded **character voices** (the Star Goblin, Olivia
   the Owl and your monster each have their own), with the browser's built-in
@@ -92,8 +93,8 @@ covering `mul`, `div`, `add`, `sub`, plus a visual `count` type. See
 
 - **New times table** (e.g. Year 3's 4s and 8s): add a `Region` to `REGIONS` in
   `src/data/regions.ts` with `kind: 'times'` and `tables: [4]`; the generator,
-  levels, unlocking, map and background fallback all follow. Add a `TIPS[id]`
-  entry for its clever trick.
+  levels, unlocking, map and background fallback all follow. Add a `LEVEL_TIPS[id]`
+  entry (one tip array per level) for its how-to tips.
 - **New early-years topic**: add a `Region` to `EARLY_REGIONS`
   (`curriculum: 'early'`, an `art` alias, a `kind`) and a branch in
   `generateEarlyLevel` in `src/logic/questions.ts`.

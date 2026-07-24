@@ -7,16 +7,16 @@ import owlUrl from '../assets/characters/owl.webp'
 
 interface Props {
   region: Region
-  /** true when Olivia first offers the trick (shows the yes/maybe-later choice) */
-  offer: boolean
+  /** which level's tip to show */
+  level: number
   readAloud?: boolean
   onDone: () => void
 }
 
-/** Olivia the Owl's optional "clever trick" mini-lesson for a topic. */
-export function TipScene({ region, offer, readAloud, onDone }: Props) {
-  const steps = region.tip ?? []
-  const [phase, setPhase] = useState<'offer' | 'cards'>(offer ? 'offer' : 'cards')
+/** Olivia the Owl's optional tip for a level, offered before every play. */
+export function TipScene({ region, level, readAloud, onDone }: Props) {
+  const steps = region.levels[level]?.tip ?? []
+  const [phase, setPhase] = useState<'offer' | 'cards'>('offer')
   const [index, setIndex] = useState(0)
 
   // read the offer, then each trick card, aloud
@@ -43,7 +43,7 @@ export function TipScene({ region, offer, readAloud, onDone }: Props) {
   }
 
   const step = steps[index]
-  const bg = backgroundFor(region.id, 0)
+  const bg = backgroundFor(region.id, level)
 
   return (
     <div className="screen tip-screen" style={{ background: `linear-gradient(180deg, ${region.color}cc, #1e1b4b)` }} data-testid="tip-scene">
@@ -61,7 +61,7 @@ export function TipScene({ region, offer, readAloud, onDone }: Props) {
               Yes please! 💡
             </button>
             <button className="btn btn-secondary" onClick={skip} data-testid="tip-skip">
-              Maybe later
+              Not now
             </button>
           </div>
         </div>

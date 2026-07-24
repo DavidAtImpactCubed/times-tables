@@ -28,3 +28,6 @@ export const backgroundFor = (regionId: string, level: number): string | undefin
 
 /** The island vista shown on the title screen. */
 export const TITLE_BG: string | undefined = byStem['title']
+
+/** The dressing-room scene behind the wardrobe (and its tutorial). */
+export const WARDROBE_BG: string | undefined = byStem['wardrobe']

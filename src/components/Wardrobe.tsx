@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { SLOTS, SLOT_LABELS, WARDROBE, itemById } from '../data/wardrobe'
 import { sfx } from '../logic/audio'
+import { WARDROBE_BG } from '../logic/backgrounds'
 import type { PartSlot, SaveData } from '../types'
 import { Monster } from './Monster'
 
@@ -59,6 +60,9 @@ export function Wardrobe({ save, setSave, onBack }: Props) {
 
   return (
     <div className="screen wardrobe-screen">
+      {WARDROBE_BG && (
+        <div className="wardrobe-bg" aria-hidden data-testid="wardrobe-bg" style={{ backgroundImage: `url(${WARDROBE_BG})` }} />
+      )}
       <header className="wardrobe-header">
         <button className="btn btn-round" onClick={onBack} aria-label="Back to the map" data-testid="wardrobe-back">
           🗺️

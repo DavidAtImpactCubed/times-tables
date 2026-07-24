@@ -3,7 +3,7 @@ import { INTRO, WARDROBE_INTRO, finaleFor, regionById, regionsFor } from './data
 import { WARDROBE } from './data/wardrobe'
 import { setMuted, sfx } from './logic/audio'
 import { setReadAloud } from './logic/speech'
-import { TITLE_BG, backgroundFor } from './logic/backgrounds'
+import { TITLE_BG, WARDROBE_BG, backgroundFor } from './logic/backgrounds'
 import { starsFor } from './logic/progress'
 import {
   addProfile,
@@ -417,6 +417,7 @@ export default function App() {
           <StoryScene
             lines={WARDROBE_INTRO}
             background="#7c3aed"
+            image={WARDROBE_BG}
             equipped={save.equipped}
             readAloud={save.readAloud}
             onDone={() => setSave((s) => ({ ...s, seenStory: [...s.seenStory, 'wardrobe-intro'] }))}

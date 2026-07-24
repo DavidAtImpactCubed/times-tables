@@ -1540,6 +1540,25 @@ button.map-monster {
 .wardrobe-screen {
   gap: 12px;
 }
+.wardrobe-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+.wardrobe-bg::after {
+  /* dim just enough that the item grid stays easy to read */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(30, 27, 75, 0.35) 0%, rgba(30, 27, 75, 0.55) 60%, rgba(30, 27, 75, 0.7) 100%);
+}
+.wardrobe-screen > :not(.wardrobe-bg) {
+  position: relative;
+  z-index: 1;
+}
 .wardrobe-header {
   width: 100%;
   display: flex;

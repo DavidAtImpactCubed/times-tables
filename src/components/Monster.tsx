@@ -104,7 +104,7 @@ const PLACE: Record<string, Placement> = {
   'back-cape': { cx: 650, cy: 1188, w: 1150 },
   'back-wings': { cx: 650, cy: 818, w: 1250 },
   'back-batwings': { cx: 650, cy: 798, w: 1420 },
-  'back-belt': { cx: 650, cy: 1228, w: 620 },
+  'back-belt': { cx: 657, cy: 1228, w: 632 },
   'back-duck': { cx: 580, cy: 1230, w: 930 },
 }
 

@@ -118,8 +118,15 @@ function matchQuestion(rows: number, cols: number, reverse = false, maxRows = In
     input: 'choice',
     choices: shuffled.map((f) => f.r * f.c),
   }
-  if (reverse) q.choiceArrays = shuffled.map((f) => ({ rows: f.r, cols: f.c }))
-  else q.choiceLabels = shuffled.map((f) => `${f.r} × ${f.c}`)
+  // Show the WHOLE fact ("4 × 11 = 44", not just "4 × 11"): every choice
+  // carries its own correct product, so nothing is given away, and each
+  // question rehearses the complete fact triple.
+  if (reverse) {
+    q.choiceArrays = shuffled.map((f) => ({ rows: f.r, cols: f.c }))
+    q.promptLabel = `${rows} × ${cols} = ${result}`
+  } else {
+    q.choiceLabels = shuffled.map((f) => `${f.r} × ${f.c} = ${f.r * f.c}`)
+  }
   return q
 }
 
@@ -490,7 +497,9 @@ export function spokenQuestion(q: Question): string {
   if (q.kind === 'count') return 'How many?'
   if (q.kind === 'match') {
     if (q.prompt) return q.prompt
-    return q.choiceArrays ? `Which array shows ${q.a} times ${q.b}?` : 'Which times fact does this array show?'
+    return q.choiceArrays
+      ? `Which array shows ${q.a} times ${q.b} equals ${q.result}?`
+      : 'Which times fact does this array show?'
   }
   const op = q.kind === 'mul' ? 'times' : q.kind === 'div' ? 'divided by' : q.kind === 'add' ? 'plus' : 'take away'
   if (q.unknown === 'result') return `What is ${q.a} ${op} ${q.b}?`
@@ -710,14 +719,14 @@ export function explain(q: Question): Explanation {
     }
     if (q.b === 11) {
       return {
-        answerLabel: `${q.a} × 11`,
+        answerLabel: `${q.a} × 11 = ${q.result}`,
         text: `Each row is a full ten and one more. ${q.a} rows makes ${q.a} tens and ${q.a} ones — ${q.result}. The ${q.a} appears twice!`,
         visual: { kind: 'array', rows: q.a, cols: 11 },
       }
     }
     const seq = Array.from({ length: q.a }, (_, i) => (i + 1) * q.b).join(', ')
     return {
-      answerLabel: `${q.a} × ${q.b}`,
+      answerLabel: `${q.a} × ${q.b} = ${q.result}`,
       text: `The array has ${q.a} rows with ${q.b} in each row. Count up in ${q.b}s, once for each row: ${seq}. That's ${q.a} × ${q.b} = ${q.result}.`,
       visual: { kind: 'array', rows: q.a, cols: q.b },
     }

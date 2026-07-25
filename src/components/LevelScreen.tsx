@@ -54,7 +54,8 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
   // stop any speech when leaving the level
   useEffect(() => () => stopSpeaking(), [])
 
-  const explainSpeech = (answer: string, body: string) => `The answer is ${answer.replace('×', 'times')}. ${body}`
+  const explainSpeech = (answer: string, body: string) =>
+    `The answer is ${answer.replace('×', 'times').replace('=', 'equals')}. ${body}`
   const replay = () => {
     if (feedback?.kind === 'wrong') speak(explainSpeech(feedback.answerLabel ?? String(feedback.answer), feedback.text))
     else speak(spokenQuestion(q))
@@ -169,7 +170,10 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             {q.choiceArrays || q.choiceCounts ? (
               <>
                 <p className="count-prompt">{q.prompt ?? 'Which array shows this fact?'}</p>
-                <div className="match-fact" aria-label={q.promptLabel ?? `${q.a} times ${q.b}`}>
+                <div
+                  className="match-fact"
+                  aria-label={(q.promptLabel ?? `${q.a} × ${q.b}`).replace('×', 'times').replace('=', 'equals')}
+                >
                   {q.promptLabel ?? `${q.a} × ${q.b}`}
                 </div>
               </>

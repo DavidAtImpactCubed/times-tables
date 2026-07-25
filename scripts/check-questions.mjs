@@ -131,10 +131,18 @@ for (const region of REGIONS) {
           } else if (!q.choiceLabels || q.choiceLabels.length !== q.choices.length) {
             fail('match without aligned labels')
           } else {
+            // fact labels show the whole equation and must be internally true
             q.choiceLabels.forEach((label, i) => {
-              const [r, c] = label.split('×').map((x) => parseInt(x.trim(), 10))
-              if (r * c !== q.choices[i]) fail(`match label "${label}" ≠ choice ${q.choices[i]}`)
+              const m = label.match(/^(\d+) × (\d+) = (\d+)$/)
+              if (!m || +m[1] * +m[2] !== q.choices[i] || +m[3] !== q.choices[i])
+                fail(`match label "${label}" ≠ choice ${q.choices[i]}`)
             })
+          }
+          // reverse prompts that show an equation must be internally true too
+          if (q.promptLabel?.includes('×')) {
+            const m = q.promptLabel.match(/^(\d+) × (\d+) = (\d+)$/)
+            if (!m || +m[1] !== q.a || +m[2] !== q.b || +m[3] !== q.a * q.b)
+              fail(`match prompt "${q.promptLabel}" ≠ ${q.a} × ${q.b} = ${q.a * q.b}`)
           }
         }
 

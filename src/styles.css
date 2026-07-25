@@ -1047,6 +1047,40 @@ button {
   justify-content: center;
   line-height: 1;
 }
+/* base-ten rods: a ten as one unbreakable segmented bar */
+.ten-rod {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  background: #b45309;
+  border-radius: 7px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.rod-cell {
+  width: 14px;
+  height: 20px;
+  background: linear-gradient(180deg, #fde047, #facc15);
+  border-radius: 3px;
+}
+.rod-split {
+  margin-left: 5px;
+}
+.rod-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+/* animated variants (tips/explanations build row by row) */
+.ten-rod.dim {
+  opacity: 0.22;
+  filter: grayscale(0.7);
+}
+.ten-rod.current {
+  transform: scale(1.06);
+}
+
 /* early "find the number" groups: wrap at five, with every row centred */
 .choice-count-group {
   display: flex;

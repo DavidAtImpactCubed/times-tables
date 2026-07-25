@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { TipVisual } from '../types'
+import { TenRod } from './TenRod'
 import hand1 from '../assets/hands/hand-1.svg'
 import hand2 from '../assets/hands/hand-2.svg'
 import hand3 from '../assets/hands/hand-3.svg'
@@ -221,6 +222,33 @@ function ArrayArt({ rows, cols, divide, split }: { rows: number; cols: number; d
   const visible = Math.min(frame, rows)
   const done = frame >= rows + 1
   const skipCount = Array.from({ length: visible }, (_, i) => (i + 1) * cols).join(', ')
+  if (cols === 10) {
+    return (
+      <div className="tip-art tip-arrayart" data-testid="tip-art-array">
+        <div className="rod-stack">
+          {Array.from({ length: rows }, (_, r) => (
+            <TenRod key={r} className={`${r < visible ? '' : 'dim'} ${r === visible - 1 && !done ? 'current' : ''}`} />
+          ))}
+        </div>
+        <div className="arr-eq" aria-hidden>
+          {done ? (
+            <>
+              <span>
+                {rows} × 10 = {rows * 10}
+              </span>
+              {divide && (
+                <span className="arr-div">
+                  {rows * 10} ÷ 10 = {rows}
+                </span>
+              )}
+            </>
+          ) : (
+            <span className="arr-skip">{skipCount || '…'}</span>
+          )}
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="tip-art tip-arrayart" data-testid="tip-art-array">
       <div className="arr-grid" style={{ gridTemplateColumns: `repeat(${cols}, auto)` }}>

@@ -6,6 +6,7 @@ import { speak, stopSpeaking } from '../logic/speech'
 import type { PartSlot, Question, Region, TipVisual } from '../types'
 import { Monster, type Mood } from './Monster'
 import { NumberPad } from './NumberPad'
+import { TenRod } from './TenRod'
 import { TipArt } from './TipArt'
 
 interface Props {
@@ -175,21 +176,29 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             ) : (
               <>
                 <p className="count-prompt">Which fact does this array show?</p>
-                <div
-                  className="match-grid"
-                  style={{
-                    gridTemplateColumns: `repeat(${q.b}, auto)`,
-                    // same sizing rule as the pick-the-array buttons, so stars feel consistent
-                    fontSize: `${Math.max(14, Math.min(q.b > 8 ? 17 : 26, Math.floor(160 / q.a)))}px`,
-                  }}
-                  aria-label={`${q.a} rows of ${q.b}`}
-                >
-                  {Array.from({ length: q.a * q.b }, (_, i) => (
-                    <span key={i} className="match-star" style={{ animationDelay: `${i * 0.02}s` }} aria-hidden>
-                      ⭐
-                    </span>
-                  ))}
-                </div>
+                {q.b === 10 ? (
+                  <div className="rod-stack" aria-label={`${q.a} tens`}>
+                    {Array.from({ length: q.a }, (_, i) => (
+                      <TenRod key={i} />
+                    ))}
+                  </div>
+                ) : (
+                  <div
+                    className="match-grid"
+                    style={{
+                      gridTemplateColumns: `repeat(${q.b}, auto)`,
+                      // same sizing rule as the pick-the-array buttons, so stars feel consistent
+                      fontSize: `${Math.max(14, Math.min(q.b > 8 ? 17 : 26, Math.floor(160 / q.a)))}px`,
+                    }}
+                    aria-label={`${q.a} rows of ${q.b}`}
+                  >
+                    {Array.from({ length: q.a * q.b }, (_, i) => (
+                      <span key={i} className="match-star" style={{ animationDelay: `${i * 0.02}s` }} aria-hidden>
+                        ⭐
+                      </span>
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -248,20 +257,28 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
                     aria-label={`${q.choiceArrays[i].rows} rows of ${q.choiceArrays[i].cols}`}
                     data-testid={`choice-${c}`}
                   >
-                    <span
-                      className="choice-array-grid"
-                      style={{
-                        gridTemplateColumns: `repeat(${q.choiceArrays[i].cols}, auto)`,
-                        // as big as the space allows: narrower and shallower arrays get larger stars
-                        fontSize: `${Math.max(14, Math.min(q.choiceArrays[i].cols > 8 ? 17 : 26, Math.floor(130 / q.choiceArrays[i].rows)))}px`,
-                      }}
-                    >
-                      {Array.from({ length: q.choiceArrays[i].rows * q.choiceArrays[i].cols }, (_, j) => (
-                        <span key={j} aria-hidden>
-                          ⭐
-                        </span>
-                      ))}
-                    </span>
+                    {q.choiceArrays[i].cols === 10 ? (
+                      <span className="rod-stack">
+                        {Array.from({ length: q.choiceArrays[i].rows }, (_, j) => (
+                          <TenRod key={j} />
+                        ))}
+                      </span>
+                    ) : (
+                      <span
+                        className="choice-array-grid"
+                        style={{
+                          gridTemplateColumns: `repeat(${q.choiceArrays[i].cols}, auto)`,
+                          // as big as the space allows: narrower and shallower arrays get larger stars
+                          fontSize: `${Math.max(14, Math.min(q.choiceArrays[i].cols > 8 ? 17 : 26, Math.floor(130 / q.choiceArrays[i].rows)))}px`,
+                        }}
+                      >
+                        {Array.from({ length: q.choiceArrays[i].rows * q.choiceArrays[i].cols }, (_, j) => (
+                          <span key={j} aria-hidden>
+                            ⭐
+                          </span>
+                        ))}
+                      </span>
+                    )}
                   </button>
                 ) : (
                   <button key={c} className="btn choice-btn" onClick={() => submit(c)} data-testid={`choice-${c}`}>

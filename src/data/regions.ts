@@ -441,7 +441,7 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('Times ten and divide by ten undo each other — add the zero, take the zero.', '7 → 70 → 7'),
     ],
     [
-      T('Each row is a full ten! Count the rows and pop a zero on: three rows is thirty.', '3 rows of 10  →  30  →  10 × 3', { kind: 'array', rows: 3, cols: 10 }),
+      T('Each bar is one full ten! Count the bars and pop a zero on: three tens is thirty.', '3 tens  →  30  →  3 × 10', { kind: 'array', rows: 3, cols: 10 }),
     ],
   ],
   forest: [

@@ -404,7 +404,8 @@ export function generateLevel(region: Region, level: number): Question[] {
       // both directions and both orientations: read an array as a fact, and
       // pick the array a fact describes
       for (const n of shuffle([2, 3, 4, 5, 6, 7])) {
-        const flip = Math.random() < 0.5
+        // tens always sit rows-of-ten, so every row renders as a base-ten rod
+        const flip = table === 10 ? false : Math.random() < 0.5
         qs.push(matchQuestion(flip ? table : n, flip ? n : table, false))
         // reverse arrays sit few-rows-of-many so the choice buttons stay wide and shallow
         qs.push(matchQuestion(Math.min(table, n), Math.max(table, n), true))

@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { sfx } from '../logic/audio'
-import { readAloudSupported } from '../logic/speech'
+import { readAloudSupported, speak, stopSpeaking } from '../logic/speech'
 import { backgroundFor } from '../logic/backgrounds'
 import { levelUnlocked, levelsLeftToUnlock, regionUnlocked, starValue } from '../logic/progress'
 import { levelId, type Region, type SaveData } from '../types'
@@ -39,6 +39,20 @@ interface Props {
 }
 
 export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, onToggleMute, onToggleReadAloud, onSwitchPlayer }: Props) {
+  // tapping a ⭐×N badge explains the star-value mechanic for that stage
+  const [valueInfo, setValueInfo] = useState<{ name: string; value: number } | null>(null)
+  const explain = (name: string, value: number) => {
+    sfx.click()
+    setValueInfo({ name, value })
+    speak(
+      `Every star you win in ${name} is worth ${value} in your star purse. Trickier stages pay more — and a perfect replay wins ${value} bonus ${value === 1 ? 'star' : 'stars'} for practising!`,
+    )
+  }
+  const closeExplain = () => {
+    sfx.click()
+    stopSpeaking()
+    setValueInfo(null)
+  }
   // the furthest level the player can currently play (their progress frontier)
   let frontier: { ri: number; li: number } | null = null
   regions.forEach((region, ri) => {
@@ -120,13 +134,14 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
                   <h2>{region.name}</h2>
                   <p className="region-sub">{regionSubtitle(region)}</p>
                 </div>
-                <span
+                <button
                   className="region-value"
-                  aria-label={`Stars here are worth ${starValue(region)} each`}
+                  onClick={() => explain(region.name, starValue(region))}
+                  aria-label={`Stars here are worth ${starValue(region)} each — tap to learn more`}
                   data-testid={`region-value-${region.id}`}
                 >
                   ⭐×{starValue(region)}
-                </span>
+                </button>
               </div>
               {!unlocked && (
                 <p className="unlock-hint" data-testid={`unlock-hint-${region.id}`}>
@@ -165,6 +180,27 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
           )
         })}
       </div>
+
+      {valueInfo && (
+        <div className="value-pop" onClick={closeExplain} data-testid="value-info">
+          <div className="value-pop-card" onClick={(e) => e.stopPropagation()}>
+            <div className="value-pop-badge" aria-hidden>
+              ⭐×{valueInfo.value}
+            </div>
+            <p>
+              Every star you win in <strong>{valueInfo.name}</strong> is worth <strong>{valueInfo.value}</strong> in
+              your star purse!
+            </p>
+            <p>
+              Trickier stages pay more — and a <strong>perfect</strong> replay wins {valueInfo.value} bonus{' '}
+              {valueInfo.value === 1 ? 'star' : 'stars'} for practising.
+            </p>
+            <button className="btn btn-primary" onClick={closeExplain} data-testid="value-info-close">
+              Got it! 👍
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

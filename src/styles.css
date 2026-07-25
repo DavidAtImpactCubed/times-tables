@@ -1004,6 +1004,55 @@ button {
   border-radius: 999px;
   padding: 4px 9px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.region-value:active {
+  transform: translateY(1px);
+}
+
+/* tap a ⭐×N badge → a little card explains the star-value mechanic */
+.value-pop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(30, 27, 75, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.value-pop-card {
+  background: #fff;
+  border-radius: 22px;
+  padding: 20px 22px;
+  max-width: 340px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  animation: pop-in 0.25s ease both;
+}
+.value-pop-card p {
+  margin: 0;
+  color: #1e1b4b;
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+.value-pop-badge {
+  align-self: center;
+  background: #fde047;
+  color: #713f12;
+  font-weight: 800;
+  font-size: 1.3rem;
+  border-radius: 999px;
+  padding: 8px 18px;
+  box-shadow: 0 3px 0 #ca8a04;
+}
+.value-pop-card .btn {
+  align-self: center;
 }
 
 .reset-confirm {

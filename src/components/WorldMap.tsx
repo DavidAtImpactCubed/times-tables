@@ -122,10 +122,10 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
                 </div>
                 <span
                   className="region-value"
-                  aria-label={`Stars here are worth ${starValue(ri)} each`}
+                  aria-label={`Stars here are worth ${starValue(region)} each`}
                   data-testid={`region-value-${region.id}`}
                 >
-                  ⭐×{starValue(ri)}
+                  ⭐×{starValue(region)}
                 </span>
               </div>
               {!unlocked && (

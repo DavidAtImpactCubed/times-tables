@@ -21,7 +21,7 @@ export function freshSave(): SaveData {
     seenFinale: false,
     muted: false,
     readAloud: true,
-    economy: 3,
+    economy: 4,
   }
 }
 
@@ -35,15 +35,15 @@ export function freshSave(): SaveData {
  * prices) or saved up.
  */
 function upgradeEconomy(save: SaveData, rawEconomy: unknown): SaveData {
-  if (rawEconomy === 3) return save
+  if (rawEconomy === 4) return save
   let earned = 0
-  regionsFor(save.curriculum).forEach((region, ri) => {
+  regionsFor(save.curriculum).forEach((region) => {
     region.levels.forEach((_, li) => {
-      earned += (save.stars[levelId(region.id, li)] ?? 0) * starValue(ri)
+      earned += (save.stars[levelId(region.id, li)] ?? 0) * starValue(region)
     })
   })
   const spent = save.owned.reduce((sum, id) => sum + (itemById(id)?.price ?? 0), 0)
-  return { ...save, wallet: Math.max(0, earned - spent), economy: 3 }
+  return { ...save, wallet: Math.max(0, earned - spent), economy: 4 }
 }
 
 /** Refund and drop wardrobe items that no longer exist in the catalogue. */

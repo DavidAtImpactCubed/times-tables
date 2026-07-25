@@ -20,6 +20,7 @@ export const REGIONS: Region[] = [
     color: '#f59e0b',
     tables: [2],
     kind: 'times',
+    starValue: 2,
     levels: TIMES_LEVELS(2, [
       [
         O('Wake up, little monster — disaster! The Star Goblin has stolen every star on Monster Island!'),
@@ -42,6 +43,7 @@ export const REGIONS: Region[] = [
     color: '#8b5cf6',
     tables: [5],
     kind: 'times',
+    starValue: 1,
     levels: TIMES_LEVELS(5, [
       [
         O('The trail climbs Five-Spike Mountain. The path rises in jumps of five!'),
@@ -60,6 +62,7 @@ export const REGIONS: Region[] = [
     color: '#06b6d4',
     tables: [10],
     kind: 'times',
+    starValue: 1,
     levels: TIMES_LEVELS(10, [
       [
         O('The goblin rowed across Ten-Tentacle Lagoon. The friendly octopus counts in tens!'),
@@ -78,6 +81,7 @@ export const REGIONS: Region[] = [
     color: '#22c55e',
     tables: [3],
     kind: 'times',
+    starValue: 3,
     levels: TIMES_LEVELS(3, [
       [
         O('Welcome to Triple Tree Forest, where everything grows in threes.'),
@@ -96,6 +100,7 @@ export const REGIONS: Region[] = [
     color: '#ec4899',
     tables: [11],
     kind: 'times',
+    starValue: 2,
     levels: TIMES_LEVELS(11, [
       [
         O('Up we go, to Eleventy Cloud Castle — home of the tricky elevens!'),
@@ -114,6 +119,7 @@ export const REGIONS: Region[] = [
     color: '#64748b',
     tables: [2, 5, 10, 3, 11],
     kind: 'division',
+    starValue: 4,
     levels: [
       {
         mode: 'choice',
@@ -136,6 +142,7 @@ export const REGIONS: Region[] = [
     color: '#ef4444',
     tables: [2, 3, 5, 10, 11],
     kind: 'mixed',
+    starValue: 5,
     levels: [
       {
         mode: 'choice',
@@ -160,7 +167,7 @@ export const INTRO: StoryLine[] = [
   O('Play a level and answer the questions to win stars back from the Star Goblin.'),
   O('Stars are yours to spend! Tap your monster or the star count at the top of the map to open the wardrobe and dress up your monster.'),
   M('And when I finish every level in a stage, the next stage unlocks!'),
-  O('The further you travel, the harder the questions — and the more each star is worth!'),
+  O('Trickier stages pay more — look for the star value on each stage of the map!'),
   O('Win back every star on the island to finish the adventure. Good luck, little monster!'),
 ]
 
@@ -195,6 +202,7 @@ export const EARLY_REGIONS: Region[] = [
     color: '#f59e0b',
     tables: [],
     kind: 'count',
+    starValue: 1,
     curriculum: 'early',
     art: 'beach',
     levels: [
@@ -224,6 +232,7 @@ export const EARLY_REGIONS: Region[] = [
     color: '#06b6d4',
     tables: [],
     kind: 'bond',
+    starValue: 2,
     curriculum: 'early',
     art: 'lagoon',
     levels: [
@@ -253,6 +262,7 @@ export const EARLY_REGIONS: Region[] = [
     color: '#22c55e',
     tables: [],
     kind: 'add',
+    starValue: 2,
     curriculum: 'early',
     art: 'forest',
     levels: [
@@ -275,6 +285,7 @@ export const EARLY_REGIONS: Region[] = [
     color: '#8b5cf6',
     tables: [],
     kind: 'sub',
+    starValue: 3,
     curriculum: 'early',
     art: 'mountain',
     levels: [
@@ -297,6 +308,7 @@ export const EARLY_REGIONS: Region[] = [
     color: '#ec4899',
     tables: [],
     kind: 'double',
+    starValue: 3,
     curriculum: 'early',
     art: 'castle',
     levels: [

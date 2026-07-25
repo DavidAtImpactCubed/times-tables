@@ -95,6 +95,8 @@ export interface Region {
   curriculum?: Curriculum
   /** background art region id to reuse, when this region has no art of its own */
   art?: string
+  /** how much each star here pays into the wallet — reflects difficulty, not unlock order */
+  starValue?: number
 }
 
 export type PartSlot = 'body' | 'eyes' | 'glasses' | 'horns' | 'hat' | 'face' | 'held' | 'back'

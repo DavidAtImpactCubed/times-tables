@@ -4,7 +4,7 @@ import { WARDROBE } from './data/wardrobe'
 import { setMuted, sfx } from './logic/audio'
 import { setReadAloud } from './logic/speech'
 import { TITLE_BG, WARDROBE_BG, backgroundFor } from './logic/backgrounds'
-import { starsFor, walletGain } from './logic/progress'
+import { starValue, starsFor, walletGain } from './logic/progress'
 import {
   addProfile,
   clearTransferParam,
@@ -167,8 +167,7 @@ export default function App() {
     const stars = starsFor(correct)
     const id = levelId(regionId, level)
     const before = save.stars[id] ?? 0
-    const regionIndex = activeRegions.findIndex((r) => r.id === regionId)
-    const { gained, practice } = walletGain(before, stars, regionIndex)
+    const { gained, practice } = walletGain(before, stars, starValue(regionById(regionId)))
     if (gained > 0) {
       setSave((s) => ({ ...s, stars: { ...s.stars, [id]: Math.max(before, stars) }, wallet: s.wallet + gained }))
     }

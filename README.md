@@ -126,6 +126,7 @@ covering `mul`, `div`, `add`, `sub`, plus a visual `count` type. See
   ("Toby, Little Mythical Monster"), Olivia the Owl ("Lucy") and your monster
   ("Canny"); questions and any un-recorded lines use the browser's speech voice
 - **Backgrounds & illustrations** — ChatGPT (OpenAI), hand-assembled into the game
+- **Image editing** — Gemini (Google)
 - **Sound effects** — generated live with the Web Audio API
 - **Teaching strategies** — informed by the [NCETM](https://www.ncetm.org.uk),
   [Oxford Owl](https://home.oxfordowl.co.uk) and

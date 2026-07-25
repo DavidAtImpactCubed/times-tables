@@ -47,6 +47,8 @@ export interface LevelDef {
   /** which background art this level uses (canonical index; levels can be
       reordered on the map, but art stays tied to the story) */
   artIndex?: number
+  /** horizontal focus of the art in story/tip scenes, 0-100 (default 0 = left edge) */
+  artX?: number
   /** Olivia's optional "how to" tip, offered before every play of this level */
   tip?: TipStep[]
 }

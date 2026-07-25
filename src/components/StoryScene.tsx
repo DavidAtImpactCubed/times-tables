@@ -13,6 +13,8 @@ interface Props {
   /** panorama shown behind the dialogue; left edge for intros, right edge when imageEnd */
   image?: string
   imageEnd?: boolean
+  /** horizontal focus of the image, 0-100 (overrides imageEnd) */
+  imageX?: number
   equipped: Partial<Record<PartSlot, string>>
   readAloud?: boolean
   finale?: boolean
@@ -21,7 +23,7 @@ interface Props {
 
 const SPEAKER_NAMES = { monster: 'You', goblin: 'Star Goblin', guide: 'Olivia the Owl' }
 
-export function StoryScene({ lines, background, image, imageEnd, equipped, readAloud, finale, onDone }: Props) {
+export function StoryScene({ lines, background, image, imageEnd, imageX, equipped, readAloud, finale, onDone }: Props) {
   const [index, setIndex] = useState(0)
   const line = lines[index]
   // only bring on a character who actually has a line in this scene
@@ -52,7 +54,7 @@ export function StoryScene({ lines, background, image, imageEnd, equipped, readA
           className="story-bg"
           aria-hidden
           data-testid="story-bg"
-          style={{ backgroundImage: `url(${image})`, backgroundPosition: `${imageEnd ? 100 : 0}% 50%` }}
+          style={{ backgroundImage: `url(${image})`, backgroundPosition: `${imageX ?? (imageEnd ? 100 : 0)}% 50%` }}
         />
       )}
       {finale && <Confetti />}

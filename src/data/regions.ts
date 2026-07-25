@@ -623,6 +623,9 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
   ],
 }
 
+// The mountain's star-stairs scene puts its staircase right of centre.
+REGIONS[1].levels[MATCH_AT.mountain].artX = 70
+
 const ALL_REGIONS = [...REGIONS, ...EARLY_REGIONS]
 for (const r of ALL_REGIONS) {
   let tips = LEVEL_TIPS[r.id]

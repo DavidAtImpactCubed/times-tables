@@ -48,7 +48,14 @@ export function TipScene({ region, level, readAloud, onDone }: Props) {
 
   return (
     <div className="screen tip-screen" style={{ background: `linear-gradient(180deg, ${region.color}cc, #1e1b4b)` }} data-testid="tip-scene">
-      {bg && <div className="story-bg" aria-hidden data-testid="tip-bg" style={{ backgroundImage: `url(${bg})` }} />}
+      {bg && (
+        <div
+          className="story-bg"
+          aria-hidden
+          data-testid="tip-bg"
+          style={{ backgroundImage: `url(${bg})`, backgroundPosition: `${region.levels[level]?.artX ?? 0}% 50%` }}
+        />
+      )}
       <div className="tip-owl">
         <img className="story-char" src={owlUrl} alt="Olivia the Owl" draggable={false} />
       </div>

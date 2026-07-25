@@ -343,6 +343,7 @@ export default function App() {
           lines={region.levels[screen.level].story}
           background={region.color}
           image={backgroundFor(region.id, region.levels[screen.level].artIndex ?? screen.level)}
+          imageX={region.levels[screen.level].artX}
           equipped={save.equipped}
           readAloud={save.readAloud}
           onDone={() => storyDone(screen.regionId, screen.level)}

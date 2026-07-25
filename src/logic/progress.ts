@@ -45,6 +45,7 @@ export function regionComplete(save: SaveData, region: Region): boolean {
 export function regionUnlocked(save: SaveData, regions: Region[], regionIndex: number): boolean {
   if (regionIndex === 0) return true
   if (regionLevelsDone(save, regions[regionIndex]) > 0) return true
+  if (save.unlockedRegions?.includes(regions[regionIndex].id)) return true
   return regionComplete(save, regions[regionIndex - 1])
 }
 
@@ -57,6 +58,9 @@ export function levelsLeftToUnlock(save: SaveData, regions: Region[], regionInde
 
 export function levelUnlocked(save: SaveData, regions: Region[], regionIndex: number, level: number): boolean {
   if (!regionUnlocked(save, regions, regionIndex)) return false
+  // a level you've already earned stars on never re-locks (e.g. when a new
+  // level is inserted before it)
+  if ((save.stars[levelId(regions[regionIndex].id, level)] ?? 0) >= 1) return true
   if (level === 0) return true
   return (save.stars[levelId(regions[regionIndex].id, level - 1)] ?? 0) >= 1
 }

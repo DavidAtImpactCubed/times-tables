@@ -136,6 +136,10 @@ export interface SaveData {
   readAloud: boolean
   /** star-economy version; saves from before difficulty pay get a one-time top-up */
   economy?: number
+  /** level-layout version; star keys from before levels were reordered get remapped */
+  layout?: number
+  /** regions unlocked for good (e.g. earned before new levels were added) */
+  unlockedRegions?: string[]
 }
 
 export const levelId = (regionId: string, level: number) => `${regionId}-${level}`

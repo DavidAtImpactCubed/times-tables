@@ -1,4 +1,4 @@
-import { regionsFor } from '../data/regions'
+import { MATCH_AT, regionsFor } from '../data/regions'
 import { RETIRED_ITEM_PRICES, itemById } from '../data/wardrobe'
 import { starValue } from './progress'
 import { levelId, type SaveData } from '../types'
@@ -22,7 +22,42 @@ export function freshSave(): SaveData {
     muted: false,
     readAloud: true,
     economy: 4,
+    layout: 2,
   }
+}
+
+/**
+ * One-time star-key remap after "Match the arrays" was inserted mid-region:
+ * older saves recorded stars by the ORIGINAL level order (choice, type,
+ * missing, mixed, then match at the end), so read stored indices as that
+ * canonical order and move each entry to the level's current position. The
+ * inserted match level ends up unplayed, and the last level of each stage
+ * keeps the stars it really earned. Story-seen markers move the same way.
+ */
+function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
+  if (rawLayout === 2) return save
+  // Regions the player had already earned under the OLD four-level rule stay
+  // unlocked for good — the new match level is extra content, not a new gate.
+  const regions = regionsFor(save.curriculum)
+  const unlocked = new Set(save.unlockedRegions ?? [])
+  unlocked.add(regions[0].id)
+  for (let i = 0; i < regions.length - 1; i++) {
+    const oldComplete = [0, 1, 2, 3].every((l) => (save.stars[levelId(regions[i].id, l)] ?? 0) >= 1)
+    if (unlocked.has(regions[i].id) && oldComplete) unlocked.add(regions[i + 1].id)
+  }
+  const remapKey = (key: string): string => {
+    for (const [rid, at] of Object.entries(MATCH_AT)) {
+      if (!key.startsWith(`${rid}-`)) continue
+      const c = Number(key.slice(rid.length + 1))
+      if (!Number.isInteger(c)) return key
+      const display = c === 4 ? at : c < at ? c : c + 1
+      return `${rid}-${display}`
+    }
+    return key
+  }
+  const stars: Record<string, number> = {}
+  for (const [key, v] of Object.entries(save.stars)) stars[remapKey(key)] = v
+  return { ...save, stars, seenStory: save.seenStory.map(remapKey), unlockedRegions: [...unlocked], layout: 2 }
 }
 
 /**
@@ -120,7 +155,7 @@ export function loadSave(name: string): SaveData {
     if (!raw) return freshSave()
     const data = JSON.parse(raw)
     if (!data || data.version !== 1 || typeof data.stars !== 'object') return freshSave()
-    return upgradeEconomy(migrate({ ...freshSave(), ...data }), data.economy)
+    return upgradeEconomy(upgradeLayout(migrate({ ...freshSave(), ...data }), data.layout), data.economy)
   } catch {
     return freshSave()
   }
@@ -155,7 +190,7 @@ export function readTransferParam(): { name: string; save: SaveData } | null {
     if (!p) return null
     const data = JSON.parse(b64urlDecode(p))
     if (!data || typeof data.n !== 'string' || !data.s || typeof data.s.stars !== 'object') return null
-    return { name: data.n.slice(0, 12), save: upgradeEconomy(migrate({ ...freshSave(), ...data.s }), data.s.economy) }
+    return { name: data.n.slice(0, 12), save: upgradeEconomy(upgradeLayout(migrate({ ...freshSave(), ...data.s }), data.s.layout), data.s.economy) }
   } catch {
     return null
   }

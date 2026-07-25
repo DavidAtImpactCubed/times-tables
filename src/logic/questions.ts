@@ -501,6 +501,8 @@ export function spokenQuestion(q: Question): string {
 export interface Explanation {
   text: string
   visual?: TipVisual
+  /** what to call the answer in "The answer is …" (defaults to the number) */
+  answerLabel?: string
 }
 
 const groups = (k: number, n: number) => (n === 1 ? `one more ${k}` : `${n} more ${k}s`)
@@ -683,13 +685,22 @@ export function explain(q: Question): Explanation {
     }
     if (q.promptLabel?.startsWith('Double')) {
       return {
+        answerLabel: `2 rows of ${q.b}`,
         text: `Double ${q.b} means TWO rows of ${q.b} — count them: ${q.b} and ${q.b} make ${q.result}.`,
         visual: { kind: 'double', n: q.b, hands: q.b <= 5 },
       }
     }
+    if (q.choiceArrays) {
+      return {
+        answerLabel: `${q.a} rows of ${q.b}`,
+        text: `You were looking for ${q.a} rows of ${q.b}. Count the ROWS in each picture — the right one has ${q.a} rows, with ${q.b} in every row.`,
+        visual: { kind: 'array', rows: q.a, cols: q.b },
+      }
+    }
     const seq = Array.from({ length: q.a }, (_, i) => (i + 1) * q.b).join(', ')
     return {
-      text: `Count one row: ${q.b}. Then count up in ${q.b}s, once for each row: ${seq}. This array shows ${q.a} × ${q.b} = ${q.result}.`,
+      answerLabel: `${q.a} × ${q.b}`,
+      text: `The array has ${q.a} rows with ${q.b} in each row. Count up in ${q.b}s, once for each row: ${seq}. That's ${q.a} × ${q.b} = ${q.result}.`,
       visual: { kind: 'array', rows: q.a, cols: q.b },
     }
   }

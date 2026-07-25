@@ -22,7 +22,7 @@ interface Entry {
   retry: boolean
 }
 
-type Feedback = null | { kind: 'correct' } | { kind: 'wrong'; text: string; answer: number; visual?: TipVisual }
+type Feedback = null | { kind: 'correct' } | { kind: 'wrong'; text: string; answer: number; answerLabel?: string; visual?: TipVisual }
 
 const STREAK_MESSAGES: Record<number, string> = {
   3: '3 in a row! 🔥',
@@ -53,9 +53,9 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
   // stop any speech when leaving the level
   useEffect(() => () => stopSpeaking(), [])
 
-  const explainSpeech = (answer: number, body: string) => `The answer is ${answer}. ${body}`
+  const explainSpeech = (answer: string, body: string) => `The answer is ${answer.replace('×', 'times')}. ${body}`
   const replay = () => {
-    if (feedback?.kind === 'wrong') speak(explainSpeech(feedback.answer, feedback.text))
+    if (feedback?.kind === 'wrong') speak(explainSpeech(feedback.answerLabel ?? String(feedback.answer), feedback.text))
     else speak(spokenQuestion(q))
   }
   const mood: Mood = feedback?.kind === 'correct' ? 'excited' : feedback?.kind === 'wrong' ? 'sad' : 'idle'
@@ -89,8 +89,8 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
       // Give the same question another (unscored) go later in the level.
       const nextQueue = entry.retry ? queue : [...queue, { q, retry: true }]
       setQueue(nextQueue)
-      setFeedback({ kind: 'wrong', text: info.text, answer: q.answer, visual: info.visual })
-      speak(explainSpeech(q.answer, info.text))
+      setFeedback({ kind: 'wrong', text: info.text, answer: q.answer, answerLabel: info.answerLabel, visual: info.visual })
+      speak(explainSpeech(info.answerLabel ?? String(q.answer), info.text))
     }
   }
 
@@ -212,7 +212,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
         {feedback?.kind === 'wrong' ? (
           <div className="explain-panel" data-testid="explain-panel">
             <p className="explain-title">
-              Nearly! The answer is <strong>{feedback.answer}</strong>. Here’s how:
+              Nearly! The answer is <strong>{feedback.answerLabel ?? feedback.answer}</strong>. Here’s how:
             </p>
             {feedback.visual && <TipArt visual={feedback.visual} />}
             <p className="explain-text">{feedback.text}</p>

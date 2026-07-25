@@ -232,10 +232,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
                     aria-label={`${q.choiceCounts[i]} ${q.object}`}
                     data-testid={`choice-${c}`}
                   >
-                    <span
-                      className="choice-array-grid"
-                      style={{ gridTemplateColumns: `repeat(${Math.min(5, q.choiceCounts[i])}, auto)`, fontSize: '24px' }}
-                    >
+                    <span className="choice-count-group">
                       {Array.from({ length: q.choiceCounts[i] }, (_, j) => (
                         <span key={j} aria-hidden>
                           {q.object}

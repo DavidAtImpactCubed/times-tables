@@ -1047,6 +1047,22 @@ button {
   justify-content: center;
   line-height: 1;
 }
+/* early "find the number" groups: wrap at five, with every row centred */
+.choice-count-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 6px;
+  font-size: 24px;
+  line-height: 1;
+  /* five 26px items + four gaps: forces the fives structure */
+  max-width: 154px;
+  margin: 0 auto;
+}
+.choice-count-group > span {
+  width: 26px;
+  text-align: center;
+}
 
 /* tap a ⭐×N badge → a little card explains the star-value mechanic */
 .value-pop {

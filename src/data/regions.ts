@@ -623,8 +623,9 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
   ],
 }
 
-// The mountain's star-stairs scene puts its staircase right of centre.
-REGIONS[1].levels[MATCH_AT.mountain].artX = 70
+// Some match scenes put their subject away from the left edge.
+REGIONS[0].levels[MATCH_AT.beach].artX = 45 // spilled star trail runs through the centre
+REGIONS[1].levels[MATCH_AT.mountain].artX = 70 // star stairs right of centre
 
 const ALL_REGIONS = [...REGIONS, ...EARLY_REGIONS]
 for (const r of ALL_REGIONS) {

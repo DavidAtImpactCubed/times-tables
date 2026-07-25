@@ -1,4 +1,4 @@
-import { MATCH_AT, regionsFor } from '../data/regions'
+import { EARLY_MATCH_AT, MATCH_AT, regionsFor } from '../data/regions'
 import { RETIRED_ITEM_PRICES, itemById } from '../data/wardrobe'
 import { starValue } from './progress'
 import { levelId, type SaveData } from '../types'
@@ -22,22 +22,15 @@ export function freshSave(): SaveData {
     muted: false,
     readAloud: true,
     economy: 4,
-    layout: 2,
+    layout: 3,
   }
 }
 
 /**
- * One-time star-key remap after "Match the arrays" was inserted mid-region:
- * older saves recorded stars by the ORIGINAL level order (choice, type,
- * missing, mixed, then match at the end), so read stored indices as that
- * canonical order and move each entry to the level's current position. The
- * inserted match level ends up unplayed, and the last level of each stage
- * keeps the stars it really earned. Story-seen markers move the same way.
+ * Regions the player had already earned under the OLD four-level rule stay
+ * unlocked for good — newly inserted levels are extra content, not new gates.
  */
-function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
-  if (rawLayout === 2) return save
-  // Regions the player had already earned under the OLD four-level rule stay
-  // unlocked for good — the new match level is extra content, not a new gate.
+function oldRuleGrants(save: SaveData): string[] {
   const regions = regionsFor(save.curriculum)
   const unlocked = new Set(save.unlockedRegions ?? [])
   unlocked.add(regions[0].id)
@@ -45,19 +38,54 @@ function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
     const oldComplete = [0, 1, 2, 3].every((l) => (save.stars[levelId(regions[i].id, l)] ?? 0) >= 1)
     if (unlocked.has(regions[i].id) && oldComplete) unlocked.add(regions[i + 1].id)
   }
-  const remapKey = (key: string): string => {
-    for (const [rid, at] of Object.entries(MATCH_AT)) {
-      if (!key.startsWith(`${rid}-`)) continue
-      const c = Number(key.slice(rid.length + 1))
-      if (!Number.isInteger(c)) return key
-      const display = c === 4 ? at : c < at ? c : c + 1
-      return `${rid}-${display}`
-    }
-    return key
-  }
+  return [...unlocked]
+}
+
+/** Move star + story-seen keys through a per-region index remap. */
+function remapKeys(save: SaveData, remapKey: (key: string) => string): SaveData {
   const stars: Record<string, number> = {}
   for (const [key, v] of Object.entries(save.stars)) stars[remapKey(key)] = v
-  return { ...save, stars, seenStory: save.seenStory.map(remapKey), unlockedRegions: [...unlocked], layout: 2 }
+  return { ...save, stars, seenStory: save.seenStory.map(remapKey) }
+}
+
+/**
+ * One-time star-key remaps after levels were inserted mid-region. Older saves
+ * recorded stars by the level order that existed at the time, so each step
+ * reads stored indices in that old order and moves every entry to the level's
+ * current position — inserted levels end up unplayed, everything else keeps
+ * the stars it really earned, and story-seen markers move the same way.
+ *   v2: "Match the arrays" into the five times regions
+ *   v3: picture-match levels into Counting Cove and Doubles Keep
+ */
+function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
+  if (rawLayout === 3) return save
+  let s = save
+  if (rawLayout !== 2) {
+    s = { ...s, unlockedRegions: oldRuleGrants(s) }
+    s = remapKeys(s, (key) => {
+      for (const [rid, at] of Object.entries(MATCH_AT)) {
+        if (!key.startsWith(`${rid}-`)) continue
+        const c = Number(key.slice(rid.length + 1))
+        if (!Number.isInteger(c)) return key
+        const display = c === 4 ? at : c < at ? c : c + 1
+        return `${rid}-${display}`
+      }
+      return key
+    })
+  }
+  if (s.curriculum === 'early') {
+    s = { ...s, unlockedRegions: oldRuleGrants(s) }
+    s = remapKeys(s, (key) => {
+      for (const [rid, at] of Object.entries(EARLY_MATCH_AT)) {
+        if (!key.startsWith(`${rid}-`)) continue
+        const c = Number(key.slice(rid.length + 1))
+        if (!Number.isInteger(c)) return key
+        return `${rid}-${c < at ? c : c + 1}`
+      }
+      return key
+    })
+  }
+  return { ...s, layout: 3 }
 }
 
 /**

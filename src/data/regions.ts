@@ -8,6 +8,9 @@ import type { Curriculum, Region, StoryLine, TipStep } from '../types'
  */
 export const MATCH_AT: Record<string, number> = { beach: 1, mountain: 2, lagoon: 3, forest: 1, castle: 2 }
 
+/** Where the early band's picture-match levels were inserted (for save migration). */
+export const EARLY_MATCH_AT: Record<string, number> = { 'count-cove': 2, 'doubles-keep': 2 }
+
 const placeMatch = <T,>(canonical: T[], at: number): T[] => {
   const base = canonical.slice(0, 4)
   return [...base.slice(0, at), canonical[4], ...base.slice(at)]
@@ -238,6 +241,10 @@ export const EARLY_REGIONS: Region[] = [
         M('So many stars now — right up to ten!'),
         O('Count carefully and tap the number. You’ve got this!'),
       ]),
+      EL('match', 'Find the number', [
+        O('The friendly crab has painted numbers on the sandcastle flags!'),
+        M('I’ll find the pile of shells that matches each number.'),
+      ]),
       EL('choice', 'One more', [
         O('A friendly crab pops ONE more star on the pile each time.'),
         M('One more than 4 is… 5! Easy peasy.'),
@@ -340,6 +347,10 @@ export const EARLY_REGIONS: Region[] = [
         M('Double 3 is 3 and 3 — that’s 6!'),
       ]),
       EL('type', 'Type the double', [M('I’ll type the doubles all by myself!'), O('Double means add the number to itself.')]),
+      EL('match', 'Match the doubles', [
+        O('The magic mirror is showing twin rows of stars!'),
+        M('Double four means two rows of four — I’ll spot it in a blink!'),
+      ]),
       EL('choice', 'Add & take away', [
         G('You’ve done SO well… but here’s a mix of everything! Hee hee!'),
         M('Adding, taking away — bring it on!'),
@@ -527,6 +538,9 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('Ten is special — it fills up BOTH your hands!', 'all 10 fingers  →  10', { kind: 'hands', show: 10, of: 10 }),
     ],
     [
+      T('Read the number first. Then touch and count each picture — stop when a picture matches!', undefined, { kind: 'count', to: 6, hands: true }),
+    ],
+    [
       T('One more just means the very next number you say when you count.', undefined, { kind: 'countOn', from: 4, add: 1, max: 8, hands: true }),
       T('Try it: start at four, hop one step… you land on five!', 'one more than 4  →  5', { kind: 'countOn', from: 4, add: 1, max: 8, hands: true }),
     ],
@@ -594,6 +608,9 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
     ],
     [
       T('Add the number to itself, then type the answer.', 'double 5  →  5 + 5  →  10', { kind: 'double', n: 5, hands: true }),
+    ],
+    [
+      T('A double is TWO rows exactly the same. Count one row, then check its twin matches!', 'double 4  →  2 rows of 4', { kind: 'double', n: 4, hands: true }),
     ],
     [
       T('Look at the sign! PLUS means hop forwards.', '6 + 2  →  6… 7, 8  →  8', { kind: 'countOn', from: 6, add: 2, max: 10, hands: true }),

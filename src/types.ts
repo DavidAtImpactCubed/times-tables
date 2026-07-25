@@ -21,6 +21,12 @@ export interface Question {
   choiceLabels?: string[]
   /** reverse match questions: the fact is shown and these arrays are the choices */
   choiceArrays?: Array<{ rows: number; cols: number }>
+  /** early picture-match questions: the choices are groups of `object`, this many in each */
+  choiceCounts?: number[]
+  /** match questions: heading + read-aloud sentence (defaults to the array wording) */
+  prompt?: string
+  /** match questions: the big text shown in the panel (e.g. "7" or "Double 4") */
+  promptLabel?: string
   /** count questions only: how many objects to show, and which emoji */
   count?: number
   object?: string

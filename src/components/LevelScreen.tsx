@@ -165,11 +165,11 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             data-cols={q.b}
             data-reverse={q.choiceArrays ? 'true' : undefined}
           >
-            {q.choiceArrays ? (
+            {q.choiceArrays || q.choiceCounts ? (
               <>
-                <p className="count-prompt">Which array shows this fact?</p>
-                <div className="match-fact" aria-label={`${q.a} times ${q.b}`}>
-                  {q.a} × {q.b}
+                <p className="count-prompt">{q.prompt ?? 'Which array shows this fact?'}</p>
+                <div className="match-fact" aria-label={q.promptLabel ?? `${q.a} times ${q.b}`}>
+                  {q.promptLabel ?? `${q.a} × ${q.b}`}
                 </div>
               </>
             ) : (
@@ -222,9 +222,28 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
           </div>
         ) : feedback === null ? (
           q.input === 'choice' ? (
-            <div className={`choices ${q.choiceArrays ? 'choices-arrays' : ''}`} data-testid="choices">
+            <div className={`choices ${q.choiceArrays || q.choiceCounts ? 'choices-arrays' : ''}`} data-testid="choices">
               {q.choices!.map((c, i) =>
-                q.choiceArrays ? (
+                q.choiceCounts ? (
+                  <button
+                    key={c}
+                    className="btn choice-btn choice-array"
+                    onClick={() => submit(c)}
+                    aria-label={`${q.choiceCounts[i]} ${q.object}`}
+                    data-testid={`choice-${c}`}
+                  >
+                    <span
+                      className="choice-array-grid"
+                      style={{ gridTemplateColumns: `repeat(${Math.min(5, q.choiceCounts[i])}, auto)`, fontSize: '24px' }}
+                    >
+                      {Array.from({ length: q.choiceCounts[i] }, (_, j) => (
+                        <span key={j} aria-hidden>
+                          {q.object}
+                        </span>
+                      ))}
+                    </span>
+                  </button>
+                ) : q.choiceArrays ? (
                   <button
                     key={c}
                     className="btn choice-btn choice-array"

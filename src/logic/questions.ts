@@ -122,6 +122,53 @@ function matchQuestion(rows: number, cols: number, reverse = false): Question {
   return q
 }
 
+/**
+ * Early picture-match: a big numeral is shown and read aloud, and the child
+ * picks the GROUP with exactly that many objects — numeral→quantity, the
+ * reverse of the counting levels. Groups wrap five-per-row so quantities
+ * read in the fives structure.
+ */
+function pickCount(n: number, object: string): Question {
+  const choices = makeChoices(n, [n - 1, n + 1, n - 2, n + 2])
+  return {
+    kind: 'match',
+    a: n,
+    b: 0,
+    result: n,
+    unknown: 'result',
+    answer: n,
+    input: 'choice',
+    choices,
+    choiceCounts: choices,
+    object,
+    prompt: `Which picture shows ${n}?`,
+    promptLabel: String(n),
+  }
+}
+
+/** Early doubles-match: "Double 4" → pick the picture with two rows of four. */
+function pickDouble(k: number): Question {
+  const cols: number[] = [k]
+  for (const c of shuffle([k - 1, k + 1, k - 2, k + 2])) {
+    if (cols.length === 3) break
+    if (c >= 1 && !cols.includes(c)) cols.push(c)
+  }
+  const shuffled = shuffle(cols)
+  return {
+    kind: 'match',
+    a: 2,
+    b: k,
+    result: 2 * k,
+    unknown: 'result',
+    answer: 2 * k,
+    input: 'choice',
+    choices: shuffled.map((c) => 2 * c),
+    choiceArrays: shuffled.map((c) => ({ rows: 2, cols: c })),
+    prompt: `Which picture shows double ${k}?`,
+    promptLabel: `Double ${k}`,
+  }
+}
+
 // ---- early-years question builders (addition, subtraction, counting) ----
 
 const COUNT_OBJECTS = ['⭐', '🐚', '🌸', '🍎', '🐟', '🎈', '🍄', '🦋', '🌟', '🐚']
@@ -219,7 +266,8 @@ function generateEarlyLevel(region: Region, level: number): Question[] {
       case 'count':
         if (level === 0) return countQuestion(rnd(1, 5), 'choice')
         if (level === 1) return countQuestion(rnd(1, 10), 'choice')
-        if (level === 2) return addQuestion(rnd(0, 9), 1, 'result', 'choice') // one more
+        if (level === 2) return pickCount(rnd(2, 9), pick(COUNT_OBJECTS)) // find the number
+        if (level === 3) return addQuestion(rnd(0, 9), 1, 'result', 'choice') // one more
         return subQuestion(rnd(1, 10), 1, 'result', 'choice') // one less
 
       case 'bond': {
@@ -286,7 +334,8 @@ function generateEarlyLevel(region: Region, level: number): Question[] {
       default: {
         if (level === 0) return doubleQ(rnd(1, 10), 'choice')
         if (level === 1) return doubleQ(rnd(1, 10), 'pad')
-        if (level === 2) {
+        if (level === 2) return pickDouble(rnd(2, 5)) // match the doubles
+        if (level === 3) {
           if (Math.random() < 0.5) {
             const [a, b] = splitTotal(rnd(4, 20), 12)
             return addQuestion(a, b, 'result', 'choice')
@@ -428,8 +477,10 @@ export function questionText(q: Question): { left: string; op: string; right: st
 /** A natural-language reading of a question, for the read-aloud voice. */
 export function spokenQuestion(q: Question): string {
   if (q.kind === 'count') return 'How many?'
-  if (q.kind === 'match')
+  if (q.kind === 'match') {
+    if (q.prompt) return q.prompt
     return q.choiceArrays ? `Which array shows ${q.a} times ${q.b}?` : 'Which times fact does this array show?'
+  }
   const op = q.kind === 'mul' ? 'times' : q.kind === 'div' ? 'divided by' : q.kind === 'add' ? 'plus' : 'take away'
   if (q.unknown === 'result') return `What is ${q.a} ${op} ${q.b}?`
   if (q.unknown === 'b') return `${q.a} ${op} what makes ${q.result}?`
@@ -624,6 +675,18 @@ export function explain(q: Question): Explanation {
   if (q.kind === 'add') return explainAdd(q)
   if (q.kind === 'sub') return explainSub(q)
   if (q.kind === 'match') {
+    if (q.choiceCounts) {
+      return {
+        text: `Touch and count each picture, one at a time — the one with exactly ${q.result} is the match!`,
+        visual: { kind: 'count', to: q.result, hands: q.result <= 10 },
+      }
+    }
+    if (q.promptLabel?.startsWith('Double')) {
+      return {
+        text: `Double ${q.b} means TWO rows of ${q.b} — count them: ${q.b} and ${q.b} make ${q.result}.`,
+        visual: { kind: 'double', n: q.b, hands: q.b <= 5 },
+      }
+    }
     const seq = Array.from({ length: q.a }, (_, i) => (i + 1) * q.b).join(', ')
     return {
       text: `Count one row: ${q.b}. Then count up in ${q.b}s, once for each row: ${seq}. This array shows ${q.a} × ${q.b} = ${q.result}.`,

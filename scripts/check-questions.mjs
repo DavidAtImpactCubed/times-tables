@@ -161,7 +161,16 @@ for (const region of EARLY_REGIONS) {
       checkCommon(region, level, qs)
 
       for (const q of qs) {
-        if (!['add', 'sub', 'count'].includes(q.kind)) fail(`${region.id}: unexpected early kind ${q.kind}`)
+        if (!['add', 'sub', 'count', 'match'].includes(q.kind)) fail(`${region.id}: unexpected early kind ${q.kind}`)
+        if (q.kind === 'match') {
+          if (q.answer !== q.result) fail(`${region.id}: match answer ${q.answer} ≠ ${q.result}`)
+          if (q.choiceCounts) {
+            q.choiceCounts.forEach((n, i) => { if (n !== q.choices[i]) fail(`${region.id}: picture count ${n} ≠ choice ${q.choices[i]}`) })
+          } else if (q.choiceArrays) {
+            q.choiceArrays.forEach((f, i) => { if (f.rows * f.cols !== q.choices[i]) fail(`${region.id}: array ${f.rows}×${f.cols} ≠ choice ${q.choices[i]}`) })
+            if (q.choiceArrays.some((f) => f.rows !== 2)) fail(`${region.id}: early doubles arrays must have two rows`)
+          } else fail(`${region.id}: early match without pictures`)
+        }
         if (q.kind === 'add' && q.a + q.b !== q.result) fail(`bad add fact ${q.a}+${q.b}=${q.result}`)
         if (q.kind === 'sub') {
           if (q.a - q.b !== q.result) fail(`bad sub fact ${q.a}-${q.b}=${q.result}`)

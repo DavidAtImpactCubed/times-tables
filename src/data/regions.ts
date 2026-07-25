@@ -16,11 +16,11 @@ const placeMatch = <T,>(canonical: T[], at: number): T[] => {
 const TIMES_LEVELS = (table: number, matchAt: number, stories: StoryLine[][]) =>
   placeMatch(
     [
-      { mode: 'choice' as const, title: `Meet the ${table}s`, story: stories[0] },
-      { mode: 'type' as const, title: `Type the ${table}s`, story: stories[1] },
-      { mode: 'missing' as const, title: 'Missing numbers', story: stories[2] },
-      { mode: 'mixed' as const, title: 'Times & sharing', story: stories[3] },
-      { mode: 'match' as const, title: 'Match the arrays', story: stories[4] },
+      { mode: 'choice' as const, title: `Meet the ${table}s`, story: stories[0], artIndex: 0 },
+      { mode: 'type' as const, title: `Type the ${table}s`, story: stories[1], artIndex: 1 },
+      { mode: 'missing' as const, title: 'Missing numbers', story: stories[2], artIndex: 2 },
+      { mode: 'mixed' as const, title: 'Times & sharing', story: stories[3], artIndex: 3 },
+      { mode: 'match' as const, title: 'Match the arrays', story: stories[4], artIndex: 4 },
     ],
     matchAt,
   )
@@ -52,7 +52,7 @@ export const REGIONS: Region[] = [
         O('Then fill in the missing numbers, and the trail will glow again!'),
       ],
       [G('Still here? Try SHARING the stars out — bet you can’t!'), M('Times and sharing are two halves of the same trick. Watch!')],
-      [O('One last beach game — star pictures! Match each array to the fact it shows.'), M('Rows of twos — I can count those!')],
+      [O('The goblin’s sack has a hole! Stars are spilling out in neat little rows on the sand.'), M('Star pictures! If I read each one right, they’re mine again.')],
     ]),
   },
   {
@@ -72,7 +72,7 @@ export const REGIONS: Region[] = [
       [M('The higher we climb, the more stars I can see twinkling above.'), O('Keep counting in fives — every right answer lights the path.')],
       [O('A rockfall! Some of the numbers have tumbled away.'), M('I can work out what’s missing. Nothing stops this monster!')],
       [G('Fine, take the mountain stars — I’ve a whole SACK more!'), M('Then I’ll win those back too. Onwards!')],
-      [O('The mountain spirits drew star pictures. Match each one to its times fact!'), M('Rows of fives, nice and neat!')],
+      [O('Halfway up! Long ago, the mountain spirits carved star patterns into these cliffs.'), M('Rows of fives, neat as steps — I can read them!')],
     ]),
   },
   {
@@ -92,7 +92,7 @@ export const REGIONS: Region[] = [
       [M('The octopus is holding stars up on its tentacles — ten on each one!'), O('Answer well and it will pass them to you.')],
       [O('Ripples have hidden some numbers under the water.'), M('I’ll figure out the missing tens!')],
       [M('Look — the goblin dropped a clue, heading for the forest!'), O('Well spotted. To the trees!')],
-      [M('The octopus is arranging its stars in rows of ten!'), O('Match each picture to the fact it shows.')],
+      [M('Look — the octopus is lining its rescued stars up in rows of ten!'), O('Read each pattern aloud and it will pass them into your purse.')],
     ]),
   },
   {
@@ -112,7 +112,7 @@ export const REGIONS: Region[] = [
       [M('Glowing mushrooms in clusters of three light the way.'), O('Follow them deeper — we’re close now.')],
       [O('The path splits! Only the right numbers reveal the true way.'), M('Missing numbers won’t fool me!')],
       [M('There — the goblin’s rope ladder, climbing up into the clouds!'), G('Grrr! How did you find it?!')],
-      [O('Star patterns grew between the trees! Which fact does each one show?'), M('Count one row, then count the rows!')],
+      [M('The goblin dropped stars as he ran — and they’ve taken root in rows of three!'), O('A star garden! Read each patch and the stars will bloom free.')],
     ]),
   },
   {
@@ -132,7 +132,7 @@ export const REGIONS: Region[] = [
       [M('The clouds are stepping stones — each right answer makes one solid!'), O('Steady now… try not to look down.')],
       [O('The castle gate only opens for the missing numbers.'), M('Eleven times… got it! Open up!')],
       [G('You’re too close! I’m hiding in my CAVE, where you’ll never divide!'), M('Division? That’s just sharing backwards. After him!')],
-      [G('Bet you can’t read my star pictures! Hee hee!'), M('Arrays can’t trick me — count one row, then count up!')],
+      [G('I’ve pinned my stars to the cloud banners — bet you can’t read them! Hee hee!'), M('Rows of eleven? Your patterns give you away, goblin!')],
     ]),
   },
   {

@@ -38,6 +38,9 @@ export interface LevelDef {
   title: string
   /** story beat shown before this level (first time only) */
   story: StoryLine[]
+  /** which background art this level uses (canonical index; levels can be
+      reordered on the map, but art stays tied to the story) */
+  artIndex?: number
   /** Olivia's optional "how to" tip, offered before every play of this level */
   tip?: TipStep[]
 }

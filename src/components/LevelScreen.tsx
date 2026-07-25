@@ -100,7 +100,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
   }
 
   const progress = Math.min(answeredFirst / QUESTIONS_PER_LEVEL, 1)
-  const bg = backgroundFor(region.id, level)
+  const bg = backgroundFor(region.id, region.levels[level].artIndex ?? level)
 
   return (
     <div className="screen level-screen" style={{ ['--region-color' as string]: region.color }}>

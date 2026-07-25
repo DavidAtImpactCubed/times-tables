@@ -44,7 +44,7 @@ export function TipScene({ region, level, readAloud, onDone }: Props) {
   }
 
   const step = steps[index]
-  const bg = backgroundFor(region.id, level)
+  const bg = backgroundFor(region.id, region.levels[level]?.artIndex ?? level)
 
   return (
     <div className="screen tip-screen" style={{ background: `linear-gradient(180deg, ${region.color}cc, #1e1b4b)` }} data-testid="tip-scene">

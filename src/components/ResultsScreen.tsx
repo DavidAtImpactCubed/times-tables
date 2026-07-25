@@ -36,7 +36,7 @@ export function ResultsScreen({ region, level, correct, stars, gained, practice,
           ? 'Well done — stars won back!'
           : 'So close! One more try and those stars are yours!'
 
-  const bg = backgroundFor(region.id, level)
+  const bg = backgroundFor(region.id, region.levels[level].artIndex ?? level)
 
   return (
     <div className="screen results-screen" style={{ ['--region-color' as string]: region.color }}>

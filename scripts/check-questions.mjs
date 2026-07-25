@@ -124,6 +124,9 @@ for (const region of REGIONS) {
             else
               q.choiceArrays.forEach((f, i) => {
                 if (f.rows * f.cols !== q.choices[i]) fail(`match array ${f.rows}×${f.cols} ≠ choice ${q.choices[i]}`)
+                // rod stacks (tens) are tall: all three buttons must fit on
+                // screen together, so no option may exceed 5 rods
+                if (f.cols === 10 && f.rows > 5) fail(`${region.id}: reverse tens option ${f.rows}×10 too tall`)
               })
           } else if (!q.choiceLabels || q.choiceLabels.length !== q.choices.length) {
             fail('match without aligned labels')

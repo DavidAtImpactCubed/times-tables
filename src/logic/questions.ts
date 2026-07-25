@@ -77,11 +77,12 @@ function divQuestion(table: number, n: number, unknown: Question['unknown'], inp
  * DISTINCT products, so counting always settles it and the commutative twin
  * can never appear as a distractor.
  */
-function matchQuestion(rows: number, cols: number, reverse = false): Question {
+function matchQuestion(rows: number, cols: number, reverse = false, maxRows = Infinity): Question {
   const result = rows * cols
   const facts: Array<{ r: number; c: number }> = [{ r: rows, c: cols }]
   // Reverse (pick-the-array) distractors vary ONLY the row count, so all
   // three array buttons share a width, stay big, and compare cleanly.
+  // maxRows keeps all three on screen together where rows are costly (rods).
   const candidates = shuffle(
     reverse
       ? [
@@ -102,7 +103,7 @@ function matchQuestion(rows: number, cols: number, reverse = false): Question {
   )
   for (const f of candidates) {
     if (facts.length === 3) break
-    if (f.r < 1 || f.c < 1) continue
+    if (f.r < 1 || f.c < 1 || f.r > maxRows) continue
     if (facts.some((g) => g.r * g.c === f.r * f.c)) continue
     facts.push(f)
   }
@@ -403,12 +404,20 @@ export function generateLevel(region: Region, level: number): Question[] {
     } else if (mode === 'match') {
       // both directions and both orientations: read an array as a fact, and
       // pick the array a fact describes
-      for (const n of shuffle([2, 3, 4, 5, 6, 7])) {
-        // tens always sit rows-of-ten, so every row renders as a base-ten rod
-        const flip = table === 10 ? false : Math.random() < 0.5
-        qs.push(matchQuestion(flip ? table : n, flip ? n : table, false))
-        // reverse arrays sit few-rows-of-many so the choice buttons stay wide and shallow
-        qs.push(matchQuestion(Math.min(table, n), Math.max(table, n), true))
+      if (table === 10) {
+        // tens always sit rows-of-ten, so every row renders as a base-ten rod.
+        // A tall rod stack is fine as the ONE question array, but the three
+        // pick-the-array buttons must all fit on screen together — so reverse
+        // facts stay small and their distractors are capped at 5 rods.
+        for (const n of shuffle([2, 3, 4, 5, 6, 7, 8, 9])) qs.push(matchQuestion(n, 10, false))
+        for (const n of shuffle([2, 3, 4])) qs.push(matchQuestion(n, 10, true, 5))
+      } else {
+        for (const n of shuffle([2, 3, 4, 5, 6, 7])) {
+          const flip = Math.random() < 0.5
+          qs.push(matchQuestion(flip ? table : n, flip ? n : table, false))
+          // reverse arrays sit few-rows-of-many so the choice buttons stay wide and shallow
+          qs.push(matchQuestion(Math.min(table, n), Math.max(table, n), true))
+        }
       }
     } else {
       // mixed: times facts and their matching division facts

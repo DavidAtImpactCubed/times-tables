@@ -175,7 +175,15 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             ) : (
               <>
                 <p className="count-prompt">Which fact does this array show?</p>
-                <div className="match-grid" style={{ gridTemplateColumns: `repeat(${q.b}, auto)` }} aria-label={`${q.a} rows of ${q.b}`}>
+                <div
+                  className="match-grid"
+                  style={{
+                    gridTemplateColumns: `repeat(${q.b}, auto)`,
+                    // same sizing rule as the pick-the-array buttons, so stars feel consistent
+                    fontSize: `${Math.max(14, Math.min(q.b > 8 ? 17 : 26, Math.floor(160 / q.a)))}px`,
+                  }}
+                  aria-label={`${q.a} rows of ${q.b}`}
+                >
                   {Array.from({ length: q.a * q.b }, (_, i) => (
                     <span key={i} className="match-star" style={{ animationDelay: `${i * 0.02}s` }} aria-hidden>
                       ⭐

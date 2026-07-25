@@ -21,25 +21,29 @@ export function freshSave(): SaveData {
     seenFinale: false,
     muted: false,
     readAloud: true,
-    economy: 2,
+    economy: 3,
   }
 }
 
 /**
- * One-time top-up for saves from before difficulty pay: harder stages now pay
- * more per star, so credit the difference — best × (value − 1) — for every
- * level already finished. Keeps old wallets from being devalued by the new
- * wardrobe prices.
+ * One-time rebalance for saves from before difficulty pay (and from the
+ * short-lived earnings-only top-up, economy 2): recompute the wallet as if
+ * the new economy had always existed — every finished level paid at the
+ * stage's star value, every owned item bought at today's price. Items are
+ * always kept; the wallet is floored at zero so nobody goes into debt.
+ * This keeps siblings comparable whether they spent early (at cheap old
+ * prices) or saved up.
  */
 function upgradeEconomy(save: SaveData, rawEconomy: unknown): SaveData {
-  if (rawEconomy === 2) return save
-  let bonus = 0
+  if (rawEconomy === 3) return save
+  let earned = 0
   regionsFor(save.curriculum).forEach((region, ri) => {
     region.levels.forEach((_, li) => {
-      bonus += (save.stars[levelId(region.id, li)] ?? 0) * (starValue(ri) - 1)
+      earned += (save.stars[levelId(region.id, li)] ?? 0) * starValue(ri)
     })
   })
-  return { ...save, wallet: save.wallet + bonus, economy: 2 }
+  const spent = save.owned.reduce((sum, id) => sum + (itemById(id)?.price ?? 0), 0)
+  return { ...save, wallet: Math.max(0, earned - spent), economy: 3 }
 }
 
 /** Refund and drop wardrobe items that no longer exist in the catalogue. */

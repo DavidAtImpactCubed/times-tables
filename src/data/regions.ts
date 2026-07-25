@@ -160,6 +160,7 @@ export const INTRO: StoryLine[] = [
   O('Play a level and answer the questions to win stars back from the Star Goblin.'),
   O('Stars are yours to spend! Tap your monster or the star count at the top of the map to open the wardrobe and dress up your monster.'),
   M('And when I finish every level in a stage, the next stage unlocks!'),
+  O('The further you travel, the harder the questions — and the more each star is worth!'),
   O('Win back every star on the island to finish the adventure. Good luck, little monster!'),
 ]
 

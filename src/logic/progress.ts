@@ -7,6 +7,25 @@ export function starsFor(correct: number): number {
   return 0
 }
 
+/**
+ * How much each star is WORTH at a given region — harder stages pay more.
+ * Main map: ×1 ×1 ×2 ×2 ×3 ×3 ×4; early map: ×1 ×1 ×2 ×2 ×3.
+ */
+export const starValue = (regionIndex: number): number => 1 + Math.floor(regionIndex / 2)
+
+/**
+ * Wallet payout for a run. Improving your best pays the improvement × the
+ * stage's star value. A PERFECT run that doesn't improve anything still pays
+ * the stage's value once — a practice bonus, so replaying hard stages is
+ * always worth more than farming easy ones.
+ */
+export function walletGain(before: number, stars: number, regionIndex: number): { gained: number; practice: boolean } {
+  const value = starValue(regionIndex)
+  if (stars > before) return { gained: (stars - before) * value, practice: false }
+  if (stars === 3) return { gained: value, practice: true }
+  return { gained: 0, practice: false }
+}
+
 /** Stages finished with at least 1 star, across the whole island. */
 export function completedLevels(save: SaveData): number {
   return Object.values(save.stars).filter((s) => s >= 1).length

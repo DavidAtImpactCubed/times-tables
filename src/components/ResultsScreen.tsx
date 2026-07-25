@@ -12,13 +12,15 @@ interface Props {
   correct: number
   stars: number
   gained: number
+  /** true when the gain is a perfect-replay practice bonus, not an improvement */
+  practice: boolean
   equipped: Partial<Record<PartSlot, string>>
   onReplay: () => void
   onContinue: () => void
   onWardrobe: () => void
 }
 
-export function ResultsScreen({ region, level, correct, stars, gained, equipped, onReplay, onContinue, onWardrobe }: Props) {
+export function ResultsScreen({ region, level, correct, stars, gained, practice, equipped, onReplay, onContinue, onWardrobe }: Props) {
   useEffect(() => {
     if (stars > 0) sfx.fanfare()
     const timers = Array.from({ length: stars }, (_, i) => window.setTimeout(sfx.star, 600 + i * 450))
@@ -61,7 +63,9 @@ export function ResultsScreen({ region, level, correct, stars, gained, equipped,
       </div>
       {gained > 0 && (
         <p className="results-gain" data-testid="results-gain">
-          +{gained} ⭐ for your star purse — spend them in the wardrobe!
+          {practice
+            ? `Perfect practice! +${gained} ⭐ bonus for your star purse!`
+            : `+${gained} ⭐ for your star purse — spend them in the wardrobe!`}
         </p>
       )}
       <div className="results-buttons">

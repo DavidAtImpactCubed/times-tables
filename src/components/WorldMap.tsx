@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { sfx } from '../logic/audio'
 import { readAloudSupported } from '../logic/speech'
 import { backgroundFor } from '../logic/backgrounds'
-import { levelUnlocked, levelsLeftToUnlock, regionUnlocked } from '../logic/progress'
+import { levelUnlocked, levelsLeftToUnlock, regionUnlocked, starValue } from '../logic/progress'
 import { levelId, type Region, type SaveData } from '../types'
 import { Monster } from './Monster'
 
@@ -120,6 +120,13 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
                   <h2>{region.name}</h2>
                   <p className="region-sub">{regionSubtitle(region)}</p>
                 </div>
+                <span
+                  className="region-value"
+                  aria-label={`Stars here are worth ${starValue(ri)} each`}
+                  data-testid={`region-value-${region.id}`}
+                >
+                  ⭐×{starValue(ri)}
+                </span>
               </div>
               {!unlocked && (
                 <p className="unlock-hint" data-testid={`unlock-hint-${region.id}`}>

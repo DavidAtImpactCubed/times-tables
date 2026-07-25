@@ -993,6 +993,19 @@ button {
   50% { transform: translateY(-8px); }
 }
 
+.region-value {
+  margin-left: auto;
+  align-self: flex-start;
+  flex: none;
+  background: rgba(255, 255, 255, 0.85);
+  color: #713f12;
+  font-weight: 800;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  padding: 4px 9px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+}
+
 .reset-confirm {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 18px;

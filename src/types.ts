@@ -125,6 +125,8 @@ export interface SaveData {
   muted: boolean
   /** read questions and tips aloud (defaults on for the early-years band) */
   readAloud: boolean
+  /** star-economy version; saves from before difficulty pay get a one-time top-up */
+  economy?: number
 }
 
 export const levelId = (regionId: string, level: number) => `${regionId}-${level}`

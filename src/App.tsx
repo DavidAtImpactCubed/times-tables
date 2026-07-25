@@ -4,7 +4,7 @@ import { WARDROBE } from './data/wardrobe'
 import { setMuted, sfx } from './logic/audio'
 import { setReadAloud } from './logic/speech'
 import { TITLE_BG, WARDROBE_BG, backgroundFor } from './logic/backgrounds'
-import { starsFor } from './logic/progress'
+import { starsFor, walletGain } from './logic/progress'
 import {
   addProfile,
   clearTransferParam,
@@ -34,7 +34,7 @@ type Screen =
   | { name: 'story'; regionId: string; level: number }
   | { name: 'tip'; regionId: string; level: number }
   | { name: 'level'; regionId: string; level: number }
-  | { name: 'results'; regionId: string; level: number; correct: number; stars: number; gained: number }
+  | { name: 'results'; regionId: string; level: number; correct: number; stars: number; gained: number; practice: boolean }
   | { name: 'finale' }
   | { name: 'wardrobe' }
   | { name: 'credits' }
@@ -49,7 +49,7 @@ function applyCheat(save: SaveData): SaveData {
       const id = levelId(region.id, l)
       stars[id] = Math.max(stars[id] ?? 0, 1)
     }
-  return { ...save, stars, wallet: save.wallet + 99, owned: WARDROBE.map((i) => i.id) }
+  return { ...save, stars, wallet: save.wallet + 999, owned: WARDROBE.map((i) => i.id) }
 }
 
 export default function App() {
@@ -161,18 +161,19 @@ export default function App() {
     goToLevel(regionId, level)
   }
 
+  const activeRegions = regionsFor(save.curriculum)
+
   const levelDone = (regionId: string, level: number, correct: number) => {
     const stars = starsFor(correct)
     const id = levelId(regionId, level)
     const before = save.stars[id] ?? 0
-    const gained = Math.max(0, stars - before)
+    const regionIndex = activeRegions.findIndex((r) => r.id === regionId)
+    const { gained, practice } = walletGain(before, stars, regionIndex)
     if (gained > 0) {
       setSave((s) => ({ ...s, stars: { ...s.stars, [id]: Math.max(before, stars) }, wallet: s.wallet + gained }))
     }
-    setScreen({ name: 'results', regionId, level, correct, stars, gained })
+    setScreen({ name: 'results', regionId, level, correct, stars, gained, practice })
   }
-
-  const activeRegions = regionsFor(save.curriculum)
 
   const afterResults = (regionId: string, level: number, stars: number) => {
     const lastRegion = activeRegions[activeRegions.length - 1]
@@ -386,6 +387,7 @@ export default function App() {
           correct={screen.correct}
           stars={screen.stars}
           gained={screen.gained}
+          practice={screen.practice}
           equipped={save.equipped}
           onReplay={() => goToLevel(screen.regionId, screen.level)}
           onContinue={() => afterResults(screen.regionId, screen.level, screen.stars)}

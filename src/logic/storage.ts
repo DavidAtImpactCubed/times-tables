@@ -1,5 +1,7 @@
+import { regionsFor } from '../data/regions'
 import { RETIRED_ITEM_PRICES, itemById } from '../data/wardrobe'
-import type { SaveData } from '../types'
+import { starValue } from './progress'
+import { levelId, type SaveData } from '../types'
 
 const SAVE_PREFIX = 'monster-maths-save-v1'
 const PROFILES_KEY = 'monster-maths-profiles-v1'
@@ -19,7 +21,25 @@ export function freshSave(): SaveData {
     seenFinale: false,
     muted: false,
     readAloud: true,
+    economy: 2,
   }
+}
+
+/**
+ * One-time top-up for saves from before difficulty pay: harder stages now pay
+ * more per star, so credit the difference — best × (value − 1) — for every
+ * level already finished. Keeps old wallets from being devalued by the new
+ * wardrobe prices.
+ */
+function upgradeEconomy(save: SaveData, rawEconomy: unknown): SaveData {
+  if (rawEconomy === 2) return save
+  let bonus = 0
+  regionsFor(save.curriculum).forEach((region, ri) => {
+    region.levels.forEach((_, li) => {
+      bonus += (save.stars[levelId(region.id, li)] ?? 0) * (starValue(ri) - 1)
+    })
+  })
+  return { ...save, wallet: save.wallet + bonus, economy: 2 }
 }
 
 /** Refund and drop wardrobe items that no longer exist in the catalogue. */
@@ -96,7 +116,7 @@ export function loadSave(name: string): SaveData {
     if (!raw) return freshSave()
     const data = JSON.parse(raw)
     if (!data || data.version !== 1 || typeof data.stars !== 'object') return freshSave()
-    return migrate({ ...freshSave(), ...data })
+    return upgradeEconomy(migrate({ ...freshSave(), ...data }), data.economy)
   } catch {
     return freshSave()
   }
@@ -131,7 +151,7 @@ export function readTransferParam(): { name: string; save: SaveData } | null {
     if (!p) return null
     const data = JSON.parse(b64urlDecode(p))
     if (!data || typeof data.n !== 'string' || !data.s || typeof data.s.stars !== 'object') return null
-    return { name: data.n.slice(0, 12), save: migrate({ ...freshSave(), ...data.s }) }
+    return { name: data.n.slice(0, 12), save: upgradeEconomy(migrate({ ...freshSave(), ...data.s }), data.s.economy) }
   } catch {
     return null
   }

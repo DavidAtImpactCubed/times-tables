@@ -28,6 +28,10 @@ Chosen per player when a new game starts (see the landing screen):
 - **4 levels per region**, ramping in difficulty. A region unlocks once every
   level of the region before it is complete.
 - **Up to 3 stars per level** (10/10 → ⭐⭐⭐); replay to improve.
+- **Harder stages pay more** — each region shows a ⭐×N value (×1 at the start,
+  up to ×4 at the Goblin's Tower); wallet earnings are improvement × value, and
+  a *perfect* replay pays the stage's value once as a practice bonus. Farming
+  the easy stages is never the best deal.
 - **Gentle mistakes** — a wrong answer shows the correct one with a
   count-on / count-back / skip-counting explanation, and the question returns
   later in the level for another (unscored) go.

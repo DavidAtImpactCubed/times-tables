@@ -157,6 +157,22 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
               ))}
             </div>
           </div>
+        ) : q.kind === 'match' ? (
+          <div
+            className={`count-panel match-panel ${feedback?.kind === 'correct' ? 'equation-right' : ''}`}
+            data-testid="match-panel"
+            data-rows={q.a}
+            data-cols={q.b}
+          >
+            <p className="count-prompt">Which fact does this array show?</p>
+            <div className="match-grid" style={{ gridTemplateColumns: `repeat(${q.b}, auto)` }} aria-label={`${q.a} rows of ${q.b}`}>
+              {Array.from({ length: q.a * q.b }, (_, i) => (
+                <span key={i} className="match-star" style={{ animationDelay: `${i * 0.02}s` }} aria-hidden>
+                  ⭐
+                </span>
+              ))}
+            </div>
+          </div>
         ) : (
           <div className={`equation ${feedback?.kind === 'correct' ? 'equation-right' : ''}`} data-testid="equation">
             <span className={text.left === '?' ? 'slot unknown' : 'slot'}>
@@ -187,9 +203,9 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
         ) : feedback === null ? (
           q.input === 'choice' ? (
             <div className="choices" data-testid="choices">
-              {q.choices!.map((c) => (
+              {q.choices!.map((c, i) => (
                 <button key={c} className="btn choice-btn" onClick={() => submit(c)} data-testid={`choice-${c}`}>
-                  {c}
+                  {q.choiceLabels?.[i] ?? c}
                 </button>
               ))}
             </div>

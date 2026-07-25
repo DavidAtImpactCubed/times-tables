@@ -101,7 +101,7 @@ for (const region of REGIONS) {
         if (q.kind === 'mul' && q.a * q.b !== q.result) fail(`bad mul fact ${q.a}×${q.b}=${q.result}`)
         if (q.kind === 'div' && (q.a !== q.b * q.result || q.a % q.b !== 0)) fail(`bad div fact ${q.a}÷${q.b}=${q.result}`)
 
-        const factors = q.kind === 'mul' ? [q.a, q.b] : [q.b, q.result]
+        const factors = q.kind === 'mul' || q.kind === 'match' ? [q.a, q.b] : [q.b, q.result]
         if (!factors.some((f) => region.tables.includes(f)))
           fail(`${region.id} L${level}: fact outside region tables: ${q.a} ${q.kind} ${q.b}`)
         if (factors.every((f) => f < 1 || f > 12)) fail(`no factor in 1..12 for ${q.a} ${q.kind} ${q.b}`)
@@ -114,6 +114,18 @@ for (const region of REGIONS) {
             fail(`${region.id} L${level}: missing-number leaves untaught ${known}s visible (${questionText(q).left} × ${questionText(q).right})`)
         }
         if (q.kind === 'div' && q.unknown === 'b') fail(`${region.id} L${level}: division hides the divisor`)
+
+        // match-the-array: every fact label must multiply out to its choice value,
+        // and the shown array's own product must be the answer
+        if (q.kind === 'match') {
+          if (q.answer !== q.a * q.b) fail(`match answer ${q.answer} ≠ ${q.a}×${q.b}`)
+          if (!q.choiceLabels || q.choiceLabels.length !== q.choices.length) fail('match without aligned labels')
+          else
+            q.choiceLabels.forEach((label, i) => {
+              const [r, c] = label.split('×').map((x) => parseInt(x.trim(), 10))
+              if (r * c !== q.choices[i]) fail(`match label "${label}" ≠ choice ${q.choices[i]}`)
+            })
+        }
 
         if (q.input === 'choice') {
           if (!q.choices || q.choices.length !== 3) fail('choice question without 3 options')

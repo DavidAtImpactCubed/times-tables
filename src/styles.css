@@ -1012,6 +1012,18 @@ button {
   transform: translateY(1px);
 }
 
+/* match-the-array levels: the array the child reads as a times fact */
+.match-grid {
+  display: grid;
+  gap: 3px 6px;
+  justify-content: center;
+}
+.match-star {
+  font-size: 1.05rem;
+  line-height: 1;
+  animation: pop-in 0.25s ease both;
+}
+
 /* tap a ⭐×N badge → a little card explains the star-value mechanic */
 .value-pop {
   position: fixed;

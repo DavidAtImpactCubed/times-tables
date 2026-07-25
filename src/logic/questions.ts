@@ -69,6 +69,43 @@ function divQuestion(table: number, n: number, unknown: Question['unknown'], inp
   return q
 }
 
+/**
+ * Match an array picture to its times fact: the screen shows `rows` rows of
+ * `cols` stars; the child taps the fact it shows. Choices are neighbouring
+ * facts with DISTINCT products, so counting the array always settles it and
+ * the commutative twin can never appear as a distractor.
+ */
+function matchQuestion(rows: number, cols: number): Question {
+  const result = rows * cols
+  const facts: Array<{ r: number; c: number }> = [{ r: rows, c: cols }]
+  const candidates = shuffle([
+    { r: rows + 1, c: cols },
+    { r: rows - 1, c: cols },
+    { r: rows, c: cols + 1 },
+    { r: rows, c: cols - 1 },
+    { r: rows + 2, c: cols },
+    { r: rows, c: cols + 2 },
+  ])
+  for (const f of candidates) {
+    if (facts.length === 3) break
+    if (f.r < 1 || f.c < 1) continue
+    if (facts.some((g) => g.r * g.c === f.r * f.c)) continue
+    facts.push(f)
+  }
+  const shuffled = shuffle(facts)
+  return {
+    kind: 'match',
+    a: rows,
+    b: cols,
+    result,
+    unknown: 'result',
+    answer: result,
+    input: 'choice',
+    choices: shuffled.map((f) => f.r * f.c),
+    choiceLabels: shuffled.map((f) => `${f.r} × ${f.c}`),
+  }
+}
+
 // ---- early-years question builders (addition, subtraction, counting) ----
 
 const COUNT_OBJECTS = ['⭐', '🐚', '🌸', '🍎', '🐟', '🎈', '🍄', '🦋', '🌟', '🐚']
@@ -298,6 +335,12 @@ export function generateLevel(region: Region, level: number): Question[] {
       for (const n of multipliers()) qs.push(mulQuestion(table, n, 'result', 'pad'))
     } else if (mode === 'missing') {
       for (const n of multipliers()) qs.push(mulQuestion(table, n, pick(['a', 'b']), 'choice'))
+    } else if (mode === 'match') {
+      // arrays in both orientations: n rows of table, and table rows of n
+      for (const n of shuffle([2, 3, 4, 5, 6, 7])) {
+        qs.push(matchQuestion(n, table))
+        qs.push(matchQuestion(table, n))
+      }
     } else {
       // mixed: times facts and their matching division facts
       const ns = multipliers()
@@ -354,7 +397,7 @@ export function generateLevel(region: Region, level: number): Question[] {
 /** Human-readable question, with the unknown slot rendered as "?" (used by display + tests). */
 export function questionText(q: Question): { left: string; op: string; right: string; result: string } {
   const show = (slot: Question['unknown'], value: number) => (q.unknown === slot ? '?' : String(value))
-  const op = q.kind === 'mul' ? '×' : q.kind === 'div' ? '÷' : q.kind === 'add' ? '+' : '−'
+  const op = q.kind === 'mul' || q.kind === 'match' ? '×' : q.kind === 'div' ? '÷' : q.kind === 'add' ? '+' : '−'
   return {
     left: show('a', q.a),
     op,
@@ -366,6 +409,7 @@ export function questionText(q: Question): { left: string; op: string; right: st
 /** A natural-language reading of a question, for the read-aloud voice. */
 export function spokenQuestion(q: Question): string {
   if (q.kind === 'count') return 'How many?'
+  if (q.kind === 'match') return 'Which times fact does this array show?'
   const op = q.kind === 'mul' ? 'times' : q.kind === 'div' ? 'divided by' : q.kind === 'add' ? 'plus' : 'take away'
   if (q.unknown === 'result') return `What is ${q.a} ${op} ${q.b}?`
   if (q.unknown === 'b') return `${q.a} ${op} what makes ${q.result}?`
@@ -559,6 +603,13 @@ export function explain(q: Question): Explanation {
   }
   if (q.kind === 'add') return explainAdd(q)
   if (q.kind === 'sub') return explainSub(q)
+  if (q.kind === 'match') {
+    const seq = Array.from({ length: q.a }, (_, i) => (i + 1) * q.b).join(', ')
+    return {
+      text: `Count one row: ${q.b}. Then count up in ${q.b}s, once for each row: ${seq}. This array shows ${q.a} × ${q.b} = ${q.result}.`,
+      visual: { kind: 'array', rows: q.a, cols: q.b },
+    }
+  }
   if (q.kind === 'mul') return explainMul(q)
   return explainDiv(q)
 }

@@ -5,6 +5,7 @@ const TIMES_LEVELS = (table: number, stories: StoryLine[][]) => [
   { mode: 'type' as const, title: `Type the ${table}s`, story: stories[1] },
   { mode: 'missing' as const, title: 'Missing numbers', story: stories[2] },
   { mode: 'mixed' as const, title: 'Times & sharing', story: stories[3] },
+  { mode: 'match' as const, title: 'Match the arrays', story: stories[4] },
 ]
 
 const M = (text: string): StoryLine => ({ speaker: 'monster', text })
@@ -34,6 +35,7 @@ export const REGIONS: Region[] = [
         O('Then fill in the missing numbers, and the trail will glow again!'),
       ],
       [G('Still here? Try SHARING the stars out — bet you can’t!'), M('Times and sharing are two halves of the same trick. Watch!')],
+      [O('One last beach game — star pictures! Match each array to the fact it shows.'), M('Rows of twos — I can count those!')],
     ]),
   },
   {
@@ -53,6 +55,7 @@ export const REGIONS: Region[] = [
       [M('The higher we climb, the more stars I can see twinkling above.'), O('Keep counting in fives — every right answer lights the path.')],
       [O('A rockfall! Some of the numbers have tumbled away.'), M('I can work out what’s missing. Nothing stops this monster!')],
       [G('Fine, take the mountain stars — I’ve a whole SACK more!'), M('Then I’ll win those back too. Onwards!')],
+      [O('The mountain spirits drew star pictures. Match each one to its times fact!'), M('Rows of fives, nice and neat!')],
     ]),
   },
   {
@@ -72,6 +75,7 @@ export const REGIONS: Region[] = [
       [M('The octopus is holding stars up on its tentacles — ten on each one!'), O('Answer well and it will pass them to you.')],
       [O('Ripples have hidden some numbers under the water.'), M('I’ll figure out the missing tens!')],
       [M('Look — the goblin dropped a clue, heading for the forest!'), O('Well spotted. To the trees!')],
+      [M('The octopus is arranging its stars in rows of ten!'), O('Match each picture to the fact it shows.')],
     ]),
   },
   {
@@ -91,6 +95,7 @@ export const REGIONS: Region[] = [
       [M('Glowing mushrooms in clusters of three light the way.'), O('Follow them deeper — we’re close now.')],
       [O('The path splits! Only the right numbers reveal the true way.'), M('Missing numbers won’t fool me!')],
       [M('There — the goblin’s rope ladder, climbing up into the clouds!'), G('Grrr! How did you find it?!')],
+      [O('Star patterns grew between the trees! Which fact does each one show?'), M('Count one row, then count the rows!')],
     ]),
   },
   {
@@ -110,6 +115,7 @@ export const REGIONS: Region[] = [
       [M('The clouds are stepping stones — each right answer makes one solid!'), O('Steady now… try not to look down.')],
       [O('The castle gate only opens for the missing numbers.'), M('Eleven times… got it! Open up!')],
       [G('You’re too close! I’m hiding in my CAVE, where you’ll never divide!'), M('Division? That’s just sharing backwards. After him!')],
+      [G('Bet you can’t read my star pictures! Hee hee!'), M('Arrays can’t trick me — count one row, then count up!')],
     ]),
   },
   {
@@ -365,6 +371,9 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('An array shows times AND sharing at once. Four rows of two make eight…', '4 × 2 = 8', { kind: 'array', rows: 4, cols: 2 }),
       T('…and eight shared into twos makes four. The same picture, read backwards!', '8 ÷ 2 = 4', { kind: 'array', rows: 4, cols: 2, divide: true }),
     ],
+    [
+      T('An array is rows of the SAME number. Count one row, then count up in twos — once for every row!', '4 rows of 2  →  2, 4, 6, 8  →  2 × 4', { kind: 'array', rows: 4, cols: 2 }),
+    ],
   ],
   mountain: [
     [
@@ -383,6 +392,9 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('Four rows of five make twenty…', '4 × 5 = 20', { kind: 'array', rows: 4, cols: 5 }),
       T('…so twenty shared into fives makes four. Times and sharing are one fact family!', '20 ÷ 5 = 4', { kind: 'array', rows: 4, cols: 5, divide: true }),
     ],
+    [
+      T('Count one row first — five! Then count up in fives, once for every row.', '3 rows of 5  →  5, 10, 15  →  5 × 3', { kind: 'array', rows: 3, cols: 5 }),
+    ],
   ],
   lagoon: [
     [
@@ -399,6 +411,9 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
     [
       T('Dividing by ten? Take the zero off! Seventy shared into tens is seven.', '70 ÷ 10 = 7'),
       T('Times ten and divide by ten undo each other — add the zero, take the zero.', '7 → 70 → 7'),
+    ],
+    [
+      T('Each row is a full ten! Count the rows and pop a zero on: three rows is thirty.', '3 rows of 10  →  30  →  10 × 3', { kind: 'array', rows: 3, cols: 10 }),
     ],
   ],
   forest: [
@@ -422,6 +437,9 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('…and twelve shared into threes makes four. One array, two facts!', '12 ÷ 3 = 4', { kind: 'array', rows: 4, cols: 3, divide: true }),
       T('Sharing big numbers? Same trick: ten threes are thirty, so twenty-seven shared by three is nine.', '27 ÷ 3  →  one less than 10  →  9'),
     ],
+    [
+      T('Count one row — three! Then count up in threes, once for every row.', '4 rows of 3  →  3, 6, 9, 12  →  3 × 4', { kind: 'array', rows: 4, cols: 3 }),
+    ],
   ],
   castle: [
     [
@@ -438,6 +456,9 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
     ],
     [
       T('Eleven times four is forty-four, so forty-four shared by eleven is four. Same fact family!', '11 × 4 = 44  →  44 ÷ 11 = 4'),
+    ],
+    [
+      T('Each row holds eleven. Count the rows, then use the elevens pattern: two rows is twenty-two!', '2 rows of 11  →  22  →  11 × 2', { kind: 'array', rows: 2, cols: 11 }),
     ],
   ],
   cavern: [

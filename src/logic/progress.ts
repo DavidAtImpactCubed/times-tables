@@ -37,9 +37,14 @@ export function regionComplete(save: SaveData, region: Region): boolean {
   return regionLevelsDone(save, region) >= region.levels.length
 }
 
-/** Region 0 is always open; region n unlocks once region n-1 is fully complete. */
+/**
+ * Region 0 is always open; region n unlocks once region n-1 is fully
+ * complete. A region the player has already started never re-locks — so
+ * adding new levels to earlier regions can't take the map away from anyone.
+ */
 export function regionUnlocked(save: SaveData, regions: Region[], regionIndex: number): boolean {
   if (regionIndex === 0) return true
+  if (regionLevelsDone(save, regions[regionIndex]) > 0) return true
   return regionComplete(save, regions[regionIndex - 1])
 }
 

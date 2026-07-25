@@ -23,8 +23,15 @@ const ART_ALIAS: Record<string, string> = {
   'doubles-keep': 'castle',
 }
 
-export const backgroundFor = (regionId: string, level: number): string | undefined =>
-  byStem[`${regionId}-${level}`] ?? byStem[`${ART_ALIAS[regionId] ?? regionId}-${level}`]
+export const backgroundFor = (regionId: string, level: number): string | undefined => {
+  const id = ART_ALIAS[regionId] ?? regionId
+  // fall back to the nearest lower level's art (new levels reuse late-region scenery)
+  for (let l = level; l >= 0; l--) {
+    const hit = byStem[`${regionId}-${l}`] ?? byStem[`${id}-${l}`]
+    if (hit) return hit
+  }
+  return undefined
+}
 
 /** The island vista shown on the title screen. */
 export const TITLE_BG: string | undefined = byStem['title']

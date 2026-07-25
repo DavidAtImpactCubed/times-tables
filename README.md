@@ -25,8 +25,10 @@ Chosen per player when a new game starts (see the landing screen):
 - **Multiple players** — each name has its own save (progress, wallet,
   wardrobe, age band). Chosen from the landing screen; switch any time via the
   tag in the map header.
-- **4 levels per region**, ramping in difficulty. A region unlocks once every
-  level of the region before it is complete.
+- **4–5 levels per region**, ramping in difficulty (times-table regions end
+  with a "Match the arrays" level: pick the fact an array of stars shows). A
+  region unlocks once every level of the region before it is complete — and a
+  region you've started never re-locks.
 - **Up to 3 stars per level** (10/10 → ⭐⭐⭐); replay to improve.
 - **Harder stages pay more** — each region shows a ⭐×N value set by
   difficulty, not unlock order (fives & tens ×1, twos & elevens ×2, threes ×3,

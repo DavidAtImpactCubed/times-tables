@@ -1,4 +1,4 @@
-export type QuestionKind = 'mul' | 'div' | 'add' | 'sub' | 'count'
+export type QuestionKind = 'mul' | 'div' | 'add' | 'sub' | 'count' | 'match'
 
 /**
  * A question is one fact with one unknown slot:
@@ -17,12 +17,14 @@ export interface Question {
   /** 'choice' shows big answer buttons, 'pad' shows the number pad */
   input: 'choice' | 'pad'
   choices?: number[]
+  /** match questions: fact labels shown on the choice buttons, aligned with `choices` */
+  choiceLabels?: string[]
   /** count questions only: how many objects to show, and which emoji */
   count?: number
   object?: string
 }
 
-export type LevelMode = 'choice' | 'type' | 'missing' | 'mixed'
+export type LevelMode = 'choice' | 'type' | 'missing' | 'mixed' | 'match'
 
 export interface StoryLine {
   speaker: 'monster' | 'goblin' | 'guide'

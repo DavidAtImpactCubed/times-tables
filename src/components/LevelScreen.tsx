@@ -163,15 +163,27 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             data-testid="match-panel"
             data-rows={q.a}
             data-cols={q.b}
+            data-reverse={q.choiceArrays ? 'true' : undefined}
           >
-            <p className="count-prompt">Which fact does this array show?</p>
-            <div className="match-grid" style={{ gridTemplateColumns: `repeat(${q.b}, auto)` }} aria-label={`${q.a} rows of ${q.b}`}>
-              {Array.from({ length: q.a * q.b }, (_, i) => (
-                <span key={i} className="match-star" style={{ animationDelay: `${i * 0.02}s` }} aria-hidden>
-                  ⭐
-                </span>
-              ))}
-            </div>
+            {q.choiceArrays ? (
+              <>
+                <p className="count-prompt">Which array shows this fact?</p>
+                <div className="match-fact" aria-label={`${q.a} times ${q.b}`}>
+                  {q.a} × {q.b}
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="count-prompt">Which fact does this array show?</p>
+                <div className="match-grid" style={{ gridTemplateColumns: `repeat(${q.b}, auto)` }} aria-label={`${q.a} rows of ${q.b}`}>
+                  {Array.from({ length: q.a * q.b }, (_, i) => (
+                    <span key={i} className="match-star" style={{ animationDelay: `${i * 0.02}s` }} aria-hidden>
+                      ⭐
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         ) : (
           <div className={`equation ${feedback?.kind === 'correct' ? 'equation-right' : ''}`} data-testid="equation">
@@ -203,11 +215,29 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
         ) : feedback === null ? (
           q.input === 'choice' ? (
             <div className="choices" data-testid="choices">
-              {q.choices!.map((c, i) => (
-                <button key={c} className="btn choice-btn" onClick={() => submit(c)} data-testid={`choice-${c}`}>
-                  {q.choiceLabels?.[i] ?? c}
-                </button>
-              ))}
+              {q.choices!.map((c, i) =>
+                q.choiceArrays ? (
+                  <button
+                    key={c}
+                    className="btn choice-btn choice-array"
+                    onClick={() => submit(c)}
+                    aria-label={`${q.choiceArrays[i].rows} rows of ${q.choiceArrays[i].cols}`}
+                    data-testid={`choice-${c}`}
+                  >
+                    <span className="choice-array-grid" style={{ gridTemplateColumns: `repeat(${q.choiceArrays[i].cols}, auto)` }}>
+                      {Array.from({ length: q.choiceArrays[i].rows * q.choiceArrays[i].cols }, (_, j) => (
+                        <span key={j} aria-hidden>
+                          ⭐
+                        </span>
+                      ))}
+                    </span>
+                  </button>
+                ) : (
+                  <button key={c} className="btn choice-btn" onClick={() => submit(c)} data-testid={`choice-${c}`}>
+                    {q.choiceLabels?.[i] ?? c}
+                  </button>
+                ),
+              )}
             </div>
           ) : (
             <NumberPad value={typed} onChange={setTyped} onSubmit={() => submit(parseInt(typed, 10))} />

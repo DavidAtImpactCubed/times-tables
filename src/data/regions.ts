@@ -1,12 +1,29 @@
 import type { Curriculum, Region, StoryLine, TipStep } from '../types'
 
-const TIMES_LEVELS = (table: number, stories: StoryLine[][]) => [
-  { mode: 'choice' as const, title: `Meet the ${table}s`, story: stories[0] },
-  { mode: 'type' as const, title: `Type the ${table}s`, story: stories[1] },
-  { mode: 'missing' as const, title: 'Missing numbers', story: stories[2] },
-  { mode: 'mixed' as const, title: 'Times & sharing', story: stories[3] },
-  { mode: 'match' as const, title: 'Match the arrays', story: stories[4] },
-]
+/**
+ * Where each times region slots its "Match the arrays" level (so it doesn't
+ * always sit in the same place). The story-carrying "mixed" level stays last.
+ * Stories and tips are written in canonical order (choice, type, missing,
+ * mixed, match) and placeMatch reorders both the same way.
+ */
+export const MATCH_AT: Record<string, number> = { beach: 1, mountain: 2, lagoon: 3, forest: 1, castle: 2 }
+
+const placeMatch = <T,>(canonical: T[], at: number): T[] => {
+  const base = canonical.slice(0, 4)
+  return [...base.slice(0, at), canonical[4], ...base.slice(at)]
+}
+
+const TIMES_LEVELS = (table: number, matchAt: number, stories: StoryLine[][]) =>
+  placeMatch(
+    [
+      { mode: 'choice' as const, title: `Meet the ${table}s`, story: stories[0] },
+      { mode: 'type' as const, title: `Type the ${table}s`, story: stories[1] },
+      { mode: 'missing' as const, title: 'Missing numbers', story: stories[2] },
+      { mode: 'mixed' as const, title: 'Times & sharing', story: stories[3] },
+      { mode: 'match' as const, title: 'Match the arrays', story: stories[4] },
+    ],
+    matchAt,
+  )
 
 const M = (text: string): StoryLine => ({ speaker: 'monster', text })
 const O = (text: string): StoryLine => ({ speaker: 'guide', text })
@@ -22,7 +39,7 @@ export const REGIONS: Region[] = [
     tables: [2],
     kind: 'times',
     starValue: 2,
-    levels: TIMES_LEVELS(2, [
+    levels: TIMES_LEVELS(2, MATCH_AT.beach, [
       [
         O('Wake up, little monster — disaster! The Star Goblin has stolen every star on Monster Island!'),
         G('Hee hee hee! They’re ALL mine now!'),
@@ -46,7 +63,7 @@ export const REGIONS: Region[] = [
     tables: [5],
     kind: 'times',
     starValue: 1,
-    levels: TIMES_LEVELS(5, [
+    levels: TIMES_LEVELS(5, MATCH_AT.mountain, [
       [
         O('The trail climbs Five-Spike Mountain. The path rises in jumps of five!'),
         M('5, 10, 15, 20 — I’ll hop up in fives!'),
@@ -66,7 +83,7 @@ export const REGIONS: Region[] = [
     tables: [10],
     kind: 'times',
     starValue: 1,
-    levels: TIMES_LEVELS(10, [
+    levels: TIMES_LEVELS(10, MATCH_AT.lagoon, [
       [
         O('The goblin rowed across Ten-Tentacle Lagoon. The friendly octopus counts in tens!'),
         M('Tens are easy — just pop a zero on the end! 10, 20, 30!'),
@@ -86,7 +103,7 @@ export const REGIONS: Region[] = [
     tables: [3],
     kind: 'times',
     starValue: 3,
-    levels: TIMES_LEVELS(3, [
+    levels: TIMES_LEVELS(3, MATCH_AT.forest, [
       [
         O('Welcome to Triple Tree Forest, where everything grows in threes.'),
         G('My secret hideout is near — but you’ll get LOST in here! Hee hee!'),
@@ -106,7 +123,7 @@ export const REGIONS: Region[] = [
     tables: [11],
     kind: 'times',
     starValue: 2,
-    levels: TIMES_LEVELS(11, [
+    levels: TIMES_LEVELS(11, MATCH_AT.castle, [
       [
         O('Up we go, to Eleventy Cloud Castle — home of the tricky elevens!'),
         M('The elevens do a magic doubling trick: 11, 22, 33, 44!'),
@@ -591,7 +608,8 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
 
 const ALL_REGIONS = [...REGIONS, ...EARLY_REGIONS]
 for (const r of ALL_REGIONS) {
-  const tips = LEVEL_TIPS[r.id]
+  let tips = LEVEL_TIPS[r.id]
+  if (tips && MATCH_AT[r.id] !== undefined) tips = placeMatch(tips, MATCH_AT[r.id])
   if (tips) r.levels.forEach((lvl, i) => { if (tips[i]) lvl.tip = tips[i] })
 }
 

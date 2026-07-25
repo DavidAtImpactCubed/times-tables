@@ -19,6 +19,8 @@ export interface Question {
   choices?: number[]
   /** match questions: fact labels shown on the choice buttons, aligned with `choices` */
   choiceLabels?: string[]
+  /** reverse match questions: the fact is shown and these arrays are the choices */
+  choiceArrays?: Array<{ rows: number; cols: number }>
   /** count questions only: how many objects to show, and which emoji */
   count?: number
   object?: string

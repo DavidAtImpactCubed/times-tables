@@ -70,12 +70,14 @@ function divQuestion(table: number, n: number, unknown: Question['unknown'], inp
 }
 
 /**
- * Match an array picture to its times fact: the screen shows `rows` rows of
- * `cols` stars; the child taps the fact it shows. Choices are neighbouring
- * facts with DISTINCT products, so counting the array always settles it and
- * the commutative twin can never appear as a distractor.
+ * Match an array picture to its times fact — or, reversed, a fact to its
+ * array. Forward: the screen shows `rows` rows of `cols` stars and the child
+ * taps the fact it shows. Reverse: the fact is shown and the choices are
+ * three mini arrays. Either way the distractors are neighbouring facts with
+ * DISTINCT products, so counting always settles it and the commutative twin
+ * can never appear as a distractor.
  */
-function matchQuestion(rows: number, cols: number): Question {
+function matchQuestion(rows: number, cols: number, reverse = false): Question {
   const result = rows * cols
   const facts: Array<{ r: number; c: number }> = [{ r: rows, c: cols }]
   const candidates = shuffle([
@@ -93,7 +95,7 @@ function matchQuestion(rows: number, cols: number): Question {
     facts.push(f)
   }
   const shuffled = shuffle(facts)
-  return {
+  const q: Question = {
     kind: 'match',
     a: rows,
     b: cols,
@@ -102,8 +104,10 @@ function matchQuestion(rows: number, cols: number): Question {
     answer: result,
     input: 'choice',
     choices: shuffled.map((f) => f.r * f.c),
-    choiceLabels: shuffled.map((f) => `${f.r} × ${f.c}`),
   }
+  if (reverse) q.choiceArrays = shuffled.map((f) => ({ rows: f.r, cols: f.c }))
+  else q.choiceLabels = shuffled.map((f) => `${f.r} × ${f.c}`)
+  return q
 }
 
 // ---- early-years question builders (addition, subtraction, counting) ----
@@ -300,7 +304,7 @@ function doubleQ(n: number, input: Question['input']): Question {
   return addQuestion(n, n, 'result', input)
 }
 
-const qKey = (q: Question) => `${q.kind}:${q.a}:${q.b}:${q.unknown}`
+const qKey = (q: Question) => `${q.kind}${q.choiceArrays ? '~' : ''}:${q.a}:${q.b}:${q.unknown}`
 
 /** Take up to `count` questions with distinct keys. */
 function takeDistinct(qs: Question[], count: number): Question[] {
@@ -336,10 +340,12 @@ export function generateLevel(region: Region, level: number): Question[] {
     } else if (mode === 'missing') {
       for (const n of multipliers()) qs.push(mulQuestion(table, n, pick(['a', 'b']), 'choice'))
     } else if (mode === 'match') {
-      // arrays in both orientations: n rows of table, and table rows of n
+      // both directions and both orientations: read an array as a fact, and
+      // pick the array a fact describes
       for (const n of shuffle([2, 3, 4, 5, 6, 7])) {
-        qs.push(matchQuestion(n, table))
-        qs.push(matchQuestion(table, n))
+        const flip = Math.random() < 0.5
+        qs.push(matchQuestion(flip ? table : n, flip ? n : table, false))
+        qs.push(matchQuestion(flip ? n : table, flip ? table : n, true))
       }
     } else {
       // mixed: times facts and their matching division facts
@@ -409,7 +415,8 @@ export function questionText(q: Question): { left: string; op: string; right: st
 /** A natural-language reading of a question, for the read-aloud voice. */
 export function spokenQuestion(q: Question): string {
   if (q.kind === 'count') return 'How many?'
-  if (q.kind === 'match') return 'Which times fact does this array show?'
+  if (q.kind === 'match')
+    return q.choiceArrays ? `Which array shows ${q.a} times ${q.b}?` : 'Which times fact does this array show?'
   const op = q.kind === 'mul' ? 'times' : q.kind === 'div' ? 'divided by' : q.kind === 'add' ? 'plus' : 'take away'
   if (q.unknown === 'result') return `What is ${q.a} ${op} ${q.b}?`
   if (q.unknown === 'b') return `${q.a} ${op} what makes ${q.result}?`

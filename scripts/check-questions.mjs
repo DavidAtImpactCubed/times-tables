@@ -94,7 +94,7 @@ for (const region of REGIONS) {
       const qs = generateLevel(region, level)
       checkCommon(region, level, qs)
 
-      const keys = new Set(qs.map((q) => `${q.kind}:${q.a}:${q.b}:${q.unknown}`))
+      const keys = new Set(qs.map((q) => `${q.kind}${q.choiceArrays ? '~' : ''}:${q.a}:${q.b}:${q.unknown}`))
       if (keys.size !== qs.length) fail(`${region.id} L${level}: duplicate questions in one level`)
 
       for (const q of qs) {
@@ -115,16 +115,24 @@ for (const region of REGIONS) {
         }
         if (q.kind === 'div' && q.unknown === 'b') fail(`${region.id} L${level}: division hides the divisor`)
 
-        // match-the-array: every fact label must multiply out to its choice value,
-        // and the shown array's own product must be the answer
+        // match-the-array: every fact label / array choice must multiply out to
+        // its choice value, and the prompt's own product must be the answer
         if (q.kind === 'match') {
           if (q.answer !== q.a * q.b) fail(`match answer ${q.answer} ≠ ${q.a}×${q.b}`)
-          if (!q.choiceLabels || q.choiceLabels.length !== q.choices.length) fail('match without aligned labels')
-          else
+          if (q.choiceArrays) {
+            if (q.choiceArrays.length !== q.choices.length) fail('reverse match without aligned arrays')
+            else
+              q.choiceArrays.forEach((f, i) => {
+                if (f.rows * f.cols !== q.choices[i]) fail(`match array ${f.rows}×${f.cols} ≠ choice ${q.choices[i]}`)
+              })
+          } else if (!q.choiceLabels || q.choiceLabels.length !== q.choices.length) {
+            fail('match without aligned labels')
+          } else {
             q.choiceLabels.forEach((label, i) => {
               const [r, c] = label.split('×').map((x) => parseInt(x.trim(), 10))
               if (r * c !== q.choices[i]) fail(`match label "${label}" ≠ choice ${q.choices[i]}`)
             })
+          }
         }
 
         if (q.input === 'choice') {

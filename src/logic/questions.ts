@@ -80,14 +80,26 @@ function divQuestion(table: number, n: number, unknown: Question['unknown'], inp
 function matchQuestion(rows: number, cols: number, reverse = false): Question {
   const result = rows * cols
   const facts: Array<{ r: number; c: number }> = [{ r: rows, c: cols }]
-  const candidates = shuffle([
-    { r: rows + 1, c: cols },
-    { r: rows - 1, c: cols },
-    { r: rows, c: cols + 1 },
-    { r: rows, c: cols - 1 },
-    { r: rows + 2, c: cols },
-    { r: rows, c: cols + 2 },
-  ])
+  // Reverse (pick-the-array) distractors vary ONLY the row count, so all
+  // three array buttons share a width, stay big, and compare cleanly.
+  const candidates = shuffle(
+    reverse
+      ? [
+          { r: rows + 1, c: cols },
+          { r: rows - 1, c: cols },
+          { r: rows + 2, c: cols },
+          { r: rows - 2, c: cols },
+          { r: rows + 3, c: cols },
+        ]
+      : [
+          { r: rows + 1, c: cols },
+          { r: rows - 1, c: cols },
+          { r: rows, c: cols + 1 },
+          { r: rows, c: cols - 1 },
+          { r: rows + 2, c: cols },
+          { r: rows, c: cols + 2 },
+        ],
+  )
   for (const f of candidates) {
     if (facts.length === 3) break
     if (f.r < 1 || f.c < 1) continue
@@ -345,7 +357,8 @@ export function generateLevel(region: Region, level: number): Question[] {
       for (const n of shuffle([2, 3, 4, 5, 6, 7])) {
         const flip = Math.random() < 0.5
         qs.push(matchQuestion(flip ? table : n, flip ? n : table, false))
-        qs.push(matchQuestion(flip ? n : table, flip ? table : n, true))
+        // reverse arrays sit few-rows-of-many so the choice buttons stay wide and shallow
+        qs.push(matchQuestion(Math.min(table, n), Math.max(table, n), true))
       }
     } else {
       // mixed: times facts and their matching division facts

@@ -214,7 +214,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
           </div>
         ) : feedback === null ? (
           q.input === 'choice' ? (
-            <div className="choices" data-testid="choices">
+            <div className={`choices ${q.choiceArrays ? 'choices-arrays' : ''}`} data-testid="choices">
               {q.choices!.map((c, i) =>
                 q.choiceArrays ? (
                   <button
@@ -224,7 +224,14 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
                     aria-label={`${q.choiceArrays[i].rows} rows of ${q.choiceArrays[i].cols}`}
                     data-testid={`choice-${c}`}
                   >
-                    <span className="choice-array-grid" style={{ gridTemplateColumns: `repeat(${q.choiceArrays[i].cols}, auto)` }}>
+                    <span
+                      className="choice-array-grid"
+                      style={{
+                        gridTemplateColumns: `repeat(${q.choiceArrays[i].cols}, auto)`,
+                        // as big as the space allows: narrower and shallower arrays get larger stars
+                        fontSize: `${Math.max(14, Math.min(q.choiceArrays[i].cols > 8 ? 17 : 26, Math.floor(130 / q.choiceArrays[i].rows)))}px`,
+                      }}
+                    >
                       {Array.from({ length: q.choiceArrays[i].rows * q.choiceArrays[i].cols }, (_, j) => (
                         <span key={j} aria-hidden>
                           ⭐

@@ -92,8 +92,8 @@ const PLACE: Record<string, Placement> = {
   // held items sit in the raised-pose fist
   'held-balloon': { cx: 1110, cy: 640, w: 230 },
   // vertical staffs/wands gripped in the raised fist (handle down through the fingers)
-  'held-wand': { cx: 1068, cy: 696, w: 150 },
-  'held-moon': { cx: 1068, cy: 705, w: 146 },
+  'held-wand': { cx: 1053, cy: 696, w: 150 },
+  'held-moon': { cx: 1060, cy: 705, w: 146 },
   'held-crystal': { cx: 1068, cy: 700, w: 108 },
   'held-gem': { cx: 1068, cy: 705, w: 98 },
   'held-orb': { cx: 1068, cy: 712, w: 200 },

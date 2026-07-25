@@ -486,7 +486,7 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('Eleven times four is forty-four, so forty-four shared by eleven is four. Same fact family!', '11 × 4 = 44  →  44 ÷ 11 = 4'),
     ],
     [
-      T('Each row holds eleven. Count the rows, then use the elevens pattern: two rows is twenty-two!', '2 rows of 11  →  22  →  11 × 2', { kind: 'array', rows: 2, cols: 11 }),
+      T('Each row is a full ten and one more! Three rows makes three tens and three ones — thirty-three. The digit appears twice!', '3 × 11  →  30 + 3  →  33', { kind: 'array', rows: 3, cols: 11 }),
     ],
   ],
   cavern: [

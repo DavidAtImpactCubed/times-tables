@@ -404,13 +404,14 @@ export function generateLevel(region: Region, level: number): Question[] {
     } else if (mode === 'match') {
       // both directions and both orientations: read an array as a fact, and
       // pick the array a fact describes
-      if (table === 10) {
-        // tens always sit rows-of-ten, so every row renders as a base-ten rod.
-        // A tall rod stack is fine as the ONE question array, but the three
+      if (table === 10 || table === 11) {
+        // tens and elevens always sit rows-of-the-table, so every row renders
+        // as a base-ten rod (elevens add one loose unit per row). A tall rod
+        // stack is fine as the ONE question array, but the three
         // pick-the-array buttons must all fit on screen together — so reverse
         // facts stay small and their distractors are capped at 5 rods.
-        for (const n of shuffle([2, 3, 4, 5, 6, 7, 8, 9])) qs.push(matchQuestion(n, 10, false))
-        for (const n of shuffle([2, 3, 4])) qs.push(matchQuestion(n, 10, true, 5))
+        for (const n of shuffle([2, 3, 4, 5, 6, 7, 8, 9])) qs.push(matchQuestion(n, table, false))
+        for (const n of shuffle([2, 3, 4])) qs.push(matchQuestion(n, table, true, 5))
       } else {
         for (const n of shuffle([2, 3, 4, 5, 6, 7])) {
           const flip = Math.random() < 0.5
@@ -705,6 +706,13 @@ export function explain(q: Question): Explanation {
         answerLabel: `${q.a} rows of ${q.b}`,
         text: `You were looking for ${q.a} rows of ${q.b}. Count the ROWS in each picture — the right one has ${q.a} rows, with ${q.b} in every row.`,
         visual: { kind: 'array', rows: q.a, cols: q.b },
+      }
+    }
+    if (q.b === 11) {
+      return {
+        answerLabel: `${q.a} × 11`,
+        text: `Each row is a full ten and one more. ${q.a} rows makes ${q.a} tens and ${q.a} ones — ${q.result}. The ${q.a} appears twice!`,
+        visual: { kind: 'array', rows: q.a, cols: 11 },
       }
     }
     const seq = Array.from({ length: q.a }, (_, i) => (i + 1) * q.b).join(', ')

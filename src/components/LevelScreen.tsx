@@ -176,10 +176,10 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             ) : (
               <>
                 <p className="count-prompt">Which fact does this array show?</p>
-                {q.b === 10 ? (
-                  <div className="rod-stack" aria-label={`${q.a} tens`}>
+                {q.b >= 10 ? (
+                  <div className="rod-stack" aria-label={`${q.a} rows of ${q.b}`}>
                     {Array.from({ length: q.a }, (_, i) => (
-                      <TenRod key={i} />
+                      <TenRod key={i} plusOne={q.b === 11} />
                     ))}
                   </div>
                 ) : (
@@ -257,10 +257,10 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
                     aria-label={`${q.choiceArrays[i].rows} rows of ${q.choiceArrays[i].cols}`}
                     data-testid={`choice-${c}`}
                   >
-                    {q.choiceArrays[i].cols === 10 ? (
+                    {q.choiceArrays[i].cols >= 10 ? (
                       <span className="rod-stack">
                         {Array.from({ length: q.choiceArrays[i].rows }, (_, j) => (
-                          <TenRod key={j} />
+                          <TenRod key={j} plusOne={q.choiceArrays![i].cols === 11} />
                         ))}
                       </span>
                     ) : (

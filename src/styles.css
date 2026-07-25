@@ -1048,13 +1048,21 @@ button {
   line-height: 1;
 }
 /* base-ten rods: a ten as one unbreakable segmented bar */
-.ten-rod {
+.ten-rod,
+.rod-one {
   display: inline-flex;
   gap: 2px;
   padding: 3px;
   background: #b45309;
   border-radius: 7px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+/* a row of eleven: the rod, a deliberate gap, then one loose unit */
+.rod-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 .rod-cell {
@@ -1073,11 +1081,13 @@ button {
   gap: 7px;
 }
 /* animated variants (tips/explanations build row by row) */
-.ten-rod.dim {
+.ten-rod.dim,
+.rod-row.dim {
   opacity: 0.22;
   filter: grayscale(0.7);
 }
-.ten-rod.current {
+.ten-rod.current,
+.rod-row.current {
   transform: scale(1.06);
 }
 

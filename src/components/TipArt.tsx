@@ -222,23 +222,28 @@ function ArrayArt({ rows, cols, divide, split }: { rows: number; cols: number; d
   const visible = Math.min(frame, rows)
   const done = frame >= rows + 1
   const skipCount = Array.from({ length: visible }, (_, i) => (i + 1) * cols).join(', ')
-  if (cols === 10) {
+  if (cols >= 10) {
+    // tens are rods; elevens are rods with one loose unit ("10 and 1 more")
     return (
       <div className="tip-art tip-arrayart" data-testid="tip-art-array">
         <div className="rod-stack">
           {Array.from({ length: rows }, (_, r) => (
-            <TenRod key={r} className={`${r < visible ? '' : 'dim'} ${r === visible - 1 && !done ? 'current' : ''}`} />
+            <TenRod
+              key={r}
+              plusOne={cols === 11}
+              className={`${r < visible ? '' : 'dim'} ${r === visible - 1 && !done ? 'current' : ''}`}
+            />
           ))}
         </div>
         <div className="arr-eq" aria-hidden>
           {done ? (
             <>
               <span>
-                {rows} × 10 = {rows * 10}
+                {rows} × {cols} = {rows * cols}
               </span>
               {divide && (
                 <span className="arr-div">
-                  {rows * 10} ÷ 10 = {rows}
+                  {rows * cols} ÷ {cols} = {rows}
                 </span>
               )}
             </>

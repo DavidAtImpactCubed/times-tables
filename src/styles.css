@@ -1153,6 +1153,19 @@ button.wallet:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #ca8a04;
 }
+/* the ⭐ emoji's own fill is yellow, so it nearly vanishes on gold/yellow
+   chips — a stroked outline in the surrounding text colour keeps its shape visible */
+.star-icon {
+  text-shadow:
+    -1px -1px 0 currentColor,
+    0 -1px 0 currentColor,
+    1px -1px 0 currentColor,
+    -1px 0 0 currentColor,
+    1px 0 0 currentColor,
+    -1px 1px 0 currentColor,
+    0 1px 0 currentColor,
+    1px 1px 0 currentColor;
+}
 button.map-monster {
   background: none;
   border: none;

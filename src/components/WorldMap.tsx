@@ -84,7 +84,7 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
         <div className="map-side">
           <div className="map-actions">
             <button className="wallet" onClick={onWardrobe} aria-label="Your stars — spend them in the wardrobe" data-testid="wallet">
-              ⭐ {save.wallet}
+              <span className="star-icon" aria-hidden>⭐</span> {save.wallet}
             </button>
             <button className="btn btn-round" onClick={onWardrobe} aria-label="Monster wardrobe" data-testid="wardrobe-btn">
               👕

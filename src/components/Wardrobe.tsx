@@ -69,7 +69,7 @@ export function Wardrobe({ save, setSave, onBack }: Props) {
         </button>
         <h1>Monster Wardrobe</h1>
         <span className="wallet" data-testid="wallet">
-          ⭐ {save.wallet}
+          <span className="star-icon" aria-hidden>⭐</span> {save.wallet}
         </span>
       </header>
 
@@ -86,7 +86,8 @@ export function Wardrobe({ save, setSave, onBack }: Props) {
             onClick={buyPreview}
             data-testid="tryon-buy"
           >
-            {save.wallet < previewItem.price ? `Need ${previewItem.price} ⭐` : `Buy for ${previewItem.price} ⭐`}
+            {save.wallet < previewItem.price ? `Need ${previewItem.price} ` : `Buy for ${previewItem.price} `}
+            <span className="star-icon" aria-hidden>⭐</span>
           </button>
           <button className="btn btn-secondary tryon-cancel" onClick={() => setPreview(null)} data-testid="tryon-cancel">
             Cancel

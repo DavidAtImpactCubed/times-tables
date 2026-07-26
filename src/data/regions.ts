@@ -166,8 +166,8 @@ export const REGIONS: Region[] = [
         M('Division? That’s just sharing backwards. After him!'),
       ],
       [
-        O('Look up — the sails are spinning the rescued stars into neat rows of four!'),
-        M('Star pinwheels! I’ll read each pattern and win them back.'),
+        O('Look up — every windmill has caught a row of stars along each of its sails!'),
+        M('Four sails, the same number of stars on every one — I can read a whole windmill in fours!'),
       ],
     ]),
   },

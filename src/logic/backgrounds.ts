@@ -14,13 +14,18 @@ for (const [path, url] of Object.entries(files)) {
   byStem[stem] = url
 }
 
-/** Early-years regions reuse the main island's art. */
+/**
+ * Early-years regions reuse the main island's art. Windmill Hill borrows the
+ * forest's green hills until its own windmill-<level>.webp scenes land —
+ * real files win over the alias automatically.
+ */
 const ART_ALIAS: Record<string, string> = {
   'count-cove': 'beach',
   'bonds-bay': 'lagoon',
   'add-meadow': 'forest',
   'sub-trail': 'mountain',
   'doubles-keep': 'castle',
+  windmill: 'forest',
 }
 
 export const backgroundFor = (regionId: string, level: number): string | undefined => {

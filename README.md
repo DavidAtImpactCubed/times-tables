@@ -17,8 +17,8 @@ Chosen per player when a new game starts (see the landing screen):
   counting and big-button addition/subtraction, with typing later on.
 - **Ages 6–8 · Year 2 & 3** — the times-tables adventure: Twinkle Beach (2s),
   Five-Spike Mountain (5s), Ten-Tentacle Lagoon (10s), Triple Tree Forest (3s),
-  Eleventy Cloud Castle (11s), Division Cavern, and The Goblin's Tower
-  (everything mixed).
+  Eleventy Cloud Castle (11s), Four-Sail Windmill Hill (4s), Division Cavern,
+  and The Goblin's Tower (everything mixed).
 
 ## Features
 
@@ -31,8 +31,8 @@ Chosen per player when a new game starts (see the landing screen):
   region you've started never re-locks.
 - **Up to 3 stars per level** (10/10 → ⭐⭐⭐); replay to improve.
 - **Harder stages pay more** — each region shows a ⭐×N value set by
-  difficulty, not unlock order (fives & tens ×1, twos & elevens ×2, threes ×3,
-  division ×4, the Goblin's Tower ×5); wallet earnings are improvement ×
+  difficulty, not unlock order (fives & tens ×1, twos & elevens ×2, threes &
+  fours ×3, division ×4, the Goblin's Tower ×5); wallet earnings are improvement ×
   value, and a *perfect* replay pays the stage's value once as a practice
   bonus. Farming the easy stages is never the best deal.
 - **Gentle mistakes** — a wrong answer shows the correct one with a
@@ -99,10 +99,12 @@ covering `mul`, `div`, `add`, `sub`, plus a visual `count` type. See
 
 ### Extending it
 
-- **New times table** (e.g. Year 3's 4s and 8s): add a `Region` to `REGIONS` in
-  `src/data/regions.ts` with `kind: 'times'` and `tables: [4]`; the generator,
+- **New times table** (e.g. Year 3's 8s): add a `Region` to `REGIONS` in
+  `src/data/regions.ts` with `kind: 'times'` and `tables: [8]`; the generator,
   levels, unlocking, map and background fallback all follow. Add a `LEVEL_TIPS[id]`
-  entry (one tip array per level) for its how-to tips.
+  entry (one tip array per level) for its how-to tips, a `MATCH_AT` slot for its
+  match level, and — if it lands mid-map — a layout migration in
+  `src/logic/storage.ts` so nobody's next region re-locks.
 - **New early-years topic**: add a `Region` to `EARLY_REGIONS`
   (`curriculum: 'early'`, an `art` alias, a `kind`) and a branch in
   `generateEarlyLevel` in `src/logic/questions.ts`.

@@ -435,7 +435,7 @@ export function generateLevel(region: Region, level: number): Question[] {
     }
   } else if (region.kind === 'division') {
     const easyTables = [2, 5, 10]
-    const trickyTables = [3, 11]
+    const trickyTables = [3, 4, 11]
     if (mode === 'choice' || mode === 'type') {
       const input = mode === 'choice' ? 'choice' : 'pad'
       for (const n of multipliers()) qs.push(divQuestion(pick(easyTables), n, 'result', input))
@@ -606,7 +606,7 @@ function explainMul(q: Question): Explanation {
   const { a, b, result, unknown, answer } = q
   if (unknown === 'result') {
     // pick the trick operand: easiest table wins
-    const t = [10, 11, 2, 5, 3].find((k) => a === k || b === k) ?? Math.min(a, b)
+    const t = [10, 11, 2, 5, 3, 4].find((k) => a === k || b === k) ?? Math.min(a, b)
     const n = a === t ? b : a
     if (t === 10) {
       return {
@@ -630,6 +630,12 @@ function explainMul(q: Question): Explanation {
         return { text: `Count up in fives: ${seq}. ${n} jumps lands on ${result}.`, visual: { kind: 'skip', step: 5, times: n } }
       }
       return { text: `Five is HALF of ten: ten ${n}s are ${10 * n}, and half of that is ${result}.` }
+    }
+    if (t === 4) {
+      return {
+        text: `Four ${n}s: double ${n} is ${2 * n}, then double AGAIN — ${result}!`,
+        visual: n <= 5 ? { kind: 'array', rows: n, cols: 4 } : undefined,
+      }
     }
     // threes: skip-count small ones, anchor the big ones on easy multiples
     if (n <= 5) {
@@ -668,6 +674,9 @@ function explainDiv(q: Question): Explanation {
         text: `Half of ${a} is ${result} — because double ${result} makes ${a}.`,
         visual: result <= 6 ? { kind: 'double', n: result, hands: result <= 5 } : undefined,
       }
+    }
+    if (b === 4) {
+      return { text: `Divide by four by halving TWICE: half of ${a} is ${a / 2}, half again is ${result}.` }
     }
     if (result <= 6) {
       return {

@@ -22,7 +22,7 @@ export function freshSave(): SaveData {
     muted: false,
     readAloud: true,
     economy: 4,
-    layout: 3,
+    layout: 4,
   }
 }
 
@@ -56,11 +56,19 @@ function remapKeys(save: SaveData, remapKey: (key: string) => string): SaveData 
  * the stars it really earned, and story-seen markers move the same way.
  *   v2: "Match the arrays" into the five times regions
  *   v3: picture-match levels into Counting Cove and Doubles Keep
+ *   v4: Windmill Hill (4s) inserted between the castle and the cavern —
+ *       no keys move, but anyone who had earned the cavern under the old
+ *       castle→cavern adjacency keeps it unlocked.
  */
 function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
-  if (rawLayout === 3) return save
+  if (rawLayout === 4) return save
+  // v4 entitlement, judged in the era the stored keys are in: a complete
+  // castle (4 levels before v2, 5 after) had unlocked the cavern.
+  const castleLevels = rawLayout === 2 || rawLayout === 3 ? [0, 1, 2, 3, 4] : [0, 1, 2, 3]
+  const hadCavern =
+    save.curriculum !== 'early' && castleLevels.every((l) => (save.stars[levelId('castle', l)] ?? 0) >= 1)
   let s = save
-  if (rawLayout !== 2) {
+  if (rawLayout !== 2 && rawLayout !== 3) {
     s = { ...s, unlockedRegions: oldRuleGrants(s) }
     s = remapKeys(s, (key) => {
       for (const [rid, at] of Object.entries(MATCH_AT)) {
@@ -73,7 +81,7 @@ function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
       return key
     })
   }
-  if (s.curriculum === 'early') {
+  if (s.curriculum === 'early' && rawLayout !== 3) {
     s = { ...s, unlockedRegions: oldRuleGrants(s) }
     s = remapKeys(s, (key) => {
       for (const [rid, at] of Object.entries(EARLY_MATCH_AT)) {
@@ -85,7 +93,8 @@ function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
       return key
     })
   }
-  return { ...s, layout: 3 }
+  if (hadCavern) s = { ...s, unlockedRegions: [...new Set([...(s.unlockedRegions ?? []), 'cavern'])] }
+  return { ...s, layout: 4 }
 }
 
 /**

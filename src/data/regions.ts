@@ -6,7 +6,7 @@ import type { Curriculum, Region, StoryLine, TipStep } from '../types'
  * Stories and tips are written in canonical order (choice, type, missing,
  * mixed, match) and placeMatch reorders both the same way.
  */
-export const MATCH_AT: Record<string, number> = { beach: 1, mountain: 2, lagoon: 3, forest: 1, castle: 2 }
+export const MATCH_AT: Record<string, number> = { beach: 1, mountain: 2, lagoon: 3, forest: 1, castle: 2, windmill: 3 }
 
 /** Where the early band's picture-match levels were inserted (for save migration). */
 export const EARLY_MATCH_AT: Record<string, number> = { 'count-cove': 2, 'doubles-keep': 2 }
@@ -32,7 +32,7 @@ const M = (text: string): StoryLine => ({ speaker: 'monster', text })
 const O = (text: string): StoryLine => ({ speaker: 'guide', text })
 const G = (text: string): StoryLine => ({ speaker: 'goblin', text })
 
-// Regions in play order: 2, 5, 10, 3, 11, then division and the mixed finale.
+// Regions in play order: 2, 5, 10, 3, 11, 4, then division and the mixed finale.
 export const REGIONS: Region[] = [
   {
     id: 'beach',
@@ -134,8 +134,41 @@ export const REGIONS: Region[] = [
       ],
       [M('The clouds are stepping stones — each right answer makes one solid!'), O('Steady now… try not to look down.')],
       [O('The castle gate only opens for the missing numbers.'), M('Eleven times… got it! Open up!')],
-      [G('You’re too close! I’m hiding in my CAVE, where you’ll never divide!'), M('Division? That’s just sharing backwards. After him!')],
+      [G('You’re too close! I’m gliding down to the windmills — catch me if you can!'), M('Then we’ll ride the wind right after him. Hold on tight!')],
       [G('I’ve pinned my stars to the cloud banners — bet you can’t read them! Hee hee!'), M('Rows of eleven? Your patterns give you away, goblin!')],
+    ]),
+  },
+  {
+    id: 'windmill',
+    name: 'Four-Sail Windmill Hill',
+    emoji: '🌬️',
+    color: '#38bdf8',
+    tables: [4],
+    kind: 'times',
+    starValue: 3,
+    levels: TIMES_LEVELS(4, MATCH_AT.windmill, [
+      [
+        O('Down from the clouds, the breeze carries us to Four-Sail Windmill Hill — where every windmill spins on four sails!'),
+        G('Not any more! I’ve gummed up every sail with sticky starlight. Hee hee!'),
+        M('Then I’ll count them free in fours: 4, 8, 12, 16!'),
+      ],
+      [
+        M('Inside the mill, two great cogwheels turn together — and each one DOUBLES!'),
+        O('That’s the fours’ secret: double, then double again.'),
+      ],
+      [
+        O('Whoosh! The wind has blown some of the numbers clean off the trail.'),
+        M('I’ll work out the missing fours before they blow away for good!'),
+      ],
+      [
+        M('The miller monster is sharing star-flour into sacks of four — times and sharing together!'),
+        G('Bah! I’m off to my CAVE, where you’ll never divide! Hee hee!'),
+        M('Division? That’s just sharing backwards. After him!'),
+      ],
+      [
+        O('Look up — the sails are spinning the rescued stars into neat rows of four!'),
+        M('Star pinwheels! I’ll read each pattern and win them back.'),
+      ],
     ]),
   },
   {
@@ -143,7 +176,7 @@ export const REGIONS: Region[] = [
     name: 'Division Cavern',
     emoji: '💎',
     color: '#64748b',
-    tables: [2, 5, 10, 3, 11],
+    tables: [2, 5, 10, 3, 11, 4],
     kind: 'division',
     starValue: 4,
     levels: [
@@ -166,7 +199,7 @@ export const REGIONS: Region[] = [
     name: 'The Goblin’s Tower',
     emoji: '🗼',
     color: '#ef4444',
-    tables: [2, 3, 5, 10, 11],
+    tables: [2, 3, 4, 5, 10, 11],
     kind: 'mixed',
     starValue: 5,
     levels: [
@@ -176,7 +209,7 @@ export const REGIONS: Region[] = [
         story: [
           G('You found my tower?! Fine — but I’ve MIXED every table together!'),
           O('This is it. Everything you’ve learned, all at once. You can do this!'),
-          M('Twos, fives, tens, threes, elevens AND sharing — I’m ready!'),
+          M('Twos, threes, fours, fives, tens, elevens AND sharing — I’m ready!'),
         ],
       },
       { mode: 'type', title: 'Spiral stairs', story: [M('Up the spiral stairs — the sack of stars is glowing above!'), O('Don’t slow down now!')] },
@@ -489,6 +522,31 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('Each row is a full ten and one more! Three rows makes three tens and three ones — thirty-three. The digit appears twice!', '3 × 11  →  30 + 3  →  33', { kind: 'array', rows: 3, cols: 11 }),
     ],
   ],
+  windmill: [
+    [
+      T('Count up in fours — like windmill sails whirling past: four, eight, twelve, sixteen!', '4, 8, 12, 16…', { kind: 'skip', step: 4, times: 4 }),
+      T('The fours’ secret trick: DOUBLE the number, then double it AGAIN!', '4 × 3  →  double 3 is 6  →  double 6 is 12', { kind: 'double', n: 3, hands: true }),
+      T('Four times three is three rows of four. Count up in fours: four, eight, twelve!', '4 × 3 = 12', { kind: 'array', rows: 3, cols: 4 }),
+    ],
+    [
+      T('Double, then double again! Four sixes: double six is twelve, double twelve is twenty-four.', '4 × 6  →  12  →  24', { kind: 'double', n: 6 }),
+      T('Every fours answer is EVEN — and it’s always double the twos: two sixes are twelve, so four sixes are twenty-four!', '2 × 6 = 12  →  4 × 6 = 24'),
+      T('For BIG fours, start from an easy multiple: five fours are twenty, so six fours are twenty plus one more four!', '4 × 6 → 20 + 4 → 24      4 × 12 → 40 + 4 + 4 → 48', { kind: 'array', rows: 6, cols: 4, split: 5 }),
+    ],
+    [
+      T('Count up in fours until you reach the total, counting the jumps on your fingers.', undefined, { kind: 'skip', step: 4, times: 4, hands: true }),
+      T('Four, eight, twelve, sixteen — four jumps, so the missing number is four!', '4 × ? = 16  →  4'),
+      T('For a big total, start from ten: ten fours are forty, so thirty-six is one four LESS — nine!', '4 × ? = 36  →  40 − 4  →  9'),
+    ],
+    [
+      T('Five rows of four make twenty…', '5 × 4 = 20', { kind: 'array', rows: 5, cols: 4 }),
+      T('…and twenty shared into fours makes five. One array, two facts!', '20 ÷ 4 = 5', { kind: 'array', rows: 5, cols: 4, divide: true }),
+      T('Dividing by four? HALVE it twice: half of twenty-four is twelve, half again is six.', '24 ÷ 4  →  12  →  6'),
+    ],
+    [
+      T('Count one row — four! Then count up in fours, once for every row.', '3 rows of 4  →  4, 8, 12  →  4 × 3', { kind: 'array', rows: 3, cols: 4 }),
+    ],
+  ],
   cavern: [
     [
       T('Dividing means SHARING into equal groups — and every share hides a times fact!', undefined, { kind: 'array', rows: 4, cols: 5, divide: true }),
@@ -509,7 +567,7 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
   tower: [
     [
       T('Time for your best tricks! Tens: pop a zero. Fives: end in five or zero. Twos: just double.', '10×6→60    5×6→30    2×6→12'),
-      T('Elevens: write the digit twice, or do ten times plus one more group.', '11 × 6  →  66'),
+      T('Elevens: write the digit twice. Fours: double, then double again!', '11 × 6  →  66      4 × 6  →  12  →  24'),
       T('And when a fact feels hard, start from an easy multiple of five or ten, then add or take away groups.', '3 × 6 → 15 + 3 → 18      3 × 9 → 30 − 3 → 27', { kind: 'array', rows: 6, cols: 3, split: 5 }),
     ],
     [

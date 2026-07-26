@@ -161,9 +161,11 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
                 </span>
                 {(q.count ?? 0) % 10 > 0 && (
                   <span className="count-ones">
+                    {/* loose ones are the same gold cells as the rods — ten of
+                        these become one of those (matching the elevens' +1) */}
                     {Array.from({ length: (q.count ?? 0) % 10 }, (_, i) => (
-                      <span key={i} className="count-obj" style={{ animationDelay: `${i * 0.06}s` }}>
-                        {q.object}
+                      <span key={i} className="rod-one">
+                        <span className="rod-cell" />
                       </span>
                     ))}
                   </span>

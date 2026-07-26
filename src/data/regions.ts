@@ -307,7 +307,7 @@ export const EARLY_REGIONS: Region[] = [
         O('Welcome to Ten-Rod Harbour! The sailor monsters pack stars into golden rods — exactly TEN in every rod.'),
         M('So I never count a rod — I just KNOW it’s ten! Ten and three more is thirteen.'),
       ]),
-      EL('choice', 'Count to twenty', [
+      EL('choice', 'Two whole rods', [
         M('Bigger crates on this jetty — some hold two whole rods!'),
         O('Rods first, then the loose ones. Two rods make twenty.'),
       ]),

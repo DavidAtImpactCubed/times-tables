@@ -364,9 +364,10 @@ function generateEarlyLevel(region: Region, level: number): Question[] {
         return subQuestion(rnd(1, 10), 1, 'result', 'choice') // one less
 
       case 'place': {
-        // teens first (one rod and some more), then to twenty, then tens & ones
+        // teens first (one rod and some more), then crossing into the second
+        // rod (about half these show two rods), then tens & ones
         if (level === 0) return rodCountQuestion(rnd(11, 15))
-        if (level === 1) return rodCountQuestion(rnd(13, 20))
+        if (level === 1) return rodCountQuestion(rnd(14, 24))
         if (level === 2) return rodCountQuestion(rnd(21, 59))
         // one more / one less with bigger numbers
         const n = rnd(10, 49)

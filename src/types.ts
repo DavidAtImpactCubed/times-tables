@@ -61,6 +61,7 @@ export interface LevelDef {
  *   countOn:  a marker hops forward along a number line (counting on)
  *   countBack: a marker hops backward along a number line (taking away)
  *   double:   two mirrored groups of n combine into the total (doubling)
+ *   doubleDouble: n doubles to 2n, then doubles again to 4n (the fours)
  * Number-line visuals plot the ticks `min` (default 0) … `max`.
  */
 export type TipVisual =
@@ -69,6 +70,7 @@ export type TipVisual =
   | { kind: 'countOn'; from: number; add: number; min?: number; max: number; hands?: boolean }
   | { kind: 'countBack'; from: number; sub: number; min?: number; max: number; hands?: boolean }
   | { kind: 'double'; n: number; hands?: boolean }
+  | { kind: 'doubleDouble'; n: number }
   | { kind: 'hands'; show: number; of?: number }
   | { kind: 'array'; rows: number; cols: number; divide?: boolean; split?: number }
   | { kind: 'skip'; step: number; times: number; hands?: boolean }

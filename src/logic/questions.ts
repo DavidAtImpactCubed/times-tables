@@ -634,7 +634,7 @@ function explainMul(q: Question): Explanation {
     if (t === 4) {
       return {
         text: `Four ${n}s: double ${n} is ${2 * n}, then double AGAIN — ${result}!`,
-        visual: n <= 5 ? { kind: 'array', rows: n, cols: 4 } : undefined,
+        visual: n <= 6 ? { kind: 'doubleDouble', n } : undefined,
       }
     }
     // threes: skip-count small ones, anchor the big ones on easy multiples

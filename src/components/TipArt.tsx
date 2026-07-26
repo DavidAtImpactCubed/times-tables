@@ -210,6 +210,58 @@ function DoubleArt({ n, hands }: { n: number; hands?: boolean }) {
 }
 
 /**
+ * The fours' trick, in three animated stages: one group of n, doubled to two
+ * groups (2n), then the whole pair doubled again to four groups (4n).
+ */
+function DoubleDoubleArt({ n }: { n: number }) {
+  const frame = useFrameLoop(5, 850)
+  const stage = Math.min(frame, 2)
+  const done = frame >= 3
+  const group = (key: number) => (
+    <span key={key} className="dbl-group ddbl-group" aria-hidden>
+      {Array.from({ length: n }, (_, i) => (
+        <span key={i} className="dbl-star">
+          ⭐
+        </span>
+      ))}
+    </span>
+  )
+  return (
+    <div className="tip-art tip-ddouble" data-testid="tip-art-ddouble">
+      <div className="ddbl-stage show">
+        {group(0)}
+        <span className="ddbl-total">{n}</span>
+      </div>
+      <div className={`ddbl-stage ${stage >= 1 ? 'show' : ''}`}>
+        <span className="ddbl-lines">
+          <span className="ddbl-line">
+            {group(0)}
+            {group(1)}
+          </span>
+        </span>
+        <span className="ddbl-total">{2 * n}</span>
+      </div>
+      <div className={`ddbl-stage ${stage >= 2 ? 'show' : ''}`}>
+        <span className="ddbl-lines">
+          <span className="ddbl-line">
+            {group(0)}
+            {group(1)}
+          </span>
+          <span className="ddbl-line">
+            {group(2)}
+            {group(3)}
+          </span>
+        </span>
+        <span className="ddbl-total">{4 * n}</span>
+      </div>
+      <div className={`dbl-eq ${done ? 'show' : ''}`} aria-hidden>
+        4 × {n} = {4 * n}
+      </div>
+    </div>
+  )
+}
+
+/**
  * An array builds one row at a time while skip-counting, then shows the
  * multiplication fact — and, with `divide`, the same array read backwards
  * as its division fact (the fact-family picture). With `split`, the first
@@ -366,6 +418,8 @@ export function TipArt({ visual }: { visual: TipVisual }) {
       )
     case 'double':
       return <DoubleArt n={visual.n} hands={visual.hands} />
+    case 'doubleDouble':
+      return <DoubleDoubleArt n={visual.n} />
     case 'hands':
       return <HandsArt show={visual.show} of={visual.of} />
     case 'array':

@@ -41,6 +41,10 @@ function checkExplanation(q) {
     case 'double':
       if (q.kind === 'add' && q.a === q.b && v.n !== q.a) fail(`${id}: double n=${v.n}`)
       break
+    case 'doubleDouble':
+      if (q.kind === 'mul' && q.unknown === 'result' && 4 * v.n !== q.result)
+        fail(`${id}: double-double 4×${v.n} ≠ ${q.result}`)
+      break
     case 'skip':
       if (q.kind === 'mul' && q.unknown === 'result' && v.step * v.times !== q.result)
         fail(`${id}: skip ${v.step}×${v.times} ≠ ${q.result}`)

@@ -525,11 +525,11 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
   windmill: [
     [
       T('Count up in fours — like windmill sails whirling past: four, eight, twelve, sixteen!', '4, 8, 12, 16…', { kind: 'skip', step: 4, times: 4 }),
-      T('The fours’ secret trick: DOUBLE the number, then double it AGAIN!', '4 × 3  →  double 3 is 6  →  double 6 is 12', { kind: 'double', n: 3, hands: true }),
+      T('The fours’ secret trick: DOUBLE the number, then double it AGAIN!', '4 × 3  →  double 3 is 6  →  double 6 is 12', { kind: 'doubleDouble', n: 3 }),
       T('Four times three is three rows of four. Count up in fours: four, eight, twelve!', '4 × 3 = 12', { kind: 'array', rows: 3, cols: 4 }),
     ],
     [
-      T('Double, then double again! Four sixes: double six is twelve, double twelve is twenty-four.', '4 × 6  →  12  →  24', { kind: 'double', n: 6 }),
+      T('Double, then double again! Four sixes: double six is twelve, double twelve is twenty-four.', '4 × 6  →  12  →  24', { kind: 'doubleDouble', n: 6 }),
       T('Every fours answer is EVEN — and it’s always double the twos: two sixes are twelve, so four sixes are twenty-four!', '2 × 6 = 12  →  4 × 6 = 24'),
       T('For BIG fours, start from an easy multiple: five fours are twenty, so six fours are twenty plus one more four!', '4 × 6 → 20 + 4 → 24      4 × 12 → 40 + 4 + 4 → 48', { kind: 'array', rows: 6, cols: 4, split: 5 }),
     ],

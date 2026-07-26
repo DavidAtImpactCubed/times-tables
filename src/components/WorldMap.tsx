@@ -24,6 +24,12 @@ function regionSubtitle(region: Region): string {
       return 'Taking away'
     case 'double':
       return 'Doubles & more'
+    case 'place':
+      return 'Tens & ones'
+    case 'half':
+      return 'Halves & sharing'
+    case 'pattern':
+      return 'Counting in jumps'
   }
 }
 

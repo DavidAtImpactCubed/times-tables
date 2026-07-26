@@ -10,11 +10,15 @@ on hats, horns, wings and colours for your own monster in the wardrobe.
 
 Chosen per player when a new game starts (see the landing screen):
 
-- **Ages 4–6 · Reception & Year 1** — Counting Cove (count to 5 then 10, one
-  more/less), Number Bond Bay (make-ten pairs → adding to ten → missing
+- **Ages 4–6 · Reception & Year 1** — Counting Cove (count to 5 then 10,
+  comparing, one more/less), Ten-Rod Harbour (teens & tens-and-ones with
+  base-ten rods), Number Bond Bay (make-ten pairs → adding to ten → missing
   numbers), Adding Meadow (add within 10 then 20), Take-Away Trail
-  (subtraction), Doubles Keep (doubling & a mixed finish). Questions are visual
-  counting and big-button addition/subtraction, with typing later on.
+  (subtraction), Doubles Keep (doubling), Halving Hollow (fair shares, halves,
+  odd/even, quarters) and Pattern Peak (counting in 2s, 10s and 5s — the bridge
+  to the times tables). Questions are visual counting and big-button
+  addition/subtraction, with typing later on. Together the two bands cover the
+  EYFS and Year 1 number curriculum end to end.
 - **Ages 6–8 · Year 2 & 3** — the times-tables adventure: Twinkle Beach (2s),
   Five-Spike Mountain (5s), Ten-Tentacle Lagoon (10s), Triple Tree Forest (3s),
   Eleventy Cloud Castle (11s), Four-Sail Windmill Hill (4s), Division Cavern,

@@ -12,7 +12,7 @@ const fail = (msg) => {
   console.error(`  ❌ ${msg}`)
 }
 
-const EARLY_KINDS = new Set(['count', 'bond', 'add', 'sub', 'double'])
+const EARLY_KINDS = new Set(['count', 'bond', 'add', 'sub', 'double', 'place', 'half', 'pattern'])
 const ROUNDS = 50
 
 // Every wrong-answer explanation must have text, and any visual it picks must
@@ -176,14 +176,20 @@ for (const region of EARLY_REGIONS) {
       checkCommon(region, level, qs)
 
       for (const q of qs) {
-        if (!['add', 'sub', 'count', 'match'].includes(q.kind)) fail(`${region.id}: unexpected early kind ${q.kind}`)
+        if (!['add', 'sub', 'count', 'match', 'div'].includes(q.kind)) fail(`${region.id}: unexpected early kind ${q.kind}`)
         if (q.kind === 'match') {
           if (q.answer !== q.result) fail(`${region.id}: match answer ${q.answer} ≠ ${q.result}`)
           if (q.choiceCounts) {
             q.choiceCounts.forEach((n, i) => { if (n !== q.choices[i]) fail(`${region.id}: picture count ${n} ≠ choice ${q.choices[i]}`) })
+            // odd-or-even: exactly one sharable pile among the options
+            if (q.promptLabel === 'EVEN' && q.choiceCounts.filter((n) => n % 2 === 0).length !== 1)
+              fail(`${region.id}: share-fairly piles ${q.choiceCounts} need exactly one even`)
           } else if (q.choiceArrays) {
             q.choiceArrays.forEach((f, i) => { if (f.rows * f.cols !== q.choices[i]) fail(`${region.id}: array ${f.rows}×${f.cols} ≠ choice ${q.choices[i]}`) })
             if (q.choiceArrays.some((f) => f.rows !== 2)) fail(`${region.id}: early doubles arrays must have two rows`)
+          } else if (q.prompt === 'What comes next?') {
+            // skip-counting: the pattern must be internally true
+            if (q.a * q.b !== q.result) fail(`${region.id}: pattern ${q.promptLabel} next ≠ ${q.result}`)
           } else fail(`${region.id}: early match without pictures`)
         }
         if (q.kind === 'add' && q.a + q.b !== q.result) fail(`bad add fact ${q.a}+${q.b}=${q.result}`)
@@ -191,11 +197,14 @@ for (const region of EARLY_REGIONS) {
           if (q.a - q.b !== q.result) fail(`bad sub fact ${q.a}-${q.b}=${q.result}`)
           if (q.result < 0 || q.b < 0) fail(`negative in sub ${q.a}-${q.b}`)
         }
+        if (q.kind === 'div' && (q.a !== q.b * q.result || ![2, 4].includes(q.b)))
+          fail(`${region.id}: early divide must halve or quarter (${q.a}÷${q.b}=${q.result})`)
         if (q.kind === 'count' && !(q.count === q.result && q.result === q.answer && q.count >= 1))
           fail(`bad count question count=${q.count} result=${q.result}`)
 
-        // answers stay in a sensible young range
-        if (q.answer < 0 || q.answer > 20) fail(`${region.id} L${level}: answer ${q.answer} out of range`)
+        // answers stay in a sensible young range (place value & skip counting reach higher)
+        const maxAnswer = region.kind === 'place' || region.kind === 'pattern' ? 100 : 20
+        if (q.answer < 0 || q.answer > maxAnswer) fail(`${region.id} L${level}: answer ${q.answer} out of range`)
 
         // choice questions: 3 distinct options incl. the answer, none negative (0 allowed for take-away)
         if (q.input === 'choice') {

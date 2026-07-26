@@ -98,6 +98,9 @@ export type RegionKind =
   | 'add'
   | 'sub'
   | 'double'
+  | 'place'
+  | 'half'
+  | 'pattern'
 
 export interface Region {
   id: string

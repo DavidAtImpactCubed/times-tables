@@ -278,6 +278,10 @@ export const EARLY_REGIONS: Region[] = [
         O('The friendly crab has painted numbers on the sandcastle flags!'),
         M('I’ll find the pile of shells that matches each number.'),
       ]),
+      EL('match', 'Who has more?', [
+        O('Two rock pools, both brimming with treasure! But which holds MORE?'),
+        M('I’ll count each pile carefully — then pick the right one.'),
+      ]),
       EL('choice', 'One more', [
         O('A friendly crab pops ONE more star on the pile each time.'),
         M('One more than 4 is… 5! Easy peasy.'),
@@ -285,6 +289,35 @@ export const EARLY_REGIONS: Region[] = [
       EL('choice', 'One less', [
         M('Oops — a little wave washes ONE star away!'),
         O('What’s one less? You can work it out!'),
+      ]),
+    ],
+  },
+  {
+    id: 'harbour',
+    name: 'Ten-Rod Harbour',
+    emoji: '⚓',
+    color: '#0ea5e9',
+    tables: [],
+    kind: 'place',
+    starValue: 2,
+    curriculum: 'early',
+    art: 'lagoon',
+    levels: [
+      EL('choice', 'One ten and more', [
+        O('Welcome to Ten-Rod Harbour! The sailor monsters pack stars into golden rods — exactly TEN in every rod.'),
+        M('So I never count a rod — I just KNOW it’s ten! Ten and three more is thirteen.'),
+      ]),
+      EL('choice', 'Count to twenty', [
+        M('Bigger crates on this jetty — some hold two whole rods!'),
+        O('Rods first, then the loose ones. Two rods make twenty.'),
+      ]),
+      EL('choice', 'Tens and ones', [
+        O('The harbour master wants every crate labelled: how many tens, how many ones?'),
+        M('Four rods and two more — that’s forty-two!'),
+      ]),
+      EL('choice', 'One more, one less', [
+        G('Hee hee! I’ve pinched a star here and dropped a star there!'),
+        M('One more, one less — even with BIG numbers, I know what comes next.'),
       ]),
     ],
   },
@@ -388,10 +421,73 @@ export const EARLY_REGIONS: Region[] = [
         G('You’ve done SO well… but here’s a mix of everything! Hee hee!'),
         M('Adding, taking away — bring it on!'),
       ]),
+      EL('mixed', 'Keep champion', [
+        O('The top of the keep! Every mirror-star shines for you.'),
+        M('Doubles, adding, taking away — I know them all now!'),
+        G('Ooooh, you’re GOOD. But can you do it all BACKWARDS? Meet me in the hollow below! Hee hee!'),
+      ]),
+    ],
+  },
+  {
+    id: 'hollow',
+    name: 'Halving Hollow',
+    emoji: '🍄',
+    color: '#f97316',
+    tables: [],
+    kind: 'half',
+    starValue: 3,
+    curriculum: 'early',
+    art: 'forest',
+    levels: [
+      EL('choice', 'Fair shares', [
+        O('Down in Halving Hollow, two hungry little monsters share every pile of star-berries.'),
+        M('One for you, one for me — fair shares means the SAME each!'),
+      ]),
+      EL('type', 'Half of it', [
+        M('Half of eight… that’s the number that doubles back to eight — four!'),
+        O('Halving is doubling backwards. And you KNOW your doubles!'),
+      ]),
+      EL('match', 'Odd or even?', [
+        G('Hee hee! I’ve sneaked in piles that WON’T share fairly!'),
+        M('If one is left over, the number is ODD. Fair shares are EVEN!'),
+      ]),
+      EL('choice', 'Halves & quarters', [
+        O('FOUR monster friends at supper tonight! A quarter is half… of a half.'),
+        M('Half of twelve is six, half of six is three — a quarter of twelve is three!'),
+      ]),
+      EL('choice', 'Double or half?', [
+        G('Doubles, halves, DOUBLES, HALVES — you’ll get dizzy! Hee hee!'),
+        M('Doubling makes it grow, halving shares it out. Bring it on!'),
+      ]),
+    ],
+  },
+  {
+    id: 'peak',
+    name: 'Pattern Peak',
+    emoji: '🏔️',
+    color: '#ef4444',
+    tables: [],
+    kind: 'pattern',
+    starValue: 4,
+    curriculum: 'early',
+    art: 'mountain',
+    levels: [
+      EL('choice', 'Count in 2s', [
+        O('The very last stars twinkle on Pattern Peak — and the path climbs in a magical rhythm!'),
+        M('Like pairs of socks: 2, 4, 6, 8 — I can count in twos!'),
+      ]),
+      EL('choice', 'Count in 10s', [
+        M('These steps are GIANT — a whole rod of ten each!'),
+        O('Count them in tens — 10, 20, 30 — and you’ll fly up.'),
+      ]),
+      EL('choice', 'Count in 5s', [
+        O('Now the path counts like fingers on a hand: five at a time!'),
+        M('A whole hand each step — 5, 10, 15, 20!'),
+      ]),
       EL('mixed', 'Star champion', [
-        O('The very last stars are at the top of the keep!'),
-        M('I’ve learned so much. This is for all my new stars!'),
-        G('Amazing! You’re a real star champion!'),
+        G('The TOP of the peak?! Fine — here’s EVERYTHING at once! Hee hee!'),
+        O('Counting, sharing, doubling, adding — you’ve learned it all. One last climb!'),
+        M('For every star on Monster Island — here I go!'),
       ]),
     ],
   },
@@ -399,7 +495,7 @@ export const EARLY_REGIONS: Region[] = [
 
 export const EARLY_FINALE: StoryLine[] = [
   { speaker: 'guide', text: 'Hooray! You collected every single star across the whole island!' },
-  { speaker: 'monster', text: 'I can count, add, take away AND double now. I’m so proud!' },
+  { speaker: 'monster', text: 'I can count, compare, add, take away, double AND halve now. I’m so proud!' },
   { speaker: 'goblin', text: 'You’re the cleverest little monster I know. Well done, superstar!' },
 ]
 
@@ -599,12 +695,34 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('Read the number first. Then touch and count each picture — stop when a picture matches!', undefined, { kind: 'count', to: 6, hands: true }),
     ],
     [
+      T('Count each pile, touching every one. Then compare the numbers you said!', undefined, { kind: 'count', to: 7, hands: true }),
+      T('Seven is MORE than four, because seven comes later when you count. Fewer means the smaller number!', '7 is more than 4      4 is fewer than 7'),
+    ],
+    [
       T('One more just means the very next number you say when you count.', undefined, { kind: 'countOn', from: 4, add: 1, max: 8, hands: true }),
       T('Try it: start at four, hop one step… you land on five!', 'one more than 4  →  5', { kind: 'countOn', from: 4, add: 1, max: 8, hands: true }),
     ],
     [
       T('One less means the number that comes just before.', undefined, { kind: 'countBack', from: 6, sub: 1, max: 8, hands: true }),
       T('Start at six and hop one step back… you land on five!', 'one less than 6  →  5', { kind: 'countBack', from: 6, sub: 1, max: 8, hands: true }),
+    ],
+  ],
+  harbour: [
+    [
+      T('A golden rod holds exactly TEN stars — you never count inside a rod, it just IS ten!', '1 rod  =  10'),
+      T('Ten and some more makes a TEEN number. Say the ten, then count on: ten… eleven, twelve, thirteen!', '10 and 3  →  13', { kind: 'countOn', from: 10, add: 3, min: 9, max: 14, hands: true }),
+    ],
+    [
+      T('Rods first, then the loose ones! Two whole rods make twenty.', '2 rods  =  20'),
+      T('Count on from the rods: twenty… twenty-one, twenty-two!', '20 and 2  →  22', { kind: 'countOn', from: 20, add: 2, min: 19, max: 24, hands: true }),
+    ],
+    [
+      T('Ask two little questions: how many TENS, and how many ONES? Four rods and two stars is forty-two.', '4 tens and 2  →  42'),
+      T('Careful — forty-two and twenty-four are different numbers! The tens always come first.', '42 = 4 tens 2 ones      24 = 2 tens 4 ones'),
+    ],
+    [
+      T('One more is the next number when you count; one less is the number just before.', '39… 40… 41', { kind: 'countOn', from: 39, add: 2, min: 38, max: 42, hands: true }),
+      T('Crossing a ten is the fun bit: one more than thirty-nine is forty — a brand new rod!', '39 + 1  →  40'),
     ],
   ],
   'bonds-bay': [
@@ -677,6 +795,40 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
     [
       T('Use all your tricks: count ON to add, count BACK to take away, and doubles are two of the same!', undefined, { kind: 'double', n: 3, hands: true }),
       T('You know everything you need. Go and win those stars!'),
+    ],
+  ],
+  hollow: [
+    [
+      T('Sharing fairly means BOTH monsters get the same. One for you, one for me, until the pile is gone!', '8  →  4 and 4', { kind: 'double', n: 4, hands: true }),
+      T('Half of eight is four — because four and four make eight. Halving is doubling backwards!', 'half of 8  →  4'),
+    ],
+    [
+      T('To halve a number, ask: WHAT doubles to make it? Half of ten is five, because double five is ten.', 'half of 10  →  5', { kind: 'double', n: 5, hands: true }),
+    ],
+    [
+      T('Pair the pile up! If everyone has a partner, the number is EVEN. One left over means ODD.', '6 → 3 pairs → even      7 → 3 pairs + 1 → odd', { kind: 'double', n: 3, hands: true }),
+      T('Even numbers end in 0, 2, 4, 6 or 8 — they always share fairly between two.', '2, 4, 6, 8, 10…'),
+    ],
+    [
+      T('A quarter means sharing between FOUR. The trick: halve it, then halve it AGAIN!', 'quarter of 12  →  half is 6  →  half again is 3'),
+    ],
+    [
+      T('Read carefully! DOUBLE makes it grow — two of the same. HALF shares it out into two.', 'double 4 = 8      half of 8 = 4', { kind: 'double', n: 4, hands: true }),
+    ],
+  ],
+  peak: [
+    [
+      T('Count in twos — like pairs of socks: two, four, six, eight!', '2, 4, 6, 8…', { kind: 'skip', step: 2, times: 4, hands: true }),
+      T('Say the pattern out loud, then ask: what comes NEXT?', '2, 4, 6, …  →  8'),
+    ],
+    [
+      T('Count in tens — a whole rod at a time: ten, twenty, thirty!', '10, 20, 30…', { kind: 'skip', step: 10, times: 3 }),
+    ],
+    [
+      T('Count in fives — a whole hand of fingers each time: five, ten, fifteen, twenty!', '5, 10, 15, 20…', { kind: 'skip', step: 5, times: 4, hands: true }),
+    ],
+    [
+      T('The last climb! Count on to add, count back to take away, double to grow, halve to share.', 'You know every trick! ⭐'),
     ],
   ],
 }

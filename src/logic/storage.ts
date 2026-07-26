@@ -22,16 +22,20 @@ export function freshSave(): SaveData {
     muted: false,
     readAloud: true,
     economy: 4,
-    layout: 4,
+    layout: 5,
   }
 }
 
 /**
  * Regions the player had already earned under the OLD four-level rule stay
  * unlocked for good — newly inserted levels are extra content, not new gates.
+ * The "next region" must be judged by the adjacency of that era, so regions
+ * added later (the windmill and the early-band expansion) are skipped over —
+ * a complete castle granted the cavern, not the windmill.
  */
+const POST_GRANT_REGIONS = new Set(['windmill', 'harbour', 'hollow', 'peak'])
 function oldRuleGrants(save: SaveData): string[] {
-  const regions = regionsFor(save.curriculum)
+  const regions = regionsFor(save.curriculum).filter((r) => !POST_GRANT_REGIONS.has(r.id))
   const unlocked = new Set(save.unlockedRegions ?? [])
   unlocked.add(regions[0].id)
   for (let i = 0; i < regions.length - 1; i++) {
@@ -59,16 +63,20 @@ function remapKeys(save: SaveData, remapKey: (key: string) => string): SaveData 
  *   v4: Windmill Hill (4s) inserted between the castle and the cavern —
  *       no keys move, but anyone who had earned the cavern under the old
  *       castle→cavern adjacency keeps it unlocked.
+ *   v5: early band grows — "Who has more?" inserted at Counting Cove slot 3,
+ *       and Ten-Rod Harbour appears between the cove and Number Bond Bay
+ *       (anyone who'd finished the cove keeps the bay unlocked).
  */
 function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
-  if (rawLayout === 4) return save
+  if (rawLayout === 5) return save
+  const era = rawLayout === 2 ? 2 : rawLayout === 3 ? 3 : rawLayout === 4 ? 4 : 1
   // v4 entitlement, judged in the era the stored keys are in: a complete
   // castle (4 levels before v2, 5 after) had unlocked the cavern.
-  const castleLevels = rawLayout === 2 || rawLayout === 3 ? [0, 1, 2, 3, 4] : [0, 1, 2, 3]
+  const castleLevels = era >= 2 ? [0, 1, 2, 3, 4] : [0, 1, 2, 3]
   const hadCavern =
-    save.curriculum !== 'early' && castleLevels.every((l) => (save.stars[levelId('castle', l)] ?? 0) >= 1)
+    era < 4 && save.curriculum !== 'early' && castleLevels.every((l) => (save.stars[levelId('castle', l)] ?? 0) >= 1)
   let s = save
-  if (rawLayout !== 2 && rawLayout !== 3) {
+  if (era < 2) {
     s = { ...s, unlockedRegions: oldRuleGrants(s) }
     s = remapKeys(s, (key) => {
       for (const [rid, at] of Object.entries(MATCH_AT)) {
@@ -81,7 +89,7 @@ function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
       return key
     })
   }
-  if (s.curriculum === 'early' && rawLayout !== 3) {
+  if (era < 3 && s.curriculum === 'early') {
     s = { ...s, unlockedRegions: oldRuleGrants(s) }
     s = remapKeys(s, (key) => {
       for (const [rid, at] of Object.entries(EARLY_MATCH_AT)) {
@@ -94,7 +102,18 @@ function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
     })
   }
   if (hadCavern) s = { ...s, unlockedRegions: [...new Set([...(s.unlockedRegions ?? []), 'cavern'])] }
-  return { ...s, layout: 4 }
+  if (s.curriculum === 'early') {
+    // judged on the 5-level cove the keys are in by this point (post-v3)
+    const coveDone = [0, 1, 2, 3, 4].every((l) => (s.stars[levelId('count-cove', l)] ?? 0) >= 1)
+    if (coveDone) s = { ...s, unlockedRegions: [...new Set([...(s.unlockedRegions ?? []), 'bonds-bay'])] }
+    s = remapKeys(s, (key) => {
+      if (!key.startsWith('count-cove-')) return key
+      const c = Number(key.slice('count-cove-'.length))
+      if (!Number.isInteger(c)) return key
+      return `count-cove-${c < 3 ? c : c + 1}`
+    })
+  }
+  return { ...s, layout: 5 }
 }
 
 /**

@@ -151,13 +151,33 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
         {q.kind === 'count' ? (
           <div className={`count-panel ${feedback?.kind === 'correct' ? 'equation-right' : ''}`} data-testid="count-panel">
             <p className="count-prompt">How many?</p>
-            <div className="count-objects" data-testid="count-objects">
-              {Array.from({ length: q.count ?? 0 }, (_, i) => (
-                <span key={i} className="count-obj" style={{ animationDelay: `${i * 0.06}s` }}>
-                  {q.object}
+            {(q.count ?? 0) > 10 ? (
+              // place value: whole tens as rods, loose ones as objects
+              <div className="count-objects count-rods" data-testid="count-objects" aria-label={`${q.count}`}>
+                <span className="rod-stack">
+                  {Array.from({ length: Math.floor((q.count ?? 0) / 10) }, (_, i) => (
+                    <TenRod key={i} />
+                  ))}
                 </span>
-              ))}
-            </div>
+                {(q.count ?? 0) % 10 > 0 && (
+                  <span className="count-ones">
+                    {Array.from({ length: (q.count ?? 0) % 10 }, (_, i) => (
+                      <span key={i} className="count-obj" style={{ animationDelay: `${i * 0.06}s` }}>
+                        {q.object}
+                      </span>
+                    ))}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <div className="count-objects" data-testid="count-objects">
+                {Array.from({ length: q.count ?? 0 }, (_, i) => (
+                  <span key={i} className="count-obj" style={{ animationDelay: `${i * 0.06}s` }}>
+                    {q.object}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         ) : q.kind === 'match' ? (
           <div
@@ -167,15 +187,17 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             data-cols={q.b}
             data-reverse={q.choiceArrays ? 'true' : undefined}
           >
-            {q.choiceArrays || q.choiceCounts ? (
+            {q.choiceArrays || q.choiceCounts || q.prompt ? (
               <>
                 <p className="count-prompt">{q.prompt ?? 'Which array shows this fact?'}</p>
-                <div
-                  className="match-fact"
-                  aria-label={(q.promptLabel ?? `${q.a} × ${q.b}`).replace('×', 'times').replace('=', 'equals')}
-                >
-                  {q.promptLabel ?? `${q.a} × ${q.b}`}
-                </div>
+                {(q.promptLabel ?? `${q.a} × ${q.b}`) !== '' && (
+                  <div
+                    className="match-fact"
+                    aria-label={(q.promptLabel ?? `${q.a} × ${q.b}`).replace('×', 'times').replace('=', 'equals')}
+                  >
+                    {q.promptLabel ?? `${q.a} × ${q.b}`}
+                  </div>
+                )}
               </>
             ) : (
               <>

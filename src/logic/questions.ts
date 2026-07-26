@@ -154,6 +154,90 @@ function pickCount(n: number, object: string): Question {
   }
 }
 
+/** Early compare: three piles — tap the one with more (or fewer). */
+function compareQuestion(): Question {
+  const more = Math.random() < 0.5
+  const counts = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, 3)
+  const answer = more ? Math.max(...counts) : Math.min(...counts)
+  const shuffled = shuffle(counts)
+  return {
+    kind: 'match',
+    a: answer,
+    b: more ? 1 : 0, // direction in the key, so more/fewer questions stay distinct
+    result: answer,
+    unknown: 'result',
+    answer,
+    input: 'choice',
+    choices: shuffled,
+    choiceCounts: shuffled,
+    object: pick(COUNT_OBJECTS),
+    prompt: `Which pile has ${more ? 'more' : 'fewer'}?`,
+    promptLabel: '', // the prompt says it all — no fact chip needed
+  }
+}
+
+/**
+ * Place-value counting: `n` shown as base-ten rods plus loose ones, so 42
+ * reads as "4 tens and 2" — not forty-two loose objects to count. The
+ * digit-swap distractor (24 for 42) is the classic teens/tens confusion.
+ */
+function rodCountQuestion(n: number): Question {
+  const tens = Math.floor(n / 10)
+  const ones = n % 10
+  const swap = ones >= 1 && ones !== tens ? ones * 10 + tens : n + 10
+  const q: Question = {
+    kind: 'count',
+    a: n,
+    b: 0,
+    result: n,
+    unknown: 'result',
+    answer: n,
+    input: 'choice',
+    count: n,
+    object: pick(COUNT_OBJECTS),
+  }
+  q.choices = makeChoices(n, [swap, n + 10, n - 10, n + 1, n - 1])
+  return q
+}
+
+/** Odd or even, concretely: which pile can TWO monsters share fairly? */
+function shareFairQuestion(): Question {
+  const even = 2 * rnd(1, 5)
+  const odds = shuffle([1, 3, 5, 7, 9]).slice(0, 2)
+  const counts = shuffle([even, ...odds])
+  return {
+    kind: 'match',
+    a: even,
+    b: 2,
+    result: even,
+    unknown: 'result',
+    answer: even,
+    input: 'choice',
+    choices: counts,
+    choiceCounts: counts,
+    object: pick(COUNT_OBJECTS),
+    prompt: 'Which pile can two monsters share fairly?',
+    promptLabel: 'EVEN',
+  }
+}
+
+/** Skip-counting: shows "step, 2·step, …" and asks what comes next. */
+function nextInPattern(step: number, shown: number): Question {
+  const result = step * (shown + 1)
+  return {
+    kind: 'match',
+    a: step,
+    b: shown + 1,
+    result,
+    unknown: 'result',
+    answer: result,
+    input: 'choice',
+    choices: makeChoices(result, [result - step, result + step, result - 1, result + 1]),
+    prompt: 'What comes next?',
+    promptLabel: `${Array.from({ length: shown }, (_, i) => (i + 1) * step).join(', ')}, …`,
+  }
+}
+
 /** Early doubles-match: "Double 4" → pick the picture with two rows of four. */
 function pickDouble(k: number): Question {
   const cols: number[] = [k]
@@ -263,7 +347,7 @@ function fill(n: number, factory: () => Question): Question[] {
   return arr
 }
 
-const EARLY_KINDS = new Set(['count', 'bond', 'add', 'sub', 'double'])
+const EARLY_KINDS = new Set(['count', 'bond', 'add', 'sub', 'double', 'place', 'half', 'pattern'])
 
 function generateEarlyLevel(region: Region, level: number): Question[] {
   const mode = region.levels[level].mode
@@ -275,8 +359,47 @@ function generateEarlyLevel(region: Region, level: number): Question[] {
         if (level === 0) return countQuestion(rnd(1, 5), 'choice')
         if (level === 1) return countQuestion(rnd(1, 10), 'choice')
         if (level === 2) return pickCount(rnd(2, 9), pick(COUNT_OBJECTS)) // find the number
-        if (level === 3) return addQuestion(rnd(0, 9), 1, 'result', 'choice') // one more
+        if (level === 3) return compareQuestion() // who has more / fewer?
+        if (level === 4) return addQuestion(rnd(0, 9), 1, 'result', 'choice') // one more
         return subQuestion(rnd(1, 10), 1, 'result', 'choice') // one less
+
+      case 'place': {
+        // teens first (one rod and some more), then to twenty, then tens & ones
+        if (level === 0) return rodCountQuestion(rnd(11, 15))
+        if (level === 1) return rodCountQuestion(rnd(13, 20))
+        if (level === 2) return rodCountQuestion(rnd(21, 59))
+        // one more / one less with bigger numbers
+        const n = rnd(10, 49)
+        return Math.random() < 0.5 ? addQuestion(n, 1, 'result', 'choice') : subQuestion(n + 1, 1, 'result', 'choice')
+      }
+
+      case 'half': {
+        if (level === 0) return divQuestion(2, rnd(1, 5), 'result', 'choice') // fair shares within 10
+        if (level === 1) return divQuestion(2, rnd(2, 10), 'result', 'pad') // half of evens to 20
+        if (level === 2) return shareFairQuestion() // odd or even?
+        if (level === 3) return divQuestion(4, rnd(1, 5), 'result', 'choice') // quarters (half of half)
+        // double or half?
+        return Math.random() < 0.5 ? doubleQ(rnd(1, 10), 'choice') : divQuestion(2, rnd(1, 10), 'result', 'choice')
+      }
+
+      case 'pattern': {
+        if (level === 0) return nextInPattern(2, rnd(2, 5)) // count in 2s
+        if (level === 1) return nextInPattern(10, rnd(2, 8)) // count in 10s
+        if (level === 2) return nextInPattern(5, rnd(2, 8)) // count in 5s
+        // star champion: a little of everything the island taught
+        const r = Math.random()
+        if (r < 0.2) return doubleQ(rnd(1, 10), 'choice')
+        if (r < 0.4) return divQuestion(2, rnd(1, 8), 'result', 'choice')
+        if (r < 0.6) {
+          const [a, b] = splitTotal(rnd(4, 20), 12)
+          return addQuestion(a, b, 'result', 'pad')
+        }
+        if (r < 0.8) {
+          const a = rnd(4, 20)
+          return subQuestion(a, rnd(1, Math.min(a, 12)), 'result', 'pad')
+        }
+        return nextInPattern(pick([2, 5, 10]), rnd(2, 6))
+      }
 
       case 'bond': {
         // Progression: make ten → add up to ten → find the missing number within ten.
@@ -698,6 +821,16 @@ function explainDiv(q: Question): Explanation {
 export function explain(q: Question): Explanation {
   if (q.kind === 'count') {
     const n = q.count ?? q.result
+    if (n > 10) {
+      const tens = Math.floor(n / 10)
+      const ones = n % 10
+      return {
+        text:
+          ones === 0
+            ? `Each rod is one whole ten — no counting needed! ${tens} tens make ${n}.`
+            : `Each rod is one whole ten. ${tens} ${tens === 1 ? 'ten' : 'tens'} and ${ones} more make ${n}.`,
+      }
+    }
     return {
       text: `Touch each one as you count — the last number you say is how many. There are ${n}.`,
       visual: { kind: 'count', to: n, hands: n <= 10 },
@@ -706,6 +839,26 @@ export function explain(q: Question): Explanation {
   if (q.kind === 'add') return explainAdd(q)
   if (q.kind === 'sub') return explainSub(q)
   if (q.kind === 'match') {
+    if (q.prompt === 'What comes next?') {
+      const seq = Array.from({ length: q.b - 1 }, (_, i) => (i + 1) * q.a).join(', ')
+      return {
+        text: `Count up in ${q.a}s: ${seq} — one more jump of ${q.a} lands on ${q.result}!`,
+        visual: { kind: 'skip', step: q.a, times: q.b, hands: q.b <= 10 },
+      }
+    }
+    if (q.promptLabel === 'EVEN') {
+      return {
+        text: `Pair them up! An EVEN pile shares fairly — ${q.result} splits into ${q.result / 2} and ${q.result / 2} with none left over. Odd piles always leave one out.`,
+        visual: { kind: 'double', n: q.result / 2, hands: q.result <= 10 },
+      }
+    }
+    if (q.prompt?.startsWith('Which pile has ')) {
+      const want = q.prompt.includes('more') ? 'biggest' : 'smallest'
+      return {
+        text: `Count each pile, one at a time, and compare. The ${want} pile has ${q.result} — that's the one!`,
+        visual: { kind: 'count', to: q.result, hands: q.result <= 10 },
+      }
+    }
     if (q.choiceCounts) {
       return {
         text: `Touch and count each picture, one at a time — the one with exactly ${q.result} is the match!`,

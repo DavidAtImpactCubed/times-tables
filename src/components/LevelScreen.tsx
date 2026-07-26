@@ -269,7 +269,9 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
                     aria-label={`${q.choiceCounts[i]} ${q.object}`}
                     data-testid={`choice-${c}`}
                   >
-                    <span className="choice-count-group">
+                    {/* odd-or-even piles wrap in PAIRS, so a leftover shows;
+                        counting piles keep the fives structure for subitising */}
+                    <span className={q.promptLabel === 'EVEN' ? 'choice-pair-group' : 'choice-count-group'}>
                       {Array.from({ length: q.choiceCounts[i] }, (_, j) => (
                         <span key={j} aria-hidden>
                           {q.object}

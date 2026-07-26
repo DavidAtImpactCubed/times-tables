@@ -1102,6 +1102,17 @@ button {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
+/* odd-or-even piles: two per row, so an odd pile visibly ends with a
+   lonely one missing its partner */
+.choice-pair-group {
+  display: grid;
+  grid-template-columns: repeat(2, 26px);
+  justify-content: center;
+  gap: 4px 8px;
+  font-size: 24px;
+  line-height: 1;
+}
+
 /* place-value counting: rods of ten, then a row of loose ones */
 .count-rods {
   display: flex;

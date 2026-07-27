@@ -1122,6 +1122,12 @@ button {
   line-height: 1;
 }
 
+/* the halving introduction's pile, shown above its equation */
+.share-pile {
+  margin: 0 auto 4px;
+  font-size: 26px;
+}
+
 /* place-value counting: rods of ten, then a row of loose ones */
 .count-rods {
   display: flex;

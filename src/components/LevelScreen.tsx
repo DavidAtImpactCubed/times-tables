@@ -200,6 +200,17 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
                     {q.promptLabel ?? `${q.a} × ${q.b}`}
                   </div>
                 )}
+                {/* halving introduction: the pile to share, in twos — each
+                    column is one monster's share */}
+                {q.count != null && q.object && (
+                  <div className="share-pile choice-pair-group" aria-label={`${q.count} to share`} data-testid="share-pile">
+                    {Array.from({ length: q.count }, (_, i) => (
+                      <span key={i} aria-hidden>
+                        {q.object}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </>
             ) : (
               <>

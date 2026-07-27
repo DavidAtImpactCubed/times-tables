@@ -443,7 +443,7 @@ export const EARLY_REGIONS: Region[] = [
         O('Down in Halving Hollow, two hungry little monsters share every pile of star-berries.'),
         M('One for you, one for me — fair shares means the SAME each!'),
       ]),
-      EL('type', 'Half of it', [
+      EL('choice', 'Half of it', [
         M('Half of eight… that’s the number that doubles back to eight — four!'),
         O('Halving is doubling backwards. And you KNOW your doubles!'),
       ]),
@@ -800,7 +800,7 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
   hollow: [
     [
       T('Sharing fairly means BOTH monsters get the same. One for you, one for me, until the pile is gone!', '8  →  4 and 4', { kind: 'double', n: 4, hands: true }),
-      T('Half of eight is four — because four and four make eight. Halving is doubling backwards!', 'half of 8  →  4'),
+      T('The pile lines up in twos — one side for each monster. Count just ONE side: that’s the half!', 'half of 8  →  4 each'),
     ],
     [
       T('To halve a number, ask: WHAT doubles to make it? Half of ten is five, because double five is ten.', 'half of 10  →  5', { kind: 'double', n: 5, hands: true }),

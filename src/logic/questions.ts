@@ -200,6 +200,30 @@ function rodCountQuestion(n: number): Question {
   return q
 }
 
+/**
+ * Visual introduction to halving: the pile is SHOWN, arranged in twos — its
+ * two columns are the two monsters' shares — and the child answers in words
+ * ("how many each?"), no ÷ symbol yet.
+ */
+function shareIntroQuestion(): Question {
+  const half = rnd(1, 5)
+  const n = 2 * half
+  return {
+    kind: 'match',
+    a: n,
+    b: 2,
+    result: half,
+    unknown: 'result',
+    answer: half,
+    input: 'choice',
+    choices: makeChoices(half, [half - 1, half + 1, half + 2, n]),
+    count: n,
+    object: pick(COUNT_OBJECTS),
+    prompt: 'Share them between two monsters — how many each?',
+    promptLabel: '',
+  }
+}
+
 /** Odd or even, concretely: which pile can TWO monsters share fairly? */
 function shareFairQuestion(): Question {
   const even = 2 * rnd(1, 5)
@@ -375,8 +399,8 @@ function generateEarlyLevel(region: Region, level: number): Question[] {
       }
 
       case 'half': {
-        if (level === 0) return divQuestion(2, rnd(1, 5), 'result', 'choice') // fair shares within 10
-        if (level === 1) return divQuestion(2, rnd(2, 10), 'result', 'pad') // half of evens to 20
+        if (level === 0) return shareIntroQuestion() // visual introduction, no ÷ yet
+        if (level === 1) return divQuestion(2, rnd(2, 10), 'result', 'choice') // half of evens to 20
         if (level === 2) return shareFairQuestion() // odd or even?
         if (level === 3) return divQuestion(4, rnd(1, 5), 'result', 'choice') // quarters (half of half)
         // double or half?
@@ -845,6 +869,13 @@ export function explain(q: Question): Explanation {
       return {
         text: `Count up in ${q.a}s: ${seq} — one more jump of ${q.a} lands on ${q.result}!`,
         visual: { kind: 'skip', step: q.a, times: q.b, hands: q.b <= 10 },
+      }
+    }
+    if (q.prompt?.startsWith('Share them')) {
+      return {
+        answerLabel: `${q.result} each`,
+        text: `One for you, one for me! ${q.a} shared between two monsters is ${q.result} each — because ${q.result} and ${q.result} make ${q.a}.`,
+        visual: { kind: 'double', n: q.result, hands: q.result <= 5 },
       }
     }
     if (q.promptLabel === 'EVEN') {

@@ -190,6 +190,10 @@ for (const region of EARLY_REGIONS) {
           } else if (q.prompt === 'What comes next?') {
             // skip-counting: the pattern must be internally true
             if (q.a * q.b !== q.result) fail(`${region.id}: pattern ${q.promptLabel} next ≠ ${q.result}`)
+          } else if (q.count != null) {
+            // halving introduction: the shown pile must be twice the answer
+            if (q.count !== q.a || q.result * 2 !== q.count)
+              fail(`${region.id}: share pile ${q.count} ≠ 2 × ${q.result}`)
           } else fail(`${region.id}: early match without pictures`)
         }
         if (q.kind === 'add' && q.a + q.b !== q.result) fail(`bad add fact ${q.a}+${q.b}=${q.result}`)

@@ -653,9 +653,13 @@ button {
   flex-wrap: wrap;
   gap: 6px 10px;
   justify-content: center;
-  max-width: 340px;
+  /* five 36px items + four gaps: quantities beyond five wrap into the
+     "five and a bit" structure (EYFS subitising), matching the answer piles */
+  max-width: 220px;
 }
 .count-obj {
+  width: 36px;
+  text-align: center;
   font-size: 2.2rem;
   line-height: 1;
   animation: pop-in 0.3s ease both;
@@ -741,8 +745,13 @@ button {
   gap: 6px;
   flex-wrap: wrap;
   justify-content: center;
+  /* same fives structure as the level's counting panel */
+  max-width: 194px;
+  margin: 0 auto;
 }
 .tip-count-star {
+  width: 34px;
+  text-align: center;
   position: relative;
   font-size: 2rem;
   line-height: 1;

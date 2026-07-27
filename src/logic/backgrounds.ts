@@ -17,7 +17,6 @@ for (const [path, url] of Object.entries(files)) {
 /** Early-years regions reuse the main island's art. */
 const ART_ALIAS: Record<string, string> = {
   'count-cove': 'beach',
-  harbour: 'lagoon', // until its own harbour-<level>.webp scenes land
   'bonds-bay': 'lagoon',
   'add-meadow': 'forest',
   'sub-trail': 'mountain',

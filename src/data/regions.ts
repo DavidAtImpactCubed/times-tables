@@ -301,7 +301,6 @@ export const EARLY_REGIONS: Region[] = [
     kind: 'place',
     starValue: 2,
     curriculum: 'early',
-    art: 'lagoon',
     levels: [
       EL('choice', 'One ten and more', [
         O('Welcome to Ten-Rod Harbour! The sailor monsters pack stars into golden rods — exactly TEN in every rod.'),

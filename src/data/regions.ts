@@ -436,7 +436,6 @@ export const EARLY_REGIONS: Region[] = [
     kind: 'half',
     starValue: 3,
     curriculum: 'early',
-    art: 'forest',
     levels: [
       EL('choice', 'Fair shares', [
         O('Down in Halving Hollow, two hungry little monsters share every pile of star-berries.'),

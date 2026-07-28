@@ -21,7 +21,6 @@ const ART_ALIAS: Record<string, string> = {
   'add-meadow': 'forest',
   'sub-trail': 'mountain',
   'doubles-keep': 'castle',
-  peak: 'mountain', // until its own scenes land
 }
 
 export const backgroundFor = (regionId: string, level: number): string | undefined => {

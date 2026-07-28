@@ -468,7 +468,6 @@ export const EARLY_REGIONS: Region[] = [
     kind: 'pattern',
     starValue: 4,
     curriculum: 'early',
-    art: 'mountain',
     levels: [
       EL('choice', 'Count in 2s', [
         O('The very last stars twinkle on Pattern Peak — and the path climbs in a magical rhythm!'),

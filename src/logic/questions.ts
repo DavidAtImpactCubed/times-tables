@@ -220,7 +220,7 @@ function shareIntroQuestion(): Question {
     count: n,
     object: pick(COUNT_OBJECTS),
     prompt: 'Share them between two monsters — how many each?',
-    promptLabel: '',
+    promptLabel: String(n),
   }
 }
 

@@ -428,9 +428,9 @@ export const EARLY_REGIONS: Region[] = [
         O('The magic mirror is showing twin rows of stars!'),
         M('Double four means two rows of four — I’ll spot it in a blink!'),
       ]),
-      EL('choice', 'Add & take away', [
-        G('You’ve done SO well… but here’s a mix of everything! Hee hee!'),
-        M('Adding, taking away — bring it on!'),
+      EL('choice', 'Near doubles', [
+        O('Oh my — the magic mirror has gone wibbly! It keeps adding one EXTRA.'),
+        M('Six plus seven? That’s just double six… and one more!'),
       ]),
       EL('mixed', 'Keep champion', [
         O('The top of the keep! Every mirror-star shines for you.'),
@@ -809,8 +809,8 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('A double is TWO rows exactly the same. Count one row, then check its twin matches!', 'double 4  →  2 rows of 4', { kind: 'double', n: 4, hands: true }),
     ],
     [
-      T('Look at the sign! PLUS means hop forwards.', '6 + 2  →  6… 7, 8  →  8', { kind: 'countOn', from: 6, add: 2, max: 10, hands: true }),
-      T('TAKE-AWAY means hop backwards.', '9 − 2  →  9… 8, 7  →  7', { kind: 'countBack', from: 9, sub: 2, max: 10, hands: true }),
+      T('When two numbers are NEIGHBOURS, use a double! Double the smaller one, then add one more.', '6 + 7  →  double 6 is 12  →  13', { kind: 'double', n: 6 }),
+      T('Try it: four plus five is double four… and one more — nine!', '4 + 5  →  8 + 1  →  9', { kind: 'double', n: 4, hands: true }),
     ],
     [
       T('Use all your tricks: count ON to add, count BACK to take away, and doubles are two of the same!', undefined, { kind: 'double', n: 3, hands: true }),

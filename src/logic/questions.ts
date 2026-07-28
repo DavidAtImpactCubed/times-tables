@@ -546,12 +546,11 @@ function generateEarlyLevel(region: Region, level: number): Question[] {
         if (level === 1) return doubleQ(rnd(1, 10), 'pad')
         if (level === 2) return pickDouble(rnd(2, 5)) // match the doubles
         if (level === 3) {
-          if (Math.random() < 0.5) {
-            const [a, b] = splitTotal(rnd(4, 20), 12)
-            return addQuestion(a, b, 'result', 'choice')
-          }
-          const a = rnd(4, 20)
-          return subQuestion(a, rnd(1, Math.min(a, 12)), 'result', 'choice')
+          // near doubles: neighbour numbers, solved by doubling the smaller
+          const n = rnd(2, 9)
+          return Math.random() < 0.5
+            ? addQuestion(n, n + 1, 'result', 'choice')
+            : addQuestion(n + 1, n, 'result', 'choice')
         }
         // star champion: doubles, adding and taking away, typed
         const r = Math.random()
@@ -752,6 +751,13 @@ function explainAdd(q: Question): Explanation {
       return {
         text: `${a} and ${b} are a make-ten pair — they always make ten together!`,
         visual: { kind: 'tenframe', a, b },
+      }
+    }
+    if (Math.abs(a - b) === 1) {
+      const small = Math.min(a, b)
+      return {
+        text: `Neighbour numbers — use a NEAR DOUBLE! Double ${small} is ${2 * small}, then one more makes ${result}.`,
+        visual: small <= 6 ? { kind: 'double', n: small, hands: small <= 5 } : undefined,
       }
     }
     const from = Math.max(a, b)

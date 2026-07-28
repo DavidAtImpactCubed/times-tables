@@ -40,6 +40,8 @@ function checkExplanation(q) {
       break
     case 'double':
       if (q.kind === 'add' && q.a === q.b && v.n !== q.a) fail(`${id}: double n=${v.n}`)
+      if (q.kind === 'add' && Math.abs(q.a - q.b) === 1 && v.n !== Math.min(q.a, q.b))
+        fail(`${id}: near-double n=${v.n} ≠ smaller of ${q.a}+${q.b}`)
       break
     case 'doubleDouble':
       if (q.kind === 'mul' && q.unknown === 'result' && 4 * v.n !== q.result)

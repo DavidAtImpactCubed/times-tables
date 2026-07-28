@@ -293,34 +293,6 @@ export const EARLY_REGIONS: Region[] = [
     ],
   },
   {
-    id: 'harbour',
-    name: 'Ten-Rod Harbour',
-    emoji: '⚓',
-    color: '#0ea5e9',
-    tables: [],
-    kind: 'place',
-    starValue: 2,
-    curriculum: 'early',
-    levels: [
-      EL('choice', 'One ten and more', [
-        O('Welcome to Ten-Rod Harbour! The sailor monsters pack stars into golden rods — exactly TEN in every rod.'),
-        M('So I never count a rod — I just KNOW it’s ten! Ten and three more is thirteen.'),
-      ]),
-      EL('choice', 'Two whole rods', [
-        M('Bigger crates on this jetty — some hold two whole rods!'),
-        O('Rods first, then the loose ones. Two rods make twenty.'),
-      ]),
-      EL('choice', 'Tens and ones', [
-        O('The harbour master wants every crate labelled: how many tens, how many ones?'),
-        M('Four rods and two more — that’s forty-two!'),
-      ]),
-      EL('choice', 'One more, one less', [
-        G('Hee hee! I’ve pinched a star here and dropped a star there!'),
-        M('One more, one less — even with BIG numbers, I know what comes next.'),
-      ]),
-    ],
-  },
-  {
     id: 'bonds-bay',
     name: 'Number Bond Bay',
     emoji: '🐠',
@@ -393,6 +365,46 @@ export const EARLY_REGIONS: Region[] = [
       EL('mixed', 'Add & take away', [
         O('This part mixes adding AND taking away. Read each one carefully!'),
         M('Plus means more, take-away means fewer. I’m ready!'),
+      ]),
+    ],
+  },
+  {
+    id: 'harbour',
+    name: 'Ten-Rod Harbour',
+    emoji: '⚓',
+    color: '#0ea5e9',
+    tables: [],
+    kind: 'place',
+    starValue: 2,
+    curriculum: 'early',
+    levels: [
+      EL('choice', 'One ten and more', [
+        O('Welcome to Ten-Rod Harbour! The sailor monsters pack stars into golden rods — exactly TEN in every rod.'),
+        M('So I never count a rod — I just KNOW it’s ten! Ten and three more is thirteen.'),
+      ]),
+      EL('choice', 'Two whole rods', [
+        M('Bigger crates on this jetty — some hold two whole rods!'),
+        O('Rods first, then the loose ones. Two rods make twenty.'),
+      ]),
+      EL('choice', 'Whole tens', [
+        M('This warehouse holds only FULL rods — not a single loose star!'),
+        O('Then count them in tens: ten, twenty, thirty!'),
+      ]),
+      EL('choice', 'Tens and ones', [
+        O('The harbour master wants every crate labelled: how many tens, how many ones?'),
+        M('Three rods and two more — that’s thirty-two!'),
+      ]),
+      EL('choice', 'Giant crates', [
+        G('Try THESE giant crates — you’ll lose count for sure! Hee hee!'),
+        M('Never! Tens first, then the ones. Sixty… sixty-seven!'),
+      ]),
+      EL('match', 'Which is more?', [
+        O('Two ships are racing to load the most stars. Which crate holds more?'),
+        M('Look at the tens first — more rods wins!'),
+      ]),
+      EL('choice', 'One more, one less', [
+        G('Hee hee! I’ve pinched a star here and dropped a star there!'),
+        M('One more, one less — even with BIG numbers, I know what comes next.'),
       ]),
     ],
   },
@@ -714,8 +726,19 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('Count on from the rods: twenty… twenty-one, twenty-two!', '20 and 2  →  22', { kind: 'countOn', from: 20, add: 2, min: 19, max: 24, hands: true }),
     ],
     [
-      T('Ask two little questions: how many TENS, and how many ONES? Four rods and two stars is forty-two.', '4 tens and 2  →  42'),
+      T('A rod is worth TEN, so count rods in TENS: ten, twenty, thirty!', '3 rods  →  10, 20, 30  →  30', { kind: 'skip', step: 10, times: 3 }),
+      T('Careful — three rods is NOT three! Every rod has ten stars packed inside.', '3 rods = 30'),
+    ],
+    [
+      T('Rods first, counting in tens: ten, twenty, thirty. Then count ON the loose ones: thirty-one, thirty-two!', '3 rods and 2  →  30…  31, 32', { kind: 'countOn', from: 30, add: 2, min: 29, max: 34, hands: true }),
+    ],
+    [
+      T('Ask two little questions: how many TENS, and how many ONES? Six rods and seven stars is sixty-seven.', '6 tens and 7  →  67'),
       T('Careful — forty-two and twenty-four are different numbers! The tens always come first.', '42 = 4 tens 2 ones      24 = 2 tens 4 ones'),
+    ],
+    [
+      T('To compare numbers, look at the TENS first — more tens means a bigger number!', '42 or 24?  →  4 tens beats 2 tens  →  42'),
+      T('If the tens are the SAME, compare the ones instead.', '35 or 32?  →  5 beats 2  →  35'),
     ],
     [
       T('One more is the next number when you count; one less is the number just before.', '39… 40… 41', { kind: 'countOn', from: 39, add: 2, min: 38, max: 42, hands: true }),

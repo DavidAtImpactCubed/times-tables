@@ -11,10 +11,11 @@ on hats, horns, wings and colours for your own monster in the wardrobe.
 Chosen per player when a new game starts (see the landing screen):
 
 - **Ages 4–6 · Reception & Year 1** — Counting Cove (count to 5 then 10,
-  comparing, one more/less), Ten-Rod Harbour (teens & tens-and-ones with
-  base-ten rods), Number Bond Bay (make-ten pairs → adding to ten → missing
-  numbers), Adding Meadow (add within 10 then 20), Take-Away Trail
-  (subtraction), Doubles Keep (doubling), Halving Hollow (fair shares, halves,
+  comparing, one more/less), Number Bond Bay (make-ten pairs → adding to ten →
+  missing numbers), Adding Meadow (add within 10 then 20), Take-Away Trail
+  (subtraction), Ten-Rod Harbour (teens, whole tens, tens-and-ones and
+  comparing numerals with base-ten rods — placed spring-term style, after the
+  arithmetic), Doubles Keep (doubling), Halving Hollow (fair shares, halves,
   odd/even, quarters) and Pattern Peak (counting in 2s, 10s and 5s — the bridge
   to the times tables). Questions are visual counting and big-button
   addition/subtraction, with typing later on. Together the two bands cover the

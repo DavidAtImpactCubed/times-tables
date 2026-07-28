@@ -194,6 +194,10 @@ for (const region of EARLY_REGIONS) {
             // halving introduction: the shown pile must be twice the answer
             if (q.count !== q.a || q.result * 2 !== q.count)
               fail(`${region.id}: share pile ${q.count} ≠ 2 × ${q.result}`)
+          } else if (q.prompt?.startsWith('Which number is the ')) {
+            // numeral comparison: the answer must be the extreme it asks for
+            const want = q.prompt.includes('biggest') ? Math.max(...q.choices) : Math.min(...q.choices)
+            if (q.answer !== want) fail(`${region.id}: compare answer ${q.answer} ≠ ${want} of ${q.choices}`)
           } else fail(`${region.id}: early match without pictures`)
         }
         if (q.kind === 'add' && q.a + q.b !== q.result) fail(`bad add fact ${q.a}+${q.b}=${q.result}`)

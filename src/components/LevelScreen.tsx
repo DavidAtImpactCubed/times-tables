@@ -151,7 +151,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
         {q.kind === 'count' ? (
           <div className={`count-panel ${feedback?.kind === 'correct' ? 'equation-right' : ''}`} data-testid="count-panel">
             <p className="count-prompt">How many?</p>
-            {(q.count ?? 0) > 10 ? (
+            {q.rods || (q.count ?? 0) > 10 ? (
               // place value: whole tens as rods, loose ones as objects
               <div className="count-objects count-rods" data-testid="count-objects" aria-label={`${q.count}`}>
                 <span className="rod-stack">

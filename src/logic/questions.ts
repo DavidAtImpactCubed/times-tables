@@ -195,9 +195,59 @@ function rodCountQuestion(n: number): Question {
     input: 'choice',
     count: n,
     object: pick(COUNT_OBJECTS),
+    rods: true,
   }
   q.choices = makeChoices(n, [swap, n + 10, n - 10, n + 1, n - 1])
   return q
+}
+
+/**
+ * Whole tens only: rods with no loose ones, so counting IN tens is the whole
+ * task. "3 rods = 3" is THE misconception, so 3 is always on offer.
+ */
+function wholeTensQuestion(): Question {
+  const t = rnd(1, 5)
+  const n = 10 * t
+  const q: Question = {
+    kind: 'count',
+    a: n,
+    b: 0,
+    result: n,
+    unknown: 'result',
+    answer: n,
+    input: 'choice',
+    count: n,
+    object: pick(COUNT_OBJECTS),
+    rods: true,
+  }
+  q.choices = makeChoices(n, [t, n + 10, n - 10])
+  return q
+}
+
+/** Compare two-digit numerals — tens first! — always including the digit-swap pair. */
+function compareNumbersQuestion(): Question {
+  const biggest = Math.random() < 0.5
+  const t = rnd(2, 7)
+  let o = rnd(1, 9)
+  if (o === t) o = o === 9 ? 8 : o + 1
+  const n = 10 * t + o
+  const swap = 10 * o + t
+  // a third with the SAME tens, so ties force an ones comparison
+  const third = 10 * t + (o >= 5 ? o - rnd(1, 3) : o + rnd(1, 3))
+  const choices = shuffle([n, swap, third])
+  const answer = biggest ? Math.max(...choices) : Math.min(...choices)
+  return {
+    kind: 'match',
+    a: answer,
+    b: biggest ? 3 : 4, // direction in the key, so biggest/smallest stay distinct
+    result: answer,
+    unknown: 'result',
+    answer,
+    input: 'choice',
+    choices,
+    prompt: `Which number is the ${biggest ? 'biggest' : 'smallest'}?`,
+    promptLabel: '',
+  }
 }
 
 /**
@@ -388,11 +438,15 @@ function generateEarlyLevel(region: Region, level: number): Question[] {
         return subQuestion(rnd(1, 10), 1, 'result', 'choice') // one less
 
       case 'place': {
-        // teens first (one rod and some more), then crossing into the second
-        // rod (about half these show two rods), then tens & ones
+        // a gentle ladder: teens → the second rod → counting whole rods in
+        // tens → a few loose ones to count on → the full range with digit
+        // swaps → comparing numerals → one more/one less
         if (level === 0) return rodCountQuestion(rnd(11, 15))
         if (level === 1) return rodCountQuestion(rnd(14, 24))
-        if (level === 2) return rodCountQuestion(rnd(21, 59))
+        if (level === 2) return wholeTensQuestion()
+        if (level === 3) return rodCountQuestion(10 * rnd(2, 5) + rnd(1, 4)) // few ones: tens, then count on
+        if (level === 4) return rodCountQuestion(rnd(21, 79)) // giant crates, digit-swap traps
+        if (level === 5) return compareNumbersQuestion()
         // one more / one less with bigger numbers
         const n = rnd(10, 49)
         return Math.random() < 0.5 ? addQuestion(n, 1, 'result', 'choice') : subQuestion(n + 1, 1, 'result', 'choice')
@@ -889,6 +943,14 @@ export function explain(q: Question): Explanation {
       return {
         text: `Count each pile, one at a time, and compare. The ${want} pile has ${q.result} — that's the one!`,
         visual: { kind: 'count', to: q.result, hands: q.result <= 10 },
+      }
+    }
+    if (q.prompt?.startsWith('Which number is the ')) {
+      const biggest = q.prompt.includes('biggest')
+      return {
+        text: `Compare the TENS first — more tens means a bigger number. If the tens match, compare the ones. The ${
+          biggest ? 'biggest' : 'smallest'
+        } here is ${q.result}: ${Math.floor(q.result / 10)} tens and ${q.result % 10}.`,
       }
     }
     if (q.choiceCounts) {

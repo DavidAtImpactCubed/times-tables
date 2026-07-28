@@ -22,7 +22,7 @@ export function freshSave(): SaveData {
     muted: false,
     readAloud: true,
     economy: 4,
-    layout: 5,
+    layout: 6,
   }
 }
 
@@ -66,10 +66,16 @@ function remapKeys(save: SaveData, remapKey: (key: string) => string): SaveData 
  *   v5: early band grows — "Who has more?" inserted at Counting Cove slot 3,
  *       and Ten-Rod Harbour appears between the cove and Number Bond Bay
  *       (anyone who'd finished the cove keeps the bay unlocked).
+ *   v6: the harbour moves after Take-Away Trail (matching the school-year
+ *       order) and grows from 4 to 7 levels — Whole tens and a gentler Tens
+ *       and ones slot in at 2-3, Which is more? at 5. Old harbour stars move
+ *       (2→3, 3→6); cove-completers keep the harbour and trail-completers
+ *       keep Doubles Keep, as under the old adjacency.
  */
 function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
-  if (rawLayout === 5) return save
-  const era = rawLayout === 2 ? 2 : rawLayout === 3 ? 3 : rawLayout === 4 ? 4 : 1
+  if (rawLayout === 6) return save
+  const era =
+    rawLayout === 2 ? 2 : rawLayout === 3 ? 3 : rawLayout === 4 ? 4 : rawLayout === 5 ? 5 : 1
   // v4 entitlement, judged in the era the stored keys are in: a complete
   // castle (4 levels before v2, 5 after) had unlocked the cavern.
   const castleLevels = era >= 2 ? [0, 1, 2, 3, 4] : [0, 1, 2, 3]
@@ -102,7 +108,7 @@ function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
     })
   }
   if (hadCavern) s = { ...s, unlockedRegions: [...new Set([...(s.unlockedRegions ?? []), 'cavern'])] }
-  if (s.curriculum === 'early') {
+  if (era < 5 && s.curriculum === 'early') {
     // judged on the 5-level cove the keys are in by this point (post-v3)
     const coveDone = [0, 1, 2, 3, 4].every((l) => (s.stars[levelId('count-cove', l)] ?? 0) >= 1)
     if (coveDone) s = { ...s, unlockedRegions: [...new Set([...(s.unlockedRegions ?? []), 'bonds-bay'])] }
@@ -113,7 +119,23 @@ function upgradeLayout(save: SaveData, rawLayout: unknown): SaveData {
       return `count-cove-${c < 3 ? c : c + 1}`
     })
   }
-  return { ...s, layout: 5 }
+  if (s.curriculum === 'early') {
+    // v6: keep everything reachable that the old adjacency had opened
+    const done = (rid: string, n: number) =>
+      Array.from({ length: n }, (_, l) => l).every((l) => (s.stars[levelId(rid, l)] ?? 0) >= 1)
+    const grants: string[] = []
+    if (done('count-cove', 6)) grants.push('harbour') // the cove used to open the harbour
+    if (done('sub-trail', 4)) grants.push('doubles-keep') // the trail used to open the keep
+    if (grants.length) s = { ...s, unlockedRegions: [...new Set([...(s.unlockedRegions ?? []), ...grants])] }
+    // old harbour stars move to the levels' new slots (2→3, 3→6)
+    s = remapKeys(s, (key) => {
+      if (!key.startsWith('harbour-')) return key
+      const c = Number(key.slice('harbour-'.length))
+      if (!Number.isInteger(c)) return key
+      return `harbour-${c === 2 ? 3 : c === 3 ? 6 : c}`
+    })
+  }
+  return { ...s, layout: 6 }
 }
 
 /**

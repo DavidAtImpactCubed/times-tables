@@ -30,6 +30,8 @@ export interface Question {
   /** count questions only: how many objects to show, and which emoji */
   count?: number
   object?: string
+  /** render the count as base-ten rods + loose ones (place-value levels) */
+  rods?: boolean
 }
 
 export type LevelMode = 'choice' | 'type' | 'missing' | 'mixed' | 'match'

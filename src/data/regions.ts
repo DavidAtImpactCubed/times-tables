@@ -399,7 +399,7 @@ export const EARLY_REGIONS: Region[] = [
         M('Never! Tens first, then the ones. Sixty… sixty-seven!'),
       ]),
       EL('match', 'Which is more?', [
-        O('Two ships are racing to load the most stars. Which crate holds more?'),
+        O('Three ships are racing to load the most stars — which one is winning?'),
         M('Look at the tens first — more rods wins!'),
       ]),
       EL('choice', 'One more, one less', [

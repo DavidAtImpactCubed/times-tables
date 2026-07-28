@@ -155,7 +155,16 @@ export function WorldMap({ save, regions, playerName, onPlayLevel, onWardrobe, o
                 </p>
               )}
               {unlocked && (
-                <div className="level-row" style={{ gridTemplateColumns: `repeat(${region.levels.length}, 1fr)` }}>
+                // up to 6 levels sit in one row; from 7 the row splits in two
+                // (e.g. 4 + 3) so buttons stay tappable on a phone
+                <div
+                  className="level-row"
+                  style={{
+                    gridTemplateColumns: `repeat(${
+                      region.levels.length >= 7 ? Math.ceil(region.levels.length / 2) : region.levels.length
+                    }, 1fr)`,
+                  }}
+                >
                   {region.levels.map((lvl, li) => {
                     const open = levelUnlocked(save, regions, ri, li)
                     const stars = save.stars[levelId(region.id, li)] ?? 0

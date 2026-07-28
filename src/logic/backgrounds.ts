@@ -21,7 +21,6 @@ const ART_ALIAS: Record<string, string> = {
   'add-meadow': 'forest',
   'sub-trail': 'mountain',
   'doubles-keep': 'castle',
-  hollow: 'forest', // until its own scenes land
   peak: 'mountain', // until its own scenes land
 }
 

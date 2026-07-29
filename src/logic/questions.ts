@@ -552,10 +552,18 @@ function generateEarlyLevel(region: Region, level: number): Question[] {
             ? addQuestion(n, n + 1, 'result', 'choice')
             : addQuestion(n + 1, n, 'result', 'choice')
         }
-        // star champion: doubles, adding and taking away, typed
+        // keep champion: spot-your-trick — doubles and near doubles mixed
+        // with plain adding/taking away, so the child must NOTICE when
+        // doubling applies rather than double everything
         const r = Math.random()
-        if (r < 0.34) return doubleQ(rnd(1, 10), 'pad')
-        if (r < 0.67) {
+        if (r < 0.3) return doubleQ(rnd(1, 10), 'pad')
+        if (r < 0.55) {
+          const n = rnd(2, 9)
+          return Math.random() < 0.5
+            ? addQuestion(n, n + 1, 'result', 'choice')
+            : addQuestion(n + 1, n, 'result', 'choice')
+        }
+        if (r < 0.8) {
           const [a, b] = splitTotal(rnd(4, 20), 12)
           return addQuestion(a, b, 'result', 'pad')
         }

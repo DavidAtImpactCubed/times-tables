@@ -433,8 +433,8 @@ export const EARLY_REGIONS: Region[] = [
         M('Six plus seven? That’s just double six… and one more!'),
       ]),
       EL('mixed', 'Keep champion', [
-        O('The top of the keep! Every mirror-star shines for you.'),
-        M('Doubles, adding, taking away — I know them all now!'),
+        O('The top of the keep! But the mirrors here are tricksy — some questions are doubles, some only LOOK like doubles.'),
+        M('I’ll spot my trick every time: double, near double, or just count it out!'),
         G('Ooooh, you’re GOOD. But can you do it all BACKWARDS? Meet me in the hollow below! Hee hee!'),
       ]),
     ],
@@ -813,8 +813,8 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('Try it: four plus five is double four… and one more — nine!', '4 + 5  →  8 + 1  →  9', { kind: 'double', n: 4, hands: true }),
     ],
     [
-      T('Use all your tricks: count ON to add, count BACK to take away, and doubles are two of the same!', undefined, { kind: 'double', n: 3, hands: true }),
-      T('You know everything you need. Go and win those stars!'),
+      T('Look at each question and SPOT your trick: twins are a double, neighbours are a near double.', 'double: 7 + 7      near double: 7 + 8', { kind: 'double', n: 7 }),
+      T('No trick to spot? Just count on to add, or count back to take away. You know everything you need!'),
     ],
   ],
   hollow: [

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { INTRO, WARDROBE_INTRO, finaleFor, regionById, regionsFor } from './data/regions'
 import { WARDROBE } from './data/wardrobe'
-import { setMuted, sfx } from './logic/audio'
+import { setMuted, sfx, startMusic, stopMusic } from './logic/audio'
 import { setReadAloud } from './logic/speech'
 import { TITLE_BG, WARDROBE_BG, backgroundFor } from './logic/backgrounds'
 import { starValue, starsFor, walletGain } from './logic/progress'
@@ -36,7 +36,7 @@ type Screen =
   | { name: 'level'; regionId: string; level: number }
   | { name: 'results'; regionId: string; level: number; correct: number; stars: number; gained: number; practice: boolean }
   | { name: 'finale' }
-  | { name: 'wardrobe' }
+  | { name: 'wardrobe'; intro?: boolean }
   | { name: 'credits' }
   | { name: 'transfer' }
   | { name: 'import' }
@@ -70,6 +70,14 @@ export default function App() {
     setMuted(save.muted)
     setReadAloud(save.readAloud)
   }, [save, profile])
+
+  // the wardrobe (and its intro) has its own looping music-box waltz
+  useEffect(() => {
+    if (screen.name === 'wardrobe' && !save.muted) {
+      startMusic()
+      return stopMusic
+    }
+  }, [screen.name, save.muted])
 
   // Hidden tester cheat: 5 quick taps on the title arms it for the next player chosen.
   const titleTapped = () => {
@@ -325,7 +333,7 @@ export default function App() {
           regions={activeRegions}
           playerName={profile ?? ''}
           onPlayLevel={startLevel}
-          onWardrobe={() => setScreen({ name: 'wardrobe' })}
+          onWardrobe={() => setScreen({ name: 'wardrobe', intro: true })}
           onToggleMute={() => setSave((s) => ({ ...s, muted: !s.muted }))}
           onToggleReadAloud={() => setSave((s) => ({ ...s, readAloud: !s.readAloud }))}
           onSwitchPlayer={() => {
@@ -391,7 +399,7 @@ export default function App() {
           equipped={save.equipped}
           onReplay={() => goToLevel(screen.regionId, screen.level)}
           onContinue={() => afterResults(screen.regionId, screen.level, screen.stars)}
-          onWardrobe={() => setScreen({ name: 'wardrobe' })}
+          onWardrobe={() => setScreen({ name: 'wardrobe', intro: true })}
         />
       )
     }
@@ -413,8 +421,8 @@ export default function App() {
     }
 
     case 'wardrobe':
-      // first visit: Olivia explains trying on, buying and earning stars
-      if (!save.seenStory.includes('wardrobe-intro')) {
+      // every visit opens with Olivia's welcome (skippable) — by popular demand
+      if (screen.intro) {
         return (
           <StoryScene
             lines={WARDROBE_INTRO}
@@ -422,7 +430,7 @@ export default function App() {
             image={WARDROBE_BG}
             equipped={save.equipped}
             readAloud={save.readAloud}
-            onDone={() => setSave((s) => ({ ...s, seenStory: [...s.seenStory, 'wardrobe-intro'] }))}
+            onDone={() => setScreen({ name: 'wardrobe' })}
           />
         )
       }

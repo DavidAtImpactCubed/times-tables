@@ -55,6 +55,9 @@ Chosen per player when a new game starts (see the landing screen):
   replay with 🔊 in a level.
 - **Monster Wardrobe** — ~45 items bought with stars: body colours, eyes,
   glasses, horns, hats, neckwear, held props and wings. Try before you buy.
+  Olivia welcomes you in every time (skippable), to its own looping
+  music-box tune — "The Wardrobe Waltz", an original piece generated live
+  with the Web Audio API like all the game's sound.
 - **Story** — a skippable comic-strip arc per region and a celebration finale.
 - Progress saves automatically in the browser (`localStorage`). Sound effects
   are generated with the Web Audio API and can be muted from the map.

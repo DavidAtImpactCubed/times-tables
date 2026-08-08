@@ -39,7 +39,10 @@ export function CreditsScreen({ onBack }: Props) {
 
         <section>
           <h2>🔊 Sound</h2>
-          <p>Sound effects generated live with the Web Audio API.</p>
+          <p>
+            Sound effects — and the Wardrobe Waltz, an original music-box tune — generated live with the Web Audio
+            API.
+          </p>
         </section>
 
         <section>

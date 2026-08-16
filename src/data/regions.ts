@@ -213,7 +213,14 @@ export const REGIONS: Region[] = [
         ],
       },
       { mode: 'type', title: 'Spiral stairs', story: [M('Up the spiral stairs — the sack of stars is glowing above!'), O('Don’t slow down now!')] },
-      { mode: 'missing', title: 'Goblin’s riddles', story: [G('Riddles and tricks! Surely THIS stumps you!'), M('Mix them up all you like — I know my tables!')] },
+      {
+        mode: 'family',
+        title: 'Fact families',
+        story: [
+          G('Riddles and tricks! I’ll ask the SAME numbers backwards. Surely THIS stumps you!'),
+          M('Backwards is still my tables! One fact tells me all the others.'),
+        ],
+      },
       { mode: 'mixed', title: 'The final showdown', story: [O('The rooftop! The very last stars are within reach!'), M('This is for all of Monster Island — here we go!')] },
     ],
   },
@@ -680,7 +687,9 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('Take each one slowly: spot WHICH table it is first, then pick your trick.', undefined, { kind: 'skip', step: 5, times: 4 }),
     ],
     [
-      T('Missing number? Turn it into a division — or count up in jumps on your fingers.', '5 × ? = 30  →  30 ÷ 5  →  6', { kind: 'skip', step: 5, times: 6, hands: true }),
+      T('Every fact comes with a FAMILY — the same three numbers, arranged four ways. Learn one and you get the rest free!', '3 × 4 = 12    4 × 3 = 12    12 ÷ 3 = 4    12 ÷ 4 = 3', { kind: 'array', rows: 4, cols: 3, divide: true }),
+      T('So the moment you know six tens are sixty, you also know sixty shared by six is ten. Same three numbers, turned around!', '6 × 10 = 60  →  60 ÷ 6 = 10'),
+      T('Answer the first one, then look at it — the second answer is hiding inside it. No working out needed!'),
     ],
     [
       T('Remember: dividing is just multiplying backwards — you know every fact family!', '4 × 5 = 20  ⇄  20 ÷ 5 = 4', { kind: 'array', rows: 4, cols: 5, divide: true }),

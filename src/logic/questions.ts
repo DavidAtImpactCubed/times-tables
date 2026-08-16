@@ -177,6 +177,7 @@ function divMatchQuestion(rows: number, cols: number): Question {
       prompt: 'Now work it out — what is the answer?',
       label: `${total} ÷ ${cols}`,
       choices: makeChoices(rows, [rows - 1, rows + 1, rows + 2, rows - 2]),
+      answer: rows,
     },
   }
 }
@@ -384,6 +385,83 @@ function pickDouble(k: number): Question {
     prompt: `Which picture shows double ${k}?`,
     promptLabel: `Double ${k}`,
   }
+}
+
+/**
+ * Fact families, asked in two parts: answer one fact, then use it to answer
+ * its partner. "You know that 7 × 2 = 14 — so what is 14 ÷ 2?" The three
+ * numbers never change, so part two is won by seeing the relationship rather
+ * than by calculating again — which is the whole point of the level.
+ *
+ * Part two may divide by the multiplier (35 ÷ 7) even though sevens aren't a
+ * taught table: the fact that makes it answerable is on screen above it.
+ */
+function factFamilyQuestion(table: number, n: number): Question {
+  const p = table * n
+  const ask = (prompt: string, label: string, equation: NonNullable<Question['step2']>['equation'], answer: number, near: number[]) => ({
+    prompt,
+    label,
+    equation,
+    answer,
+    choices: makeChoices(answer, near),
+  })
+
+  if (Math.random() < 0.5) {
+    // know the times fact, then share the product back out by either factor
+    const d = Math.random() < 0.5 ? table : n
+    const other = d === table ? n : table
+    return {
+      kind: 'mul',
+      a: table,
+      b: n,
+      result: p,
+      unknown: 'result',
+      answer: p,
+      input: 'choice',
+      choices: makeChoices(p, [p - table, p + table, p - n, p + n, p + 1]),
+      step2: ask(
+        'What is:',
+        `${table} × ${n} = ${p}`,
+        { kind: 'div', a: p, b: d, result: other, unknown: 'result' },
+        other,
+        [other - 1, other + 1, other + 2, other - 2],
+      ),
+    }
+  }
+
+  // know the sharing fact, then find its partner — either the other share…
+  const base: Question = {
+    kind: 'div',
+    a: p,
+    b: table,
+    result: n,
+    unknown: 'result',
+    answer: n,
+    input: 'choice',
+    choices: makeChoices(n, [n - 1, n + 1, n - 2, n + 2]),
+  }
+  // …or the same sharing with the total hidden ("? ÷ 7 = 5")
+  return Math.random() < 0.5
+    ? {
+        ...base,
+        step2: ask(
+          'What is:',
+          `${p} ÷ ${table} = ${n}`,
+          { kind: 'div', a: p, b: n, result: table, unknown: 'result' },
+          table,
+          [table - 1, table + 1, table + 2, table - 2],
+        ),
+      }
+    : {
+        ...base,
+        step2: ask(
+          'What is:',
+          `${p} ÷ ${table} = ${n}`,
+          { kind: 'div', a: p, b: n, result: table, unknown: 'a' },
+          p,
+          [p - table, p + table, p - n, p + n],
+        ),
+      }
 }
 
 // ---- early-years question builders (addition, subtraction, counting) ----
@@ -722,6 +800,11 @@ export function generateLevel(region: Region, level: number): Question[] {
       for (const n of ns.concat(ns)) qs.push(mulQuestion(pick(tables), n, 'result', 'choice'))
     } else if (mode === 'type') {
       for (const n of multipliers().concat(multipliers())) qs.push(mulQuestion(pick(tables), n, 'result', 'pad'))
+    } else if (mode === 'family') {
+      // one fact, then its partner — every table, times and sharing together
+      for (const table of shuffle(tables))
+        for (const n of multipliers().filter((m) => m > 1 && m !== table).slice(0, 2))
+          qs.push(factFamilyQuestion(table, n))
     } else if (mode === 'missing') {
       for (const n of multipliers().concat(multipliers()))
         qs.push(mulQuestion(pick(tables), n, pick(['a', 'b']), 'choice'))
@@ -969,9 +1052,21 @@ function explainDiv(q: Question): Explanation {
 }
 
 export function explain(q: Question, step: 1 | 2 = 1): Explanation {
-  // second part of a two-part question: they've named the calculation, so
-  // explain how to DO it — the same strategies the region already teaches
   if (step === 2 && q.step2) {
+    const s2 = q.step2
+    if (s2.equation) {
+      // fact family: the answer is already sitting in the fact they were given
+      const e = s2.equation
+      const [x, y] = q.kind === 'div' ? [q.b, q.result] : [q.a, q.b]
+      const product = q.kind === 'div' ? q.a : q.result
+      const partner =
+        e.unknown === 'a' ? `${product} ÷ ${e.b} = ${e.result}` : `${e.a} ÷ ${e.b} = ${e.result}`
+      return {
+        text: `You already know ${s2.label}. A fact family always shares the same three numbers — ${x}, ${y} and ${product} — so ${partner}.`,
+        visual: x <= 6 && y <= 6 ? { kind: 'array', rows: y, cols: x, divide: true } : undefined,
+      }
+    }
+    // division arrays: they've named the calculation, so explain how to DO it
     return explainDiv({
       kind: 'div',
       a: q.result,

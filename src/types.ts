@@ -1,19 +1,23 @@
 export type QuestionKind = 'mul' | 'div' | 'add' | 'sub' | 'count' | 'match'
 
 /**
- * The second half of a two-part question. The child first picks WHICH
- * calculation the picture shows, then works that calculation out — so both
- * parts resolve to the same `answer`, and part one's buttons carry it as
- * their (invisible) value. The picture stays on screen for part two, with
- * the chosen calculation shown above it.
+ * The second half of a two-part question, asked once the first half is right.
+ * What the child established in part one stays on screen as `label`, so part
+ * two always builds on it:
+ *   - division arrays: the picture stays, the chosen fact appears above it
+ *   - fact families: "You know that 7 × 2 = 14" above its partner fact
  */
 export interface QuestionStep2 {
   /** what to ask once the first part is right */
   prompt: string
-  /** the first part's answer, shown beside the original picture */
+  /** what part one established, shown above the second question */
   label: string
   /** the second part's options (plain numbers) */
   choices: number[]
+  /** the second part's answer (may differ from part one's) */
+  answer: number
+  /** fact families: show THIS equation in place of part one's */
+  equation?: Pick<Question, 'kind' | 'a' | 'b' | 'result' | 'unknown'>
 }
 
 /**
@@ -54,7 +58,7 @@ export interface Question {
   rods?: boolean
 }
 
-export type LevelMode = 'choice' | 'type' | 'missing' | 'mixed' | 'match'
+export type LevelMode = 'choice' | 'type' | 'missing' | 'mixed' | 'match' | 'family'
 
 export interface StoryLine {
   speaker: 'monster' | 'goblin' | 'guide'

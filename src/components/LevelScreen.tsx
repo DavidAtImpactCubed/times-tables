@@ -50,15 +50,20 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
 
   const entry = queue[pos]
   const q = entry.q
-  const text = questionText(q)
   const part2 = step === 2 && q.step2 ? q.step2 : null
+  // fact families swap in the partner fact for part two
+  const shownQ = part2?.equation ? { ...q, ...part2.equation } : q
+  const text = questionText(shownQ)
+  const target = part2 ? part2.answer : q.answer
+
+  const part2Speech = (s2: NonNullable<Question['step2']>) =>
+    s2.equation
+      ? `You know that ${spokenSymbols(s2.label)}. So — ${spokenQuestion({ ...q, ...s2.equation })}`
+      : `${s2.prompt} ${spokenSymbols(s2.label)}`
 
   // read the current question (or its second part) aloud when it appears
   useEffect(() => {
-    if (feedback === null) {
-      const s2 = q.step2
-      speak(step === 2 && s2 ? `${s2.prompt} ${spokenSymbols(s2.label)}` : spokenQuestion(q))
-    }
+    if (feedback === null) speak(part2 ? part2Speech(part2) : spokenQuestion(q))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pos, step])
   // stop any speech when leaving the level
@@ -67,7 +72,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
   const explainSpeech = (answer: string, body: string) => `The answer is ${spokenSymbols(answer)}. ${body}`
   const replay = () => {
     if (feedback?.kind === 'wrong') speak(explainSpeech(feedback.answerLabel ?? String(feedback.answer), feedback.text))
-    else if (part2) speak(`${part2.prompt} ${spokenSymbols(part2.label)}`)
+    else if (part2) speak(part2Speech(part2))
     else speak(spokenQuestion(q))
   }
   const mood: Mood = feedback?.kind === 'correct' ? 'excited' : feedback?.kind === 'wrong' ? 'sad' : 'idle'
@@ -82,7 +87,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
 
   const submit = (value: number) => {
     if (feedback) return
-    const isRight = value === q.answer
+    const isRight = value === target
 
     // Two-part question: naming the calculation correctly opens part two.
     // Scoring and the streak wait for the second part — it's one question.
@@ -112,8 +117,8 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
       // Give the same question another (unscored) go later in the level.
       const nextQueue = entry.retry ? queue : [...queue, { q, retry: true }]
       setQueue(nextQueue)
-      setFeedback({ kind: 'wrong', text: info.text, answer: q.answer, answerLabel: info.answerLabel, visual: info.visual })
-      speak(explainSpeech(info.answerLabel ?? String(q.answer), info.text))
+      setFeedback({ kind: 'wrong', text: info.text, answer: target, answerLabel: info.answerLabel, visual: info.visual })
+      speak(explainSpeech(info.answerLabel ?? String(target), info.text))
     }
   }
 
@@ -264,19 +269,31 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             )}
           </div>
         ) : (
-          <div className={`equation ${feedback?.kind === 'correct' ? 'equation-right' : ''}`} data-testid="equation">
-            <span className={text.left === '?' ? 'slot unknown' : 'slot'}>
-              {text.left === '?' && q.input === 'pad' && typed ? typed : text.left}
-            </span>
-            <span className="slot op">{text.op}</span>
-            <span className={text.right === '?' ? 'slot unknown' : 'slot'}>
-              {text.right === '?' && q.input === 'pad' && typed ? typed : text.right}
-            </span>
-            <span className="slot op">=</span>
-            <span className={text.result === '?' ? 'slot unknown' : 'slot'}>
-              {text.result === '?' && q.input === 'pad' && typed ? typed : text.result}
-            </span>
-          </div>
+          <>
+            {/* fact families: what you just worked out, above its partner */}
+            {part2?.equation && (
+              <div className="known-fact" data-testid="known-fact">
+                <span className="known-label">You know that</span>
+                <span className="known-eq" aria-label={spokenSymbols(part2.label)}>
+                  {part2.label}
+                </span>
+                <span className="known-ask">{part2.prompt}</span>
+              </div>
+            )}
+            <div className={`equation ${feedback?.kind === 'correct' ? 'equation-right' : ''}`} data-testid="equation">
+              <span className={text.left === '?' ? 'slot unknown' : 'slot'}>
+                {text.left === '?' && q.input === 'pad' && typed ? typed : text.left}
+              </span>
+              <span className="slot op">{text.op}</span>
+              <span className={text.right === '?' ? 'slot unknown' : 'slot'}>
+                {text.right === '?' && q.input === 'pad' && typed ? typed : text.right}
+              </span>
+              <span className="slot op">=</span>
+              <span className={text.result === '?' ? 'slot unknown' : 'slot'}>
+                {text.result === '?' && q.input === 'pad' && typed ? typed : text.result}
+              </span>
+            </div>
+          </>
         )}
 
         {feedback?.kind === 'wrong' ? (
@@ -364,7 +381,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
           )
         ) : null}
 
-        {feedback?.kind === 'correct' && <div className="correct-flash">✔ {q.answer} — brilliant!</div>}
+        {feedback?.kind === 'correct' && <div className="correct-flash">✔ {target} — brilliant!</div>}
       </main>
     </div>
   )

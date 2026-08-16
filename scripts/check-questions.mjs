@@ -20,9 +20,15 @@ const ROUNDS = 50
 function checkExplanation(q, step = 1) {
   const e = explain(q, step)
   if (!e.text || typeof e.text !== 'string') fail(`explain(${q.kind}, step ${step}) has no text`)
-  // a two-part question's second explanation is about the calculation itself
+  // a two-part question's second explanation must state its own answer
   if (step === 2) {
-    if (!e.text.includes(String(q.answer))) fail(`step 2 explanation never states the answer ${q.answer}`)
+    if (!e.text.includes(String(q.step2.answer)))
+      fail(`step 2 explanation never states the answer ${q.step2.answer}`)
+    const v2 = e.visual
+    if (v2?.kind === 'array') {
+      const product = q.kind === 'div' ? q.a : q.result
+      if (v2.rows * v2.cols !== product) fail(`step 2 array ${v2.rows}×${v2.cols} ≠ ${product}`)
+    }
     return
   }
   const v = e.visual
@@ -182,19 +188,33 @@ for (const region of REGIONS) {
           }
         }
 
-        // two-part questions: both parts are solved by the SAME answer, and
-        // part two offers three sound options of its own
+        // two-part questions: part two must stand on what part one established
         if (q.step2) {
           const s2 = q.step2
           if (!s2.prompt || !s2.label) fail(`${region.id}: step 2 without a prompt/label`)
           if (!s2.choices || s2.choices.length !== 3) fail(`${region.id}: step 2 without 3 options`)
           else {
-            if (!s2.choices.includes(q.answer)) fail(`step 2 choices ${s2.choices} missing answer ${q.answer}`)
+            if (!s2.choices.includes(s2.answer)) fail(`step 2 choices ${s2.choices} missing answer ${s2.answer}`)
             if (new Set(s2.choices).size !== 3) fail(`duplicate step 2 choices ${s2.choices}`)
             if (s2.choices.some((c) => c <= 0)) fail(`non-positive step 2 choice in ${s2.choices}`)
           }
-          // the label must be the calculation part one just identified
-          if (s2.label !== `${q.result} ÷ ${q.b}`) fail(`step 2 label "${s2.label}" ≠ ${q.result} ÷ ${q.b}`)
+          if (s2.equation) {
+            // fact families: a sound fact, from the SAME family as part one
+            const e = s2.equation
+            if (e.kind === 'div' && e.a !== e.b * e.result) fail(`bad step 2 fact ${e.a}÷${e.b}=${e.result}`)
+            if (e.kind === 'mul' && e.a * e.b !== e.result) fail(`bad step 2 fact ${e.a}×${e.b}=${e.result}`)
+            if (e.kind === 'div' && e.unknown === 'b') fail(`${region.id}: step 2 division hides the divisor`)
+            const slot = e.unknown === 'a' ? e.a : e.unknown === 'b' ? e.b : e.result
+            if (slot !== s2.answer) fail(`step 2 answer ${s2.answer} ≠ its unknown slot ${slot}`)
+            const family = (k, a, b, r) => (k === 'div' ? [b, r, a] : [a, b, r])
+            const [x1, y1, p1] = family(q.kind, q.a, q.b, q.result)
+            const [x2, y2, p2] = family(e.kind, e.a, e.b, e.result)
+            if (p1 !== p2 || [x1, y1].sort((m, n) => m - n).join() !== [x2, y2].sort((m, n) => m - n).join())
+              fail(`${region.id}: step 2 leaves part one's fact family (${x1}·${y1}=${p1} → ${x2}·${y2}=${p2})`)
+          } else {
+            // division arrays: the label is the calculation part one identified
+            if (s2.label !== `${q.result} ÷ ${q.b}`) fail(`step 2 label "${s2.label}" ≠ ${q.result} ÷ ${q.b}`)
+          }
           checkExplanation(q, 2)
         }
 

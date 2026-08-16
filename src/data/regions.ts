@@ -860,6 +860,7 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
     ],
     [
       T('A quarter means sharing between FOUR. The trick: halve it, then halve it AGAIN!', 'quarter of 12  →  half is 6  →  half again is 3'),
+      T('So tell me the HALF first. Then halve that answer — and you’ve found the quarter!', '12 ÷ 2 = 6  →  12 ÷ 4 = 3', { kind: 'double', n: 3, hands: true }),
     ],
     [
       T('Read carefully! DOUBLE makes it grow — two of the same. HALF shares it out into two.', 'double 4 = 8      half of 8 = 4', { kind: 'double', n: 4, hands: true }),

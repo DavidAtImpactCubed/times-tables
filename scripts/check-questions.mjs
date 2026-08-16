@@ -92,6 +92,54 @@ function checkCommon(region, level, qs) {
   }
 }
 
+// ---- two-part questions: part two must stand on what part one established ----
+function checkStep2(region, q) {
+  const s2 = q.step2
+  if (!s2) return
+  if (!s2.prompt || !s2.label) fail(`${region.id}: step 2 without a prompt/label`)
+  if (!s2.choices || s2.choices.length !== 3) fail(`${region.id}: step 2 without 3 options`)
+  else {
+    if (!s2.choices.includes(s2.answer)) fail(`step 2 choices ${s2.choices} missing answer ${s2.answer}`)
+    if (new Set(s2.choices).size !== 3) fail(`duplicate step 2 choices ${s2.choices}`)
+    if (s2.choices.some((c) => c <= 0)) fail(`non-positive step 2 choice in ${s2.choices}`)
+  }
+  const e = s2.equation
+  if (e) {
+    if (e.kind === 'div' && e.a !== e.b * e.result) fail(`bad step 2 fact ${e.a}\u00f7${e.b}=${e.result}`)
+    if (e.kind === 'mul' && e.a * e.b !== e.result) fail(`bad step 2 fact ${e.a}\u00d7${e.b}=${e.result}`)
+    if (e.kind === 'div' && e.unknown === 'b') fail(`${region.id}: step 2 division hides the divisor`)
+    const slot = e.unknown === 'a' ? e.a : e.unknown === 'b' ? e.b : e.result
+    if (slot !== s2.answer) fail(`step 2 answer ${s2.answer} \u2260 its unknown slot ${slot}`)
+    const family = (k, a, b, r) => (k === 'div' ? [b, r, a] : [a, b, r])
+    const [x1, y1, p1] = family(q.kind, q.a, q.b, q.result)
+    const [x2, y2, p2] = family(e.kind, e.a, e.b, e.result)
+    if (s2.relation === 'anchor') {
+      // anchors hop from an easy multiple to a NEARBY fact in the same table
+      const shared = [x1, y1].filter((f) => f === x2 || f === y2)
+      if (!shared.length) fail(`${region.id}: anchor hop changes table (${x1}\u00b7${y1} \u2192 ${x2}\u00b7${y2})`)
+      else {
+        const t = shared[0]
+        const from = x1 === t ? y1 : x1
+        const to = x2 === t ? y2 : x2
+        if (![5, 10].includes(from)) fail(`${region.id}: anchor ${from} is not a \u00d75 or \u00d710 fact`)
+        if (from === to) fail(`${region.id}: anchor hop goes nowhere (${from} \u2192 ${to})`)
+        if (Math.abs(to - from) > 3) fail(`${region.id}: anchor hop of ${Math.abs(to - from)} is too far`)
+        if (!region.tables.includes(t)) fail(`${region.id}: anchor table ${t} is not taught here`)
+      }
+    } else if (s2.relation === 'halve') {
+      // quarters: the same total, halved and then quartered
+      if (q.kind !== 'div' || e.kind !== 'div' || e.a !== q.a || q.b !== 2 || e.b !== 4)
+        fail(`${region.id}: halve step 2 is not half-then-quarter (${q.a}\u00f7${q.b} \u2192 ${e.a}\u00f7${e.b})`)
+      else if (e.result * 2 !== q.result) fail(`${region.id}: quarter ${e.result} is not half of ${q.result}`)
+    } else if (p1 !== p2 || [x1, y1].sort((m, n) => m - n).join() !== [x2, y2].sort((m, n) => m - n).join())
+      fail(`${region.id}: step 2 leaves part one's fact family (${x1}\u00b7${y1}=${p1} \u2192 ${x2}\u00b7${y2}=${p2})`)
+  } else {
+    // division arrays: the label is the calculation part one identified
+    if (s2.label !== `${q.result} \u00f7 ${q.b}`) fail(`step 2 label "${s2.label}" \u2260 ${q.result} \u00f7 ${q.b}`)
+  }
+  checkExplanation(q, 2)
+}
+
 // ---- tip lessons: arrays/skip lines must count in a table the region teaches ----
 for (const region of REGIONS) {
   region.levels.forEach((lvl, li) => {
@@ -197,48 +245,7 @@ for (const region of REGIONS) {
           }
         }
 
-        // two-part questions: part two must stand on what part one established
-        if (q.step2) {
-          const s2 = q.step2
-          if (!s2.prompt || !s2.label) fail(`${region.id}: step 2 without a prompt/label`)
-          if (!s2.choices || s2.choices.length !== 3) fail(`${region.id}: step 2 without 3 options`)
-          else {
-            if (!s2.choices.includes(s2.answer)) fail(`step 2 choices ${s2.choices} missing answer ${s2.answer}`)
-            if (new Set(s2.choices).size !== 3) fail(`duplicate step 2 choices ${s2.choices}`)
-            if (s2.choices.some((c) => c <= 0)) fail(`non-positive step 2 choice in ${s2.choices}`)
-          }
-          if (s2.equation) {
-            // fact families: a sound fact, from the SAME family as part one
-            const e = s2.equation
-            if (e.kind === 'div' && e.a !== e.b * e.result) fail(`bad step 2 fact ${e.a}÷${e.b}=${e.result}`)
-            if (e.kind === 'mul' && e.a * e.b !== e.result) fail(`bad step 2 fact ${e.a}×${e.b}=${e.result}`)
-            if (e.kind === 'div' && e.unknown === 'b') fail(`${region.id}: step 2 division hides the divisor`)
-            const slot = e.unknown === 'a' ? e.a : e.unknown === 'b' ? e.b : e.result
-            if (slot !== s2.answer) fail(`step 2 answer ${s2.answer} ≠ its unknown slot ${slot}`)
-            const family = (k, a, b, r) => (k === 'div' ? [b, r, a] : [a, b, r])
-            const [x1, y1, p1] = family(q.kind, q.a, q.b, q.result)
-            const [x2, y2, p2] = family(e.kind, e.a, e.b, e.result)
-            if (s2.relation === 'anchor') {
-              // anchors hop from an easy multiple to a NEARBY fact in the same table
-              const shared = [x1, y1].filter((f) => f === x2 || f === y2)
-              if (!shared.length) fail(`${region.id}: anchor hop changes table (${x1}·${y1} → ${x2}·${y2})`)
-              else {
-                const t = shared[0]
-                const from = x1 === t ? y1 : x1
-                const to = x2 === t ? y2 : x2
-                if (![5, 10].includes(from)) fail(`${region.id}: anchor ${from} is not a ×5 or ×10 fact`)
-                if (from === to) fail(`${region.id}: anchor hop goes nowhere (${from} → ${to})`)
-                if (Math.abs(to - from) > 3) fail(`${region.id}: anchor hop of ${Math.abs(to - from)} is too far`)
-                if (!region.tables.includes(t)) fail(`${region.id}: anchor table ${t} is not taught here`)
-              }
-            } else if (p1 !== p2 || [x1, y1].sort((m, n) => m - n).join() !== [x2, y2].sort((m, n) => m - n).join())
-              fail(`${region.id}: step 2 leaves part one's fact family (${x1}·${y1}=${p1} → ${x2}·${y2}=${p2})`)
-          } else {
-            // division arrays: the label is the calculation part one identified
-            if (s2.label !== `${q.result} ÷ ${q.b}`) fail(`step 2 label "${s2.label}" ≠ ${q.result} ÷ ${q.b}`)
-          }
-          checkExplanation(q, 2)
-        }
+        checkStep2(region, q)
 
         checkExplanation(q)
       }
@@ -294,6 +301,7 @@ for (const region of EARLY_REGIONS) {
         // answers stay in a sensible young range (place value & skip counting reach higher)
         const maxAnswer = region.kind === 'place' || region.kind === 'pattern' ? 100 : 20
         if (q.answer < 0 || q.answer > maxAnswer) fail(`${region.id} L${level}: answer ${q.answer} out of range`)
+        checkStep2(region, q)
 
         // choice questions: 3 distinct options incl. the answer, none negative (0 allowed for take-away)
         if (q.input === 'choice') {

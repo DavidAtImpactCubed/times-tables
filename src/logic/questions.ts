@@ -326,6 +326,41 @@ function shareIntroQuestion(): Question {
   }
 }
 
+/**
+ * Quarters, asked in two parts: halve it, then halve THAT. Part one is the
+ * stepping stone (12 ÷ 2 = 6) and part two the real question (12 ÷ 4), so the
+ * numbers shrink as the child works — the second step is easier than the
+ * first. One distractor is the half itself, for the child who stops halfway.
+ */
+function quarterQuestion(): Question {
+  const n = 4 * rnd(1, 6)
+  const half = n / 2
+  const quarter = n / 4
+  return {
+    kind: 'div',
+    a: n,
+    b: 2,
+    result: half,
+    unknown: 'result',
+    answer: half,
+    input: 'choice',
+    choices: makeChoices(half, [half - 1, half + 1, half + 2, half - 2]),
+    step2: {
+      prompt: 'What is:',
+      label: `${n} ÷ 2 = ${half}`,
+      relation: 'halve',
+      equation: { kind: 'div', a: n, b: 4, result: quarter, unknown: 'result' },
+      // the half is ALWAYS on offer: it's what a child who stops halfway picks
+      choices: shuffle([
+        quarter,
+        half,
+        shuffle([quarter + 1, quarter - 1, quarter + 2].filter((x) => x > 0 && x !== half))[0] ?? quarter + 3,
+      ]),
+      answer: quarter,
+    },
+  }
+}
+
 /** Odd or even, concretely: which pile can TWO monsters share fairly? */
 function shareFairQuestion(): Question {
   const even = 2 * rnd(1, 5)
@@ -643,7 +678,7 @@ function generateEarlyLevel(region: Region, level: number): Question[] {
         if (level === 0) return shareIntroQuestion() // visual introduction, no ÷ yet
         if (level === 1) return divQuestion(2, rnd(2, 10), 'result', 'choice') // half of evens to 20
         if (level === 2) return shareFairQuestion() // odd or even?
-        if (level === 3) return divQuestion(4, rnd(1, 5), 'result', 'choice') // quarters (half of half)
+        if (level === 3) return quarterQuestion() // quarters, in two halving steps
         // double or half?
         return Math.random() < 0.5 ? doubleQ(rnd(1, 10), 'choice') : divQuestion(2, rnd(1, 10), 'result', 'choice')
       }
@@ -1120,6 +1155,14 @@ function explainDiv(q: Question): Explanation {
 export function explain(q: Question, step: 1 | 2 = 1): Explanation {
   if (step === 2 && q.step2) {
     const s2 = q.step2
+    if (s2.relation === 'halve' && s2.equation) {
+      // a quarter is half of a half — halve the answer they already have
+      const e = s2.equation
+      return {
+        text: `You know ${s2.label}. A quarter is half of a HALF — so halve ${q.result} again to get ${s2.answer}. That means ${e.a} ÷ ${e.b} = ${e.result}.`,
+        visual: { kind: 'double', n: s2.answer, hands: s2.answer <= 5 },
+      }
+    }
     if (s2.relation === 'anchor' && s2.equation) {
       // anchor: hop from the easy multiple to the fact they were asked for
       const e = s2.equation

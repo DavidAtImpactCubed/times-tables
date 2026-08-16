@@ -20,9 +20,10 @@ export interface QuestionStep2 {
   equation?: Pick<Question, 'kind' | 'a' | 'b' | 'result' | 'unknown'>
   /**
    * how part two relates to part one — 'family' turns the same three numbers
-   * around, 'anchor' hops from an easy multiple to a nearby fact
+   * around, 'anchor' hops from an easy multiple to a nearby fact, 'halve'
+   * halves a half to reach a quarter
    */
-  relation?: 'family' | 'anchor'
+  relation?: 'family' | 'anchor' | 'halve'
   /** part two's input (defaults to big answer buttons) */
   input?: 'choice' | 'pad'
 }

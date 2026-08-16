@@ -126,8 +126,51 @@ function matchQuestion(rows: number, cols: number, reverse = false, maxRows = In
     q.promptLabel = `${rows} × ${cols} = ${result}`
   } else {
     q.choiceLabels = shuffled.map((f) => `${f.r} × ${f.c} = ${f.r * f.c}`)
+    q.showArray = true
   }
   return q
+}
+
+/**
+ * Division arrays: the screen shows `rows` rows of `cols` stars and the child
+ * picks the DIVISION fact it shows — the array read as sharing, total ÷ cols =
+ * rows ("six shared into rows of two makes three rows"). Every distractor has
+ * a different total, so exactly one option is a true reading of the picture:
+ * the commuted fact (total ÷ rows = cols) is a fair reading of the same array
+ * too, so it must never appear as a wrong answer.
+ */
+function divMatchQuestion(rows: number, cols: number): Question {
+  const total = rows * cols
+  const facts: Array<{ r: number; c: number }> = [{ r: rows, c: cols }]
+  const candidates = shuffle([
+    { r: rows + 1, c: cols },
+    { r: rows - 1, c: cols },
+    { r: rows + 2, c: cols },
+    { r: rows - 2, c: cols },
+    { r: rows + 1, c: cols === 2 ? 3 : 2 },
+    { r: rows - 1, c: cols === 5 ? 4 : 5 },
+  ])
+  for (const f of candidates) {
+    if (facts.length === 3) break
+    if (f.r < 2 || f.c < 2) continue
+    if (f.r * f.c === total) continue // another true reading of this array
+    if (facts.some((g) => g.r === f.r)) continue // quotients are the tap values: keep them distinct
+    facts.push(f)
+  }
+  const shuffled = shuffle(facts)
+  return {
+    kind: 'match',
+    a: rows,
+    b: cols,
+    result: total,
+    unknown: 'a', // the quotient — how many rows the sharing makes
+    answer: rows,
+    input: 'choice',
+    showArray: true,
+    choices: shuffled.map((f) => f.r),
+    choiceLabels: shuffled.map((f) => `${f.r * f.c} ÷ ${f.c} = ${f.r}`),
+    prompt: 'Which division does this array show?',
+  }
 }
 
 /**
@@ -645,7 +688,13 @@ export function generateLevel(region: Region, level: number): Question[] {
   } else if (region.kind === 'division') {
     const easyTables = [2, 5, 10]
     const trickyTables = [3, 4, 11]
-    if (mode === 'choice' || mode === 'type') {
+    if (mode === 'match') {
+      // read an array as its sharing fact — the concrete way in to division
+      for (const cols of shuffle([2, 3, 4, 5]))
+        for (const rows of shuffle([2, 3, 4, 5, 6]).slice(0, 2)) qs.push(divMatchQuestion(rows, cols))
+      // tens sit rows-of-ten, so each row draws as a base-ten rod
+      for (const rows of shuffle([2, 3, 4])) qs.push(divMatchQuestion(rows, 10))
+    } else if (mode === 'choice' || mode === 'type') {
       const input = mode === 'choice' ? 'choice' : 'pad'
       for (const n of multipliers()) qs.push(divQuestion(pick(easyTables), n, 'result', input))
     } else if (mode === 'missing') {
@@ -985,6 +1034,13 @@ export function explain(q: Question): Explanation {
         answerLabel: `${q.a} rows of ${q.b}`,
         text: `You were looking for ${q.a} rows of ${q.b}. Count the ROWS in each picture — the right one has ${q.a} rows, with ${q.b} in every row.`,
         visual: { kind: 'array', rows: q.a, cols: q.b },
+      }
+    }
+    if (q.prompt?.startsWith('Which division')) {
+      return {
+        answerLabel: `${q.result} ÷ ${q.b} = ${q.a}`,
+        text: `Count the picture: ${q.a} rows of ${q.b} makes ${q.result}. Now share those ${q.result} back out into rows of ${q.b} — you get ${q.a} rows. So ${q.result} ÷ ${q.b} = ${q.a}.`,
+        visual: { kind: 'array', rows: q.a, cols: q.b, divide: true },
       }
     }
     if (q.b === 11) {

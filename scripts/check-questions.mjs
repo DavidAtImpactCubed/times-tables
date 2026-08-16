@@ -123,7 +123,22 @@ for (const region of REGIONS) {
 
         // match-the-array: every fact label / array choice must multiply out to
         // its choice value, and the prompt's own product must be the answer
-        if (q.kind === 'match') {
+        const divMatch = q.kind === 'match' && !!q.choiceLabels?.some((l) => l.includes('÷'))
+        if (divMatch) {
+          // division arrays: the picture is a×b, the tap value is the quotient
+          if (q.answer !== q.a) fail(`div-match answer ${q.answer} ≠ quotient ${q.a}`)
+          if (q.result !== q.a * q.b) fail(`div-match total ${q.result} ≠ ${q.a}×${q.b}`)
+          q.choiceLabels.forEach((label, i) => {
+            const m = label.match(/^(\d+) ÷ (\d+) = (\d+)$/)
+            if (!m || +m[2] * +m[3] !== +m[1] || +m[3] !== q.choices[i])
+              fail(`div-match label "${label}" ≠ choice ${q.choices[i]}`)
+            // only the ANSWER may be a true reading of the array on screen —
+            // a wrong option sharing its total would be ambiguous
+            else if (+m[1] === q.a * q.b && q.choices[i] !== q.answer)
+              fail(`div-match distractor "${label}" also reads the ${q.a}×${q.b} array`)
+          })
+        }
+        if (q.kind === 'match' && !divMatch) {
           if (q.answer !== q.a * q.b) fail(`match answer ${q.answer} ≠ ${q.a}×${q.b}`)
           if (q.choiceArrays) {
             if (q.choiceArrays.length !== q.choices.length) fail('reverse match without aligned arrays')

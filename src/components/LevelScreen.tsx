@@ -25,6 +25,10 @@ interface Entry {
 
 type Feedback = null | { kind: 'correct' } | { kind: 'wrong'; text: string; answer: number; answerLabel?: string; visual?: TipVisual }
 
+/** Read maths symbols aloud as words (for speech and screen readers). */
+const spokenSymbols = (s: string) =>
+  s.replace(/×/g, 'times').replace(/÷/g, 'divided by').replace(/=/g, 'equals')
+
 const STREAK_MESSAGES: Record<number, string> = {
   3: '3 in a row! 🔥',
   5: '5 in a row! Amazing! 🌟',
@@ -54,8 +58,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
   // stop any speech when leaving the level
   useEffect(() => () => stopSpeaking(), [])
 
-  const explainSpeech = (answer: string, body: string) =>
-    `The answer is ${answer.replace('×', 'times').replace('=', 'equals')}. ${body}`
+  const explainSpeech = (answer: string, body: string) => `The answer is ${spokenSymbols(answer)}. ${body}`
   const replay = () => {
     if (feedback?.kind === 'wrong') speak(explainSpeech(feedback.answerLabel ?? String(feedback.answer), feedback.text))
     else speak(spokenQuestion(q))
@@ -189,32 +192,27 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             data-cols={q.b}
             data-reverse={q.choiceArrays ? 'true' : undefined}
           >
-            {q.choiceArrays || q.choiceCounts || q.prompt ? (
+            <p className="count-prompt">
+              {q.prompt ?? (q.choiceArrays ? 'Which array shows this fact?' : 'Which fact does this array show?')}
+            </p>
+            {q.promptLabel && (
+              <div className="match-fact" aria-label={spokenSymbols(q.promptLabel)}>
+                {q.promptLabel}
+              </div>
+            )}
+            {/* halving introduction: the pile to share, in twos — each
+                column is one monster's share */}
+            {q.count != null && q.object && (
+              <div className="share-pile choice-pair-group" aria-label={`${q.count} to share`} data-testid="share-pile">
+                {Array.from({ length: q.count }, (_, i) => (
+                  <span key={i} aria-hidden>
+                    {q.object}
+                  </span>
+                ))}
+              </div>
+            )}
+            {q.showArray && (
               <>
-                <p className="count-prompt">{q.prompt ?? 'Which array shows this fact?'}</p>
-                {(q.promptLabel ?? `${q.a} × ${q.b}`) !== '' && (
-                  <div
-                    className="match-fact"
-                    aria-label={(q.promptLabel ?? `${q.a} × ${q.b}`).replace('×', 'times').replace('=', 'equals')}
-                  >
-                    {q.promptLabel ?? `${q.a} × ${q.b}`}
-                  </div>
-                )}
-                {/* halving introduction: the pile to share, in twos — each
-                    column is one monster's share */}
-                {q.count != null && q.object && (
-                  <div className="share-pile choice-pair-group" aria-label={`${q.count} to share`} data-testid="share-pile">
-                    {Array.from({ length: q.count }, (_, i) => (
-                      <span key={i} aria-hidden>
-                        {q.object}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <p className="count-prompt">Which fact does this array show?</p>
                 {q.b >= 10 ? (
                   <div className="rod-stack" aria-label={`${q.a} rows of ${q.b}`}>
                     {Array.from({ length: q.a }, (_, i) => (

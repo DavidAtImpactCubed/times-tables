@@ -181,12 +181,12 @@ export const REGIONS: Region[] = [
     starValue: 4,
     levels: [
       {
-        mode: 'choice',
-        title: 'Sharing out',
+        mode: 'match',
+        title: 'Division arrays',
         story: [
-          O('Deep in Division Cavern, the goblin split the stars into equal piles of crystals.'),
+          O('Deep in Division Cavern, the goblin has set the stars in neat rows of crystals.'),
           G('Sharing is HARD! Your brain will go dizzy, hee hee!'),
-          M('If 5 × 4 = 20, then 20 ÷ 5 = 4 — same fact family!'),
+          M('Not a bit! Every row picture is a sharing fact — I just have to read it.'),
         ],
       },
       { mode: 'type', title: 'Divide & shine', story: [M('Each crystal pile is stars shared out evenly.'), O('Divide carefully and they’ll come loose.')] },
@@ -655,6 +655,7 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
   cavern: [
     [
       T('Dividing means SHARING into equal groups — and every share hides a times fact!', undefined, { kind: 'array', rows: 4, cols: 5, divide: true }),
+      T('Read the picture in two steps: count how many are in ONE row, then count the rows.', '4 rows of 5', { kind: 'array', rows: 4, cols: 5 }),
       T('Twenty shared into rows of five makes four rows — because four fives are twenty!', '20 ÷ 5 = 4    because    5 × 4 = 20', { kind: 'array', rows: 4, cols: 5, divide: true }),
     ],
     [

@@ -27,6 +27,8 @@ export interface Question {
   prompt?: string
   /** match questions: the big text shown in the panel (e.g. "7" or "Double 4") */
   promptLabel?: string
+  /** match questions: draw the a×b array on screen (read-the-picture questions) */
+  showArray?: boolean
   /** count questions only: how many objects to show, and which emoji */
   count?: number
   object?: string

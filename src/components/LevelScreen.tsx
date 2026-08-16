@@ -55,6 +55,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
   const shownQ = part2?.equation ? { ...q, ...part2.equation } : q
   const text = questionText(shownQ)
   const target = part2 ? part2.answer : q.answer
+  const activeInput = part2?.input ?? q.input
 
   const part2Speech = (s2: NonNullable<Question['step2']>) =>
     s2.equation
@@ -282,15 +283,15 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             )}
             <div className={`equation ${feedback?.kind === 'correct' ? 'equation-right' : ''}`} data-testid="equation">
               <span className={text.left === '?' ? 'slot unknown' : 'slot'}>
-                {text.left === '?' && q.input === 'pad' && typed ? typed : text.left}
+                {text.left === '?' && activeInput === 'pad' && typed ? typed : text.left}
               </span>
               <span className="slot op">{text.op}</span>
               <span className={text.right === '?' ? 'slot unknown' : 'slot'}>
-                {text.right === '?' && q.input === 'pad' && typed ? typed : text.right}
+                {text.right === '?' && activeInput === 'pad' && typed ? typed : text.right}
               </span>
               <span className="slot op">=</span>
               <span className={text.result === '?' ? 'slot unknown' : 'slot'}>
-                {text.result === '?' && q.input === 'pad' && typed ? typed : text.result}
+                {text.result === '?' && activeInput === 'pad' && typed ? typed : text.result}
               </span>
             </div>
           </>
@@ -309,14 +310,18 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
           </div>
         ) : feedback === null ? (
           part2 ? (
-            // part two: plain number buttons, under the picture and its fact
-            <div className="choices" data-testid="choices">
-              {part2.choices.map((c) => (
-                <button key={c} className="btn choice-btn" onClick={() => submit(c)} data-testid={`choice-${c}`}>
-                  {c}
-                </button>
-              ))}
-            </div>
+            part2.input === 'pad' ? (
+              <NumberPad value={typed} onChange={setTyped} onSubmit={() => submit(parseInt(typed, 10))} />
+            ) : (
+              // part two: plain number buttons, under the picture and its fact
+              <div className="choices" data-testid="choices">
+                {part2.choices.map((c) => (
+                  <button key={c} className="btn choice-btn" onClick={() => submit(c)} data-testid={`choice-${c}`}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+            )
           ) : q.input === 'choice' ? (
             <div className={`choices ${q.choiceArrays || q.choiceCounts ? 'choices-arrays' : ''}`} data-testid="choices">
               {q.choices!.map((c, i) =>

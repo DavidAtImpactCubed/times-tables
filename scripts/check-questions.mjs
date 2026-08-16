@@ -25,9 +25,12 @@ function checkExplanation(q, step = 1) {
     if (!e.text.includes(String(q.step2.answer)))
       fail(`step 2 explanation never states the answer ${q.step2.answer}`)
     const v2 = e.visual
-    if (v2?.kind === 'array') {
-      const product = q.kind === 'div' ? q.a : q.result
+    const eq = q.step2.equation
+    if (v2?.kind === 'array' && eq) {
+      // the array must draw the fact being ASKED, not part one's
+      const product = eq.kind === 'div' ? eq.a : eq.result
       if (v2.rows * v2.cols !== product) fail(`step 2 array ${v2.rows}×${v2.cols} ≠ ${product}`)
+      if (v2.split != null && v2.split >= v2.rows) fail(`step 2 split ${v2.split} ≥ rows ${v2.rows}`)
     }
     return
   }
@@ -111,7 +114,13 @@ for (const region of REGIONS) {
       const qs = generateLevel(region, level)
       checkCommon(region, level, qs)
 
-      const keys = new Set(qs.map((q) => `${q.kind}${q.choiceArrays ? '~' : ''}:${q.a}:${q.b}:${q.unknown}`))
+      const keys = new Set(
+        qs.map(
+          (q) =>
+            `${q.kind}${q.choiceArrays ? '~' : ''}:${q.a}:${q.b}:${q.unknown}` +
+            (q.step2?.equation ? `>${q.step2.equation.a}:${q.step2.equation.b}` : ''),
+        ),
+      )
       if (keys.size !== qs.length) fail(`${region.id} L${level}: duplicate questions in one level`)
 
       for (const q of qs) {
@@ -209,7 +218,20 @@ for (const region of REGIONS) {
             const family = (k, a, b, r) => (k === 'div' ? [b, r, a] : [a, b, r])
             const [x1, y1, p1] = family(q.kind, q.a, q.b, q.result)
             const [x2, y2, p2] = family(e.kind, e.a, e.b, e.result)
-            if (p1 !== p2 || [x1, y1].sort((m, n) => m - n).join() !== [x2, y2].sort((m, n) => m - n).join())
+            if (s2.relation === 'anchor') {
+              // anchors hop from an easy multiple to a NEARBY fact in the same table
+              const shared = [x1, y1].filter((f) => f === x2 || f === y2)
+              if (!shared.length) fail(`${region.id}: anchor hop changes table (${x1}·${y1} → ${x2}·${y2})`)
+              else {
+                const t = shared[0]
+                const from = x1 === t ? y1 : x1
+                const to = x2 === t ? y2 : x2
+                if (![5, 10].includes(from)) fail(`${region.id}: anchor ${from} is not a ×5 or ×10 fact`)
+                if (from === to) fail(`${region.id}: anchor hop goes nowhere (${from} → ${to})`)
+                if (Math.abs(to - from) > 3) fail(`${region.id}: anchor hop of ${Math.abs(to - from)} is too far`)
+                if (!region.tables.includes(t)) fail(`${region.id}: anchor table ${t} is not taught here`)
+              }
+            } else if (p1 !== p2 || [x1, y1].sort((m, n) => m - n).join() !== [x2, y2].sort((m, n) => m - n).join())
               fail(`${region.id}: step 2 leaves part one's fact family (${x1}·${y1}=${p1} → ${x2}·${y2}=${p2})`)
           } else {
             // division arrays: the label is the calculation part one identified

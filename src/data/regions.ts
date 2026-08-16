@@ -16,11 +16,19 @@ const placeMatch = <T,>(canonical: T[], at: number): T[] => {
   return [...base.slice(0, at), canonical[4], ...base.slice(at)]
 }
 
-const TIMES_LEVELS = (table: number, matchAt: number, stories: StoryLine[][]) =>
+/**
+ * `anchored` swaps the typing level for two-part anchor questions — answer an
+ * easy multiple, then hop to a nearby fact. Worth it for the tables where
+ * that hop is genuinely the best method; typing still happens in the mixed
+ * level, so the region keeps it.
+ */
+const TIMES_LEVELS = (table: number, matchAt: number, stories: StoryLine[][], anchored = false) =>
   placeMatch(
     [
       { mode: 'choice' as const, title: `Meet the ${table}s`, story: stories[0], artIndex: 0 },
-      { mode: 'type' as const, title: `Type the ${table}s`, story: stories[1], artIndex: 1 },
+      anchored
+        ? { mode: 'anchor' as const, title: 'Clever shortcuts', story: stories[1], artIndex: 1 }
+        : { mode: 'type' as const, title: `Type the ${table}s`, story: stories[1], artIndex: 1 },
       { mode: 'missing' as const, title: 'Missing numbers', story: stories[2], artIndex: 2 },
       { mode: 'mixed' as const, title: 'Times & sharing', story: stories[3], artIndex: 3 },
       { mode: 'match' as const, title: 'Match the arrays', story: stories[4], artIndex: 4 },
@@ -112,11 +120,14 @@ export const REGIONS: Region[] = [
         G('My secret hideout is near — but you’ll get LOST in here! Hee hee!'),
         M('Not if I follow the threes: 3, 6, 9, 12!'),
       ],
-      [M('Glowing mushrooms in clusters of three light the way.'), O('Follow them deeper — we’re close now.')],
+      [
+        M('Glowing mushrooms in clusters of three light the way.'),
+        O('The big bright ones mark the EASY threes — five threes, ten threes. Hop from those to reach the rest!'),
+      ],
       [O('The path splits! Only the right numbers reveal the true way.'), M('Missing numbers won’t fool me!')],
       [M('There — the goblin’s rope ladder, climbing up into the clouds!'), G('Grrr! How did you find it?!')],
       [M('The goblin dropped stars as he ran — and they’ve taken root in rows of three!'), O('A star garden! Read each patch and the stars will bloom free.')],
-    ]),
+    ], true),
   },
   {
     id: 'castle',
@@ -212,7 +223,14 @@ export const REGIONS: Region[] = [
           M('Twos, threes, fours, fives, tens, elevens AND sharing — I’m ready!'),
         ],
       },
-      { mode: 'type', title: 'Spiral stairs', story: [M('Up the spiral stairs — the sack of stars is glowing above!'), O('Don’t slow down now!')] },
+      {
+        mode: 'anchor',
+        title: 'Clever shortcuts',
+        story: [
+          M('Up the spiral stairs — the sack of stars is glowing above!'),
+          O('Every fifth step glows brighter. Land on an easy one, then hop to the next — that works for ANY table.'),
+        ],
+      },
       {
         mode: 'family',
         title: 'Fact families',
@@ -596,9 +614,9 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('Swapping the order never changes the answer: three fives and five threes are both fifteen!', '3 × 5 = 15      5 × 3 = 15', { kind: 'array', rows: 5, cols: 3 }),
     ],
     [
-      T('Clever trick: three of something is DOUBLE it, plus one more group.', undefined, { kind: 'double', n: 4, hands: true }),
-      T('Three times four: double four is eight, add one more four — twelve!', '3 × 4  →  8 + 4  →  12'),
-      T('For BIG threes, start from an easy multiple. Five threes are fifteen, so six threes are fifteen plus one more three!', '3 × 6 → 15 + 3 → 18      3 × 12 → 30 + 3 + 3 → 36', { kind: 'array', rows: 6, cols: 3, split: 5 }),
+      T('Two facts are ANCHORS — five of something and ten of something. They’re easy, and every other fact is a hop away.', '3 × 5 = 15      3 × 10 = 30'),
+      T('Six threes? Start at the anchor — five threes are fifteen — then add one more three: eighteen!', '3 × 6  →  15 + 3  →  18', { kind: 'array', rows: 6, cols: 3, split: 5 }),
+      T('Nine threes? Start at ten threes — thirty — and take one three away: twenty-seven. Hop up or hop down!', '3 × 9  →  30 − 3  →  27'),
     ],
     [
       T('Count up in threes until you reach the total, counting the jumps on your fingers.', undefined, { kind: 'skip', step: 3, times: 4, hands: true }),
@@ -684,7 +702,8 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
       T('And when a fact feels hard, start from an easy multiple of five or ten, then add or take away groups.', '3 × 6 → 15 + 3 → 18      3 × 9 → 30 − 3 → 27', { kind: 'array', rows: 6, cols: 3, split: 5 }),
     ],
     [
-      T('Take each one slowly: spot WHICH table it is first, then pick your trick.', undefined, { kind: 'skip', step: 5, times: 4 }),
+      T('EVERY table has two easy anchors: five of it, and ten of it. Land on the anchor first, then hop to the fact you need.', '4 × 5 = 20  →  4 × 6 = 24'),
+      T('Above the anchor, add groups. Below it, take groups away. It works for every table in the tower!', '3 × 11 → 30 + 3 → 33      4 × 9 → 40 − 4 → 36'),
     ],
     [
       T('Every fact comes with a FAMILY — the same three numbers, arranged four ways. Learn one and you get the rest free!', '3 × 4 = 12    4 × 3 = 12    12 ÷ 3 = 4    12 ÷ 4 = 3', { kind: 'array', rows: 4, cols: 3, divide: true }),

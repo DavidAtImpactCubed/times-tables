@@ -16,8 +16,15 @@ export interface QuestionStep2 {
   choices: number[]
   /** the second part's answer (may differ from part one's) */
   answer: number
-  /** fact families: show THIS equation in place of part one's */
+  /** show THIS equation in place of part one's */
   equation?: Pick<Question, 'kind' | 'a' | 'b' | 'result' | 'unknown'>
+  /**
+   * how part two relates to part one — 'family' turns the same three numbers
+   * around, 'anchor' hops from an easy multiple to a nearby fact
+   */
+  relation?: 'family' | 'anchor'
+  /** part two's input (defaults to big answer buttons) */
+  input?: 'choice' | 'pad'
 }
 
 /**
@@ -58,7 +65,7 @@ export interface Question {
   rods?: boolean
 }
 
-export type LevelMode = 'choice' | 'type' | 'missing' | 'mixed' | 'match' | 'family'
+export type LevelMode = 'choice' | 'type' | 'missing' | 'mixed' | 'match' | 'family' | 'anchor'
 
 export interface StoryLine {
   speaker: 'monster' | 'goblin' | 'guide'

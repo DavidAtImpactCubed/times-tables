@@ -464,6 +464,64 @@ function factFamilyQuestion(table: number, n: number): Question {
       }
 }
 
+/**
+ * Anchor facts, asked in two parts: answer an easy multiple first — five of
+ * something or ten of something — then use it to reach a nearby fact.
+ * "You know 3 × 5 = 15 — so what is 3 × 6?"
+ *
+ * This is the strategy the tips describe everywhere; here the child actually
+ * walks it. Part two is always the REAL question (3 × 6), never the leftover
+ * arithmetic (15 + 3), so the hop stays attached to the fact it answers.
+ */
+function anchorFactQuestion(table: number, anchor: number, target: number, tableFirst: boolean): Question {
+  const anchorP = table * anchor
+  const targetP = table * target
+  const pair = (m: number) => (tableFirst ? { a: table, b: m } : { a: m, b: table })
+  const one = pair(anchor)
+  const two = pair(target)
+  return {
+    kind: 'mul',
+    ...one,
+    result: anchorP,
+    unknown: 'result',
+    answer: anchorP,
+    input: 'choice',
+    choices: makeChoices(anchorP, [anchorP - table, anchorP + table, anchorP + 1, anchorP - 1]),
+    step2: {
+      prompt: 'What is:',
+      label: `${one.a} × ${one.b} = ${anchorP}`,
+      relation: 'anchor',
+      equation: { kind: 'mul', ...two, result: targetP, unknown: 'result' },
+      choices: makeChoices(targetP, [targetP - table, targetP + table, targetP + 1]),
+      answer: targetP,
+      input: 'pad',
+    },
+  }
+}
+
+/** Easy anchors and the nearby facts they unlock. */
+const ANCHOR_STEPS: Array<[number, number]> = [
+  [5, 3],
+  [5, 4],
+  [5, 6],
+  [5, 7],
+  [10, 8],
+  [10, 9],
+  [10, 11],
+  [10, 12],
+]
+
+/** A level's worth of anchor questions, drawn from the tables it teaches. */
+function anchorQuestions(tables: number[]): Question[] {
+  // fives and tens ARE the anchors, so they're never the table being hopped
+  const hard = tables.filter((t) => t !== 5 && t !== 10 && t !== 2)
+  const pool = hard.length ? hard : tables
+  const out: Question[] = []
+  for (const [anchor, target] of shuffle(ANCHOR_STEPS))
+    for (const tableFirst of [true, false]) out.push(anchorFactQuestion(pick(pool), anchor, target, tableFirst))
+  return out
+}
+
 // ---- early-years question builders (addition, subtraction, counting) ----
 
 const COUNT_OBJECTS = ['⭐', '🐚', '🌸', '🍎', '🐟', '🎈', '🍄', '🦋', '🌟', '🐚']
@@ -711,7 +769,11 @@ function doubleQ(n: number, input: Question['input']): Question {
   return addQuestion(n, n, 'result', input)
 }
 
-const qKey = (q: Question) => `${q.kind}${q.choiceArrays ? '~' : ''}:${q.a}:${q.b}:${q.unknown}`
+// two-part questions with the same first half are still different questions,
+// so the follow-up fact is part of the key
+const qKey = (q: Question) =>
+  `${q.kind}${q.choiceArrays ? '~' : ''}:${q.a}:${q.b}:${q.unknown}` +
+  (q.step2?.equation ? `>${q.step2.equation.a}:${q.step2.equation.b}` : '')
 
 /** Take up to `count` questions with distinct keys. */
 function takeDistinct(qs: Question[], count: number): Question[] {
@@ -742,6 +804,8 @@ export function generateLevel(region: Region, level: number): Question[] {
       // Gentle start: smaller multipliers first, multiple choice.
       const ns = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
       for (const n of ns) qs.push(mulQuestion(table, n, 'result', 'choice'))
+    } else if (mode === 'anchor') {
+      qs.push(...anchorQuestions(region.tables))
     } else if (mode === 'type') {
       for (const n of multipliers()) qs.push(mulQuestion(table, n, 'result', 'pad'))
     } else if (mode === 'missing') {
@@ -798,6 +862,8 @@ export function generateLevel(region: Region, level: number): Question[] {
     if (mode === 'choice') {
       const ns = shuffle([1, 2, 3, 4, 5, 6, 7, 8])
       for (const n of ns.concat(ns)) qs.push(mulQuestion(pick(tables), n, 'result', 'choice'))
+    } else if (mode === 'anchor') {
+      qs.push(...anchorQuestions(tables))
     } else if (mode === 'type') {
       for (const n of multipliers().concat(multipliers())) qs.push(mulQuestion(pick(tables), n, 'result', 'pad'))
     } else if (mode === 'family') {
@@ -1054,6 +1120,24 @@ function explainDiv(q: Question): Explanation {
 export function explain(q: Question, step: 1 | 2 = 1): Explanation {
   if (step === 2 && q.step2) {
     const s2 = q.step2
+    if (s2.relation === 'anchor' && s2.equation) {
+      // anchor: hop from the easy multiple to the fact they were asked for
+      const e = s2.equation
+      const t = q.a === e.a || q.a === e.b ? q.a : q.b
+      const from = q.a === t ? q.b : q.a
+      const to = e.a === t ? e.b : e.a
+      const hops = Math.abs(to - from)
+      const groups = hops === 1 ? `one more ${t}` : `${hops} more ${t}s`
+      const back = hops === 1 ? `one ${t}` : `${hops} ${t}s`
+      return {
+        text:
+          to > from
+            ? `You know ${s2.label}. And ${e.a} × ${e.b} is ${groups} than ${q.a} × ${q.b}: ${q.result} + ${hops * t} = ${e.result}.`
+            : `You know ${s2.label}. And ${e.a} × ${e.b} is ${back} FEWER than ${q.a} × ${q.b}: ${q.result} − ${hops * t} = ${e.result}.`,
+        visual:
+          to > from && to <= 7 && t <= 5 ? { kind: 'array', rows: to, cols: t, split: from } : undefined,
+      }
+    }
     if (s2.equation) {
       // fact family: the answer is already sitting in the fact they were given
       const e = s2.equation

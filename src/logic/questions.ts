@@ -132,12 +132,15 @@ function matchQuestion(rows: number, cols: number, reverse = false, maxRows = In
 }
 
 /**
- * Division arrays: the screen shows `rows` rows of `cols` stars and the child
- * picks the DIVISION fact it shows — the array read as sharing, total ÷ cols =
- * rows ("six shared into rows of two makes three rows"). Every distractor has
- * a different total, so exactly one option is a true reading of the picture:
- * the commuted fact (total ÷ rows = cols) is a fair reading of the same array
- * too, so it must never appear as a wrong answer.
+ * Division arrays, asked in two parts: the screen shows `rows` rows of `cols`
+ * stars and the child first picks the DIVISION the picture shows (total ÷
+ * cols), then — with the picture and their chosen fact both still on screen —
+ * works out the answer (rows). Reading the array and doing the sharing are
+ * separate skills, so they're asked separately.
+ *
+ * Every distractor has a different total, so exactly one option is a true
+ * reading of the picture: the commuted fact (total ÷ rows = cols) is a fair
+ * reading of the same array too, so it must never appear as a wrong answer.
  */
 function divMatchQuestion(rows: number, cols: number): Question {
   const total = rows * cols
@@ -168,8 +171,13 @@ function divMatchQuestion(rows: number, cols: number): Question {
     input: 'choice',
     showArray: true,
     choices: shuffled.map((f) => f.r),
-    choiceLabels: shuffled.map((f) => `${f.r * f.c} ÷ ${f.c} = ${f.r}`),
+    choiceLabels: shuffled.map((f) => `${f.r * f.c} ÷ ${f.c}`),
     prompt: 'Which division does this array show?',
+    step2: {
+      prompt: 'Now work it out — what is the answer?',
+      label: `${total} ÷ ${cols}`,
+      choices: makeChoices(rows, [rows - 1, rows + 1, rows + 2, rows - 2]),
+    },
   }
 }
 
@@ -960,7 +968,20 @@ function explainDiv(q: Question): Explanation {
   return { text: `Ask: what times ${result} makes ${a}? ${answer}!` }
 }
 
-export function explain(q: Question): Explanation {
+export function explain(q: Question, step: 1 | 2 = 1): Explanation {
+  // second part of a two-part question: they've named the calculation, so
+  // explain how to DO it — the same strategies the region already teaches
+  if (step === 2 && q.step2) {
+    return explainDiv({
+      kind: 'div',
+      a: q.result,
+      b: q.b,
+      result: q.a,
+      unknown: 'result',
+      answer: q.a,
+      input: 'choice',
+    })
+  }
   if (q.kind === 'count') {
     const n = q.count ?? q.result
     if (n > 10) {
@@ -1038,9 +1059,9 @@ export function explain(q: Question): Explanation {
     }
     if (q.prompt?.startsWith('Which division')) {
       return {
-        answerLabel: `${q.result} ÷ ${q.b} = ${q.a}`,
-        text: `Count the picture: ${q.a} rows of ${q.b} makes ${q.result}. Now share those ${q.result} back out into rows of ${q.b} — you get ${q.a} rows. So ${q.result} ÷ ${q.b} = ${q.a}.`,
-        visual: { kind: 'array', rows: q.a, cols: q.b, divide: true },
+        answerLabel: `${q.result} ÷ ${q.b}`,
+        text: `Count ONE row first — ${q.b} in each row — then count them all: ${q.result} stars altogether. Sharing ${q.result} back into rows of ${q.b} is written ${q.result} ÷ ${q.b}.`,
+        visual: { kind: 'array', rows: q.a, cols: q.b },
       }
     }
     if (q.b === 11) {

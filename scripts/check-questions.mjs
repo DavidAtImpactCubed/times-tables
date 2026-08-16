@@ -17,9 +17,14 @@ const ROUNDS = 50
 
 // Every wrong-answer explanation must have text, and any visual it picks must
 // be mathematically consistent with the question it explains.
-function checkExplanation(q) {
-  const e = explain(q)
-  if (!e.text || typeof e.text !== 'string') fail(`explain(${q.kind}) has no text`)
+function checkExplanation(q, step = 1) {
+  const e = explain(q, step)
+  if (!e.text || typeof e.text !== 'string') fail(`explain(${q.kind}, step ${step}) has no text`)
+  // a two-part question's second explanation is about the calculation itself
+  if (step === 2) {
+    if (!e.text.includes(String(q.answer))) fail(`step 2 explanation never states the answer ${q.answer}`)
+    return
+  }
   const v = e.visual
   if (!v) return
   const id = `${q.kind} ${q.a}/${q.b}/${q.result} (${q.unknown})`
@@ -128,9 +133,10 @@ for (const region of REGIONS) {
           // division arrays: the picture is a×b, the tap value is the quotient
           if (q.answer !== q.a) fail(`div-match answer ${q.answer} ≠ quotient ${q.a}`)
           if (q.result !== q.a * q.b) fail(`div-match total ${q.result} ≠ ${q.a}×${q.b}`)
+          // part one names the calculation only — showing "= 3" would answer part two
           q.choiceLabels.forEach((label, i) => {
-            const m = label.match(/^(\d+) ÷ (\d+) = (\d+)$/)
-            if (!m || +m[2] * +m[3] !== +m[1] || +m[3] !== q.choices[i])
+            const m = label.match(/^(\d+) ÷ (\d+)$/)
+            if (!m || +m[1] % +m[2] !== 0 || +m[1] / +m[2] !== q.choices[i])
               fail(`div-match label "${label}" ≠ choice ${q.choices[i]}`)
             // only the ANSWER may be a true reading of the array on screen —
             // a wrong option sharing its total would be ambiguous
@@ -174,6 +180,22 @@ for (const region of REGIONS) {
             if (new Set(q.choices).size !== 3) fail(`duplicate choices ${q.choices}`)
             if (q.choices.some((c) => c <= 0)) fail(`non-positive choice in ${q.choices}`)
           }
+        }
+
+        // two-part questions: both parts are solved by the SAME answer, and
+        // part two offers three sound options of its own
+        if (q.step2) {
+          const s2 = q.step2
+          if (!s2.prompt || !s2.label) fail(`${region.id}: step 2 without a prompt/label`)
+          if (!s2.choices || s2.choices.length !== 3) fail(`${region.id}: step 2 without 3 options`)
+          else {
+            if (!s2.choices.includes(q.answer)) fail(`step 2 choices ${s2.choices} missing answer ${q.answer}`)
+            if (new Set(s2.choices).size !== 3) fail(`duplicate step 2 choices ${s2.choices}`)
+            if (s2.choices.some((c) => c <= 0)) fail(`non-positive step 2 choice in ${s2.choices}`)
+          }
+          // the label must be the calculation part one just identified
+          if (s2.label !== `${q.result} ÷ ${q.b}`) fail(`step 2 label "${s2.label}" ≠ ${q.result} ÷ ${q.b}`)
+          checkExplanation(q, 2)
         }
 
         checkExplanation(q)

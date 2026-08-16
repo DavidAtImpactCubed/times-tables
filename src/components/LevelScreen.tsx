@@ -44,23 +44,30 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
   const [streak, setStreak] = useState(0)
   const [feedback, setFeedback] = useState<Feedback>(null)
   const [typed, setTyped] = useState('')
+  // two-part questions: 1 = name the calculation, 2 = work it out
+  const [step, setStep] = useState<1 | 2>(1)
   const advanceTimer = useRef<number | undefined>(undefined)
 
   const entry = queue[pos]
   const q = entry.q
   const text = questionText(q)
+  const part2 = step === 2 && q.step2 ? q.step2 : null
 
-  // read the current question aloud when it first appears
+  // read the current question (or its second part) aloud when it appears
   useEffect(() => {
-    if (feedback === null) speak(spokenQuestion(q))
+    if (feedback === null) {
+      const s2 = q.step2
+      speak(step === 2 && s2 ? `${s2.prompt} ${spokenSymbols(s2.label)}` : spokenQuestion(q))
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pos])
+  }, [pos, step])
   // stop any speech when leaving the level
   useEffect(() => () => stopSpeaking(), [])
 
   const explainSpeech = (answer: string, body: string) => `The answer is ${spokenSymbols(answer)}. ${body}`
   const replay = () => {
     if (feedback?.kind === 'wrong') speak(explainSpeech(feedback.answerLabel ?? String(feedback.answer), feedback.text))
+    else if (part2) speak(`${part2.prompt} ${spokenSymbols(part2.label)}`)
     else speak(spokenQuestion(q))
   }
   const mood: Mood = feedback?.kind === 'correct' ? 'excited' : feedback?.kind === 'wrong' ? 'sad' : 'idle'
@@ -68,6 +75,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
   const advance = (nextQueue: Entry[], nextCorrect: number) => {
     setFeedback(null)
     setTyped('')
+    setStep(1)
     if (pos + 1 < nextQueue.length) setPos(pos + 1)
     else onFinish(nextCorrect)
   }
@@ -75,6 +83,16 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
   const submit = (value: number) => {
     if (feedback) return
     const isRight = value === q.answer
+
+    // Two-part question: naming the calculation correctly opens part two.
+    // Scoring and the streak wait for the second part — it's one question.
+    if (isRight && q.step2 && step === 1) {
+      sfx.star()
+      setTyped('')
+      setStep(2)
+      return
+    }
+
     const nextAnsweredFirst = entry.retry ? answeredFirst : answeredFirst + 1
     const nextCorrect = !entry.retry && isRight ? correct + 1 : correct
     setAnsweredFirst(nextAnsweredFirst)
@@ -90,7 +108,7 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
     } else {
       sfx.wrong()
       setStreak(0)
-      const info = explain(q)
+      const info = explain(q, step)
       // Give the same question another (unscored) go later in the level.
       const nextQueue = entry.retry ? queue : [...queue, { q, retry: true }]
       setQueue(nextQueue)
@@ -193,11 +211,17 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             data-reverse={q.choiceArrays ? 'true' : undefined}
           >
             <p className="count-prompt">
-              {q.prompt ?? (q.choiceArrays ? 'Which array shows this fact?' : 'Which fact does this array show?')}
+              {part2?.prompt ??
+                q.prompt ??
+                (q.choiceArrays ? 'Which array shows this fact?' : 'Which fact does this array show?')}
             </p>
-            {q.promptLabel && (
-              <div className="match-fact" aria-label={spokenSymbols(q.promptLabel)}>
-                {q.promptLabel}
+            {(part2?.label ?? q.promptLabel) && (
+              <div
+                className={`match-fact ${part2 ? 'match-fact-won' : ''}`}
+                aria-label={spokenSymbols(part2?.label ?? q.promptLabel!)}
+                data-testid={part2 ? 'step2-fact' : undefined}
+              >
+                {part2?.label ?? q.promptLabel}
               </div>
             )}
             {/* halving introduction: the pile to share, in twos — each
@@ -267,7 +291,16 @@ export function LevelScreen({ region, level, equipped, readAloud, onFinish, onQu
             </button>
           </div>
         ) : feedback === null ? (
-          q.input === 'choice' ? (
+          part2 ? (
+            // part two: plain number buttons, under the picture and its fact
+            <div className="choices" data-testid="choices">
+              {part2.choices.map((c) => (
+                <button key={c} className="btn choice-btn" onClick={() => submit(c)} data-testid={`choice-${c}`}>
+                  {c}
+                </button>
+              ))}
+            </div>
+          ) : q.input === 'choice' ? (
             <div className={`choices ${q.choiceArrays || q.choiceCounts ? 'choices-arrays' : ''}`} data-testid="choices">
               {q.choices!.map((c, i) =>
                 q.choiceCounts ? (

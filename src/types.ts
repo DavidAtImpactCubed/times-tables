@@ -1,6 +1,22 @@
 export type QuestionKind = 'mul' | 'div' | 'add' | 'sub' | 'count' | 'match'
 
 /**
+ * The second half of a two-part question. The child first picks WHICH
+ * calculation the picture shows, then works that calculation out — so both
+ * parts resolve to the same `answer`, and part one's buttons carry it as
+ * their (invisible) value. The picture stays on screen for part two, with
+ * the chosen calculation shown above it.
+ */
+export interface QuestionStep2 {
+  /** what to ask once the first part is right */
+  prompt: string
+  /** the first part's answer, shown beside the original picture */
+  label: string
+  /** the second part's options (plain numbers) */
+  choices: number[]
+}
+
+/**
  * A question is one fact with one unknown slot:
  *   mul: a × b = result      div: a ÷ b = result
  *   add: a + b = result      sub: a - b = result
@@ -29,6 +45,8 @@ export interface Question {
   promptLabel?: string
   /** match questions: draw the a×b array on screen (read-the-picture questions) */
   showArray?: boolean
+  /** two-part questions: the follow-up asked once the first part is right */
+  step2?: QuestionStep2
   /** count questions only: how many objects to show, and which emoji */
   count?: number
   object?: string

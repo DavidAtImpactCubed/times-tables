@@ -129,6 +129,11 @@ function checkStep2(region, q) {
         // digit is the digit written twice
         if ((t === 11 && to <= 9) || (to === 11 && t <= 9))
           fail(`${region.id}: anchor hop reaches ${t} \u00d7 ${to}, already easy via the elevens trick`)
+        // and no hop that costs more than counting the table up from nothing
+        if (Math.abs(to - from) >= to - 1)
+          fail(
+            `${region.id}: anchor hop ${from} \u2192 ${to} is no shorter than counting ${t} up ${to} times`,
+          )
       }
     } else if (s2.relation === 'halve') {
       // quarters: the same total, halved and then quartered

@@ -536,7 +536,6 @@ function anchorFactQuestion(table: number, anchor: number, target: number, table
 
 /** Easy anchors and the nearby facts they unlock. */
 const ANCHOR_STEPS: Array<[number, number]> = [
-  [5, 3],
   [5, 4],
   [5, 6],
   [5, 7],
@@ -547,12 +546,21 @@ const ANCHOR_STEPS: Array<[number, number]> = [
 ]
 
 /**
- * Anchoring is wasted on a fact that's already easy. Eleven times a single
- * digit is just the digit written twice — so the elevens only need a hop for
- * 11 × 11 and 11 × 12, and no other table needs one to reach × 11 either.
+ * Anchoring is only worth asking for when the hop actually saves work.
+ *
+ * Eleven times a single digit is just the digit written twice, so the elevens
+ * only need a hop for 11 × 11 and 11 × 12 — and no other table needs one to
+ * reach × 11 either.
+ *
+ * And a hop is no help when counting the table up from nothing is just as
+ * short: 3 × 3 from 3 × 5 is two counts BACK (15 − 3 − 3) where 3 + 3 + 3 is
+ * two counts forward, so the child is better off counting. The hop has to be
+ * strictly shorter than building the target from scratch.
  */
-const needsAnchor = (table: number, target: number) =>
-  !((table === 11 && target <= 9) || (target === 11 && table <= 9))
+const worthAnchoring = (table: number, anchor: number, target: number) => {
+  if ((table === 11 && target <= 9) || (target === 11 && table <= 9)) return false
+  return Math.abs(anchor - target) < target - 1
+}
 
 /** A level's worth of anchor questions, drawn from the tables it teaches. */
 function anchorQuestions(tables: number[]): Question[] {
@@ -561,7 +569,7 @@ function anchorQuestions(tables: number[]): Question[] {
   const pool = hard.length ? hard : tables
   const out: Question[] = []
   for (const [anchor, target] of shuffle(ANCHOR_STEPS)) {
-    const usable = pool.filter((t) => needsAnchor(t, target))
+    const usable = pool.filter((t) => worthAnchoring(t, anchor, target))
     if (!usable.length) continue
     for (const tableFirst of [true, false]) out.push(anchorFactQuestion(pick(usable), anchor, target, tableFirst))
   }

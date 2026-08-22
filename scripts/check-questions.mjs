@@ -125,6 +125,10 @@ function checkStep2(region, q) {
         if (from === to) fail(`${region.id}: anchor hop goes nowhere (${from} \u2192 ${to})`)
         if (Math.abs(to - from) > 3) fail(`${region.id}: anchor hop of ${Math.abs(to - from)} is too far`)
         if (!region.tables.includes(t)) fail(`${region.id}: anchor table ${t} is not taught here`)
+        // no hopping to a fact that's already easy: eleven times a single
+        // digit is the digit written twice
+        if ((t === 11 && to <= 9) || (to === 11 && t <= 9))
+          fail(`${region.id}: anchor hop reaches ${t} \u00d7 ${to}, already easy via the elevens trick`)
       }
     } else if (s2.relation === 'halve') {
       // quarters: the same total, halved and then quartered

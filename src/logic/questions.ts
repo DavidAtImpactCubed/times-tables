@@ -546,14 +546,25 @@ const ANCHOR_STEPS: Array<[number, number]> = [
   [10, 12],
 ]
 
+/**
+ * Anchoring is wasted on a fact that's already easy. Eleven times a single
+ * digit is just the digit written twice — so the elevens only need a hop for
+ * 11 × 11 and 11 × 12, and no other table needs one to reach × 11 either.
+ */
+const needsAnchor = (table: number, target: number) =>
+  !((table === 11 && target <= 9) || (target === 11 && table <= 9))
+
 /** A level's worth of anchor questions, drawn from the tables it teaches. */
 function anchorQuestions(tables: number[]): Question[] {
   // fives and tens ARE the anchors, so they're never the table being hopped
   const hard = tables.filter((t) => t !== 5 && t !== 10 && t !== 2)
   const pool = hard.length ? hard : tables
   const out: Question[] = []
-  for (const [anchor, target] of shuffle(ANCHOR_STEPS))
-    for (const tableFirst of [true, false]) out.push(anchorFactQuestion(pick(pool), anchor, target, tableFirst))
+  for (const [anchor, target] of shuffle(ANCHOR_STEPS)) {
+    const usable = pool.filter((t) => needsAnchor(t, target))
+    if (!usable.length) continue
+    for (const tableFirst of [true, false]) out.push(anchorFactQuestion(pick(usable), anchor, target, tableFirst))
+  }
   return out
 }
 

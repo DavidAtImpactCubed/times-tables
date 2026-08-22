@@ -703,7 +703,8 @@ const LEVEL_TIPS: Record<string, TipStep[][]> = {
     ],
     [
       T('EVERY table has two easy anchors: five of it, and ten of it. Land on the anchor first, then hop to the fact you need.', '4 × 5 = 20  →  4 × 6 = 24'),
-      T('Above the anchor, add groups. Below it, take groups away. It works for every table in the tower!', '3 × 11 → 30 + 3 → 33      4 × 9 → 40 − 4 → 36'),
+      T('Above the anchor, add groups. Below it, take groups away.', '4 × 12 → 40 + 8 → 48      3 × 9 → 30 − 3 → 27'),
+      T('The elevens don’t need this trick — you already know eleven times a digit is that digit written twice! But eleven ELEVENS? Start at eleven tens.', '11 × 11  →  110 + 11  →  121'),
     ],
     [
       T('Every fact comes with a FAMILY — the same three numbers, arranged four ways. Learn one and you get the rest free!', '3 × 4 = 12    4 × 3 = 12    12 ÷ 3 = 4    12 ÷ 4 = 3', { kind: 'array', rows: 4, cols: 3, divide: true }),

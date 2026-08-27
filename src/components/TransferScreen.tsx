@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { sfx } from '../logic/audio'
-import { loadSave, makeTransferLink } from '../logic/storage'
+import { lastSavedLabel, loadSave, makeTransferLink } from '../logic/storage'
 import { Monster } from './Monster'
 
 interface Props {
@@ -10,13 +10,13 @@ interface Props {
 
 /** Pick a player and get a link that recreates their game on another device. */
 export function TransferScreen({ profiles, onBack }: Props) {
-  const [link, setLink] = useState<{ name: string; url: string } | null>(null)
+  const [link, setLink] = useState<{ name: string; url: string; saved: string } | null>(null)
   const [copied, setCopied] = useState(false)
 
   const getLink = async (name: string) => {
     sfx.click()
     const url = makeTransferLink(name)
-    setLink({ name, url })
+    setLink({ name, url, saved: lastSavedLabel(loadSave(name)) })
     setCopied(false)
     try {
       await navigator.clipboard.writeText(url)
@@ -38,15 +38,23 @@ export function TransferScreen({ profiles, onBack }: Props) {
       <div className="credits-card">
         <p>Pick a player, then open their link on the other phone to copy the game across.</p>
         <div className="transfer-list">
-          {profiles.map((name) => (
-            <div key={name} className="transfer-row">
-              <Monster equipped={loadSave(name).equipped} size={46} />
-              <span className="transfer-name">{name}</span>
-              <button className="btn btn-secondary btn-tiny" data-testid={`transfer-${name}`} onClick={() => getLink(name)}>
-                Get link
-              </button>
-            </div>
-          ))}
+          {profiles.map((name) => {
+            const save = loadSave(name)
+            return (
+              <div key={name} className="transfer-row">
+                <Monster equipped={save.equipped} size={46} />
+                <div className="transfer-who">
+                  <span className="transfer-name">{name}</span>
+                  <span className="transfer-saved" data-testid={`transfer-saved-${name}`}>
+                    {lastSavedLabel(save)}
+                  </span>
+                </div>
+                <button className="btn btn-secondary btn-tiny" data-testid={`transfer-${name}`} onClick={() => getLink(name)}>
+                  Get link
+                </button>
+              </div>
+            )
+          })}
         </div>
 
         {link && (
@@ -56,6 +64,7 @@ export function TransferScreen({ profiles, onBack }: Props) {
                 ? `✅ ${link.name}’s link is copied — paste it into a message to yourself, then open it on the other phone.`
                 : `Copy ${link.name}’s link and open it on the other phone:`}
             </p>
+            <p className="transfer-saved-note">{link.saved} — that’s the progress this link copies across.</p>
             <input
               className="transfer-url"
               readOnly

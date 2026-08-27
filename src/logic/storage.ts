@@ -241,10 +241,37 @@ export function loadSave(name: string): SaveData {
 
 export function persistSave(name: string, save: SaveData): void {
   try {
-    localStorage.setItem(saveKey(name), JSON.stringify(save))
+    localStorage.setItem(saveKey(name), JSON.stringify({ ...save, savedAt: Date.now() }))
   } catch {
     // Storage full/blocked — the game still plays, it just won't remember.
   }
+}
+
+const MS_PER_DAY = 86_400_000
+/** Whole calendar days from `then` to `now` (midnight to midnight, local time). */
+function daysAgo(then: Date, now: Date): number {
+  const midnight = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+  return Math.round((midnight(now) - midnight(then)) / MS_PER_DAY)
+}
+
+/**
+ * When this save was last written, in words a parent can act on — the point
+ * being to tell a played-today profile apart from one left behind months ago.
+ */
+export function lastSavedLabel(save: SaveData, now: Date = new Date()): string {
+  if (!save.savedAt) return 'Last saved date not known'
+  const when = new Date(save.savedAt)
+  const time = when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+  const days = daysAgo(when, now)
+  if (days <= 0) return `Last saved today, ${time}`
+  if (days === 1) return `Last saved yesterday, ${time}`
+  if (days < 7) return `Last saved ${days} days ago`
+  const date = when.toLocaleDateString([], {
+    day: 'numeric',
+    month: 'short',
+    ...(when.getFullYear() === now.getFullYear() ? {} : { year: 'numeric' }),
+  })
+  return `Last saved ${date}`
 }
 
 // ---- transfer a player to another device via a link ----------------------

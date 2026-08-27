@@ -187,6 +187,12 @@ export interface SaveData {
   layout?: number
   /** regions unlocked for good (e.g. earned before new levels were added) */
   unlockedRegions?: string[]
+  /**
+   * When this profile was last written to storage (ms since the epoch).
+   * Absent on saves from before the stamp existed, and on a fresh save that
+   * has never been persisted.
+   */
+  savedAt?: number
 }
 
 export const levelId = (regionId: string, level: number) => `${regionId}-${level}`

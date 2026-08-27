@@ -556,6 +556,63 @@ button {
   color: #4c1d95;
 }
 
+/* offline (download the game for no-signal play) */
+.offline-screen {
+  gap: 16px;
+  align-items: stretch;
+  overflow-y: auto;
+}
+.offline-screen .btn-big {
+  width: 100%;
+  margin-top: 6px;
+}
+.offline-progress {
+  margin-top: 12px;
+}
+.offline-bar {
+  height: 14px;
+  border-radius: 999px;
+  background: #ede9fe;
+  overflow: hidden;
+}
+.offline-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #a78bfa, #7c3aed);
+  transition: width 0.2s ease;
+}
+.offline-progress p {
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+  color: #6d5fa8;
+}
+.offline-ready {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ecfdf5;
+  border: 2px solid #6ee7b7;
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-top: 10px;
+}
+.offline-ready p {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+}
+.offline-tick {
+  font-size: 1.8rem;
+}
+.offline-note {
+  font-size: 0.8rem;
+  color: #6d5fa8;
+}
+.offline-warn {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #b91c1c;
+}
+
 /* import (opened via a transfer link) */
 .import-screen {
   justify-content: center;

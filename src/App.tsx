@@ -24,6 +24,7 @@ import { Monster } from './components/Monster'
 import { ResultsScreen } from './components/ResultsScreen'
 import { StoryScene } from './components/StoryScene'
 import { TipScene } from './components/TipScene'
+import { OfflineScreen } from './components/OfflineScreen'
 import { TransferScreen } from './components/TransferScreen'
 import { Wardrobe } from './components/Wardrobe'
 import { WorldMap } from './components/WorldMap'
@@ -39,6 +40,7 @@ type Screen =
   | { name: 'wardrobe'; intro?: boolean }
   | { name: 'credits' }
   | { name: 'transfer' }
+  | { name: 'offline' }
   | { name: 'import' }
 
 /** Unlock all levels, own every item and top up stars (tester cheat). */
@@ -304,6 +306,9 @@ export default function App() {
                     Move a player to another phone
                   </button>
                 )}
+                <button className="credits-link" data-testid="offline-link" onClick={() => setScreen({ name: 'offline' })}>
+                  ✈️ Play with no internet
+                </button>
                 <button className="credits-link" data-testid="credits-link" onClick={() => setScreen({ name: 'credits' })}>
                   Credits
                 </button>
@@ -438,6 +443,9 @@ export default function App() {
 
     case 'credits':
       return <CreditsScreen onBack={() => setScreen({ name: 'landing' })} />
+
+    case 'offline':
+      return <OfflineScreen onBack={() => setScreen({ name: 'landing' })} />
 
     case 'transfer':
       return <TransferScreen profiles={profiles} onBack={() => setScreen({ name: 'landing' })} />

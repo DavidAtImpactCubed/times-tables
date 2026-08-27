@@ -193,6 +193,13 @@ export interface SaveData {
    * has never been persisted.
    */
   savedAt?: number
+  /**
+   * Upper bound for a save that predates `savedAt`: the last write happened
+   * at or before this moment. localStorage keeps no write time, so this is
+   * the most that can be said for a pre-existing profile. Dropped as soon as
+   * a real `savedAt` is written.
+   */
+  savedAtBound?: number
 }
 
 export const levelId = (regionId: string, level: number) => `${regionId}-${level}`

@@ -194,13 +194,38 @@ function writeProfiles(names: string[]): void {
 }
 
 /** List the saved player profiles. */
+/**
+ * Recover what can be recovered about when a pre-existing profile was last
+ * saved. localStorage exposes no write time, so the exact date is gone for
+ * good — but the save must have happened at or before the first moment this
+ * build sees it, and recording that bound turns "date not known" into "not
+ * played since <date>", which is what the transfer screen is really asking.
+ * Self-gating: a profile is bounded once and never re-bounded.
+ */
+function backfillSaveBounds(names: string[], now: number): void {
+  for (const name of names) {
+    try {
+      const raw = localStorage.getItem(saveKey(name))
+      if (!raw) continue
+      const data = JSON.parse(raw)
+      if (!data || typeof data !== 'object' || data.savedAt || data.savedAtBound) continue
+      localStorage.setItem(saveKey(name), JSON.stringify({ ...data, savedAtBound: now }))
+    } catch {
+      // unreadable or storage blocked — the row just says the date isn't known
+    }
+  }
+}
+
 export function listProfiles(): string[] {
+  // Runs before the migration below so both agree on the bound.
+  backfillSaveBounds(readProfiles(), Date.now())
+
   // One-time: turn read-aloud on for pre-existing profiles (it's now the default).
   try {
     if (localStorage.getItem(NARRATION_DEFAULT_KEY) === null) {
       for (const name of readProfiles()) {
         const s = loadSave(name)
-        if (!s.readAloud) persistSave(name, { ...s, readAloud: true })
+        if (!s.readAloud) writeSave(name, { ...s, readAloud: true })
       }
       localStorage.setItem(NARRATION_DEFAULT_KEY, '1')
     }
@@ -239,12 +264,23 @@ export function loadSave(name: string): SaveData {
   }
 }
 
-export function persistSave(name: string, save: SaveData): void {
+/**
+ * Write a save exactly as given, with no stamping. For migrations: rewriting
+ * the blob to fix its shape is not a save the child made, so it must not
+ * claim to be the last-saved moment.
+ */
+function writeSave(name: string, save: SaveData): void {
   try {
-    localStorage.setItem(saveKey(name), JSON.stringify({ ...save, savedAt: Date.now() }))
+    localStorage.setItem(saveKey(name), JSON.stringify(save))
   } catch {
     // Storage full/blocked — the game still plays, it just won't remember.
   }
+}
+
+export function persistSave(name: string, save: SaveData): void {
+  const stamped: SaveData = { ...save, savedAt: Date.now() }
+  delete stamped.savedAtBound // an exact stamp supersedes the bound
+  writeSave(name, stamped)
 }
 
 const MS_PER_DAY = 86_400_000
@@ -254,24 +290,36 @@ function daysAgo(then: Date, now: Date): number {
   return Math.round((midnight(now) - midnight(then)) / MS_PER_DAY)
 }
 
+/** A day as "18 Jul", carrying the year only when it isn't the current one. */
+function formatDay(when: Date, now: Date): string {
+  return when.toLocaleDateString([], {
+    day: 'numeric',
+    month: 'short',
+    ...(when.getFullYear() === now.getFullYear() ? {} : { year: 'numeric' }),
+  })
+}
+
 /**
  * When this save was last written, in words a parent can act on — the point
  * being to tell a played-today profile apart from one left behind months ago.
+ * A profile that predates the stamp can only be bounded, so it says "on or
+ * before": true on the day it was bounded, and increasingly telling as that
+ * date recedes.
  */
 export function lastSavedLabel(save: SaveData, now: Date = new Date()): string {
-  if (!save.savedAt) return 'Last saved date not known'
+  if (!save.savedAt) {
+    if (!save.savedAtBound) return 'Last saved date not known'
+    const bound = new Date(save.savedAtBound)
+    if (daysAgo(bound, now) <= 0) return 'Last saved today or earlier'
+    return `Last saved on or before ${formatDay(bound, now)}`
+  }
   const when = new Date(save.savedAt)
   const time = when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
   const days = daysAgo(when, now)
   if (days <= 0) return `Last saved today, ${time}`
   if (days === 1) return `Last saved yesterday, ${time}`
   if (days < 7) return `Last saved ${days} days ago`
-  const date = when.toLocaleDateString([], {
-    day: 'numeric',
-    month: 'short',
-    ...(when.getFullYear() === now.getFullYear() ? {} : { year: 'numeric' }),
-  })
-  return `Last saved ${date}`
+  return `Last saved ${formatDay(when, now)}`
 }
 
 // ---- transfer a player to another device via a link ----------------------
